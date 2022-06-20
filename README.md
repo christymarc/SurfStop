@@ -55,14 +55,14 @@ Allows users to get tips, learn about current surf conditions, and join a surfin
     * displays community groups and beach groups
 * Community/Beach group timelines
     * displays long term posts
-* Shop Screen
-    * displays shop posts of used merchandise
-    * posts include price, location, contact info, description, photo
-    * (Potentially) filters posts
 * Profile Screen 
    * Allows user to upload a photo and give a simple description
 * Settings Screen
    * Lets people change app notification settings.
+* (Potentially) Shop Screen
+    * displays shop posts of used merchandise
+    * posts include price, location, contact info, description, photo
+    * filters posts
 * (Potentially) Beach Details Screen
     * displays photos, name, description
 * (Potentially) BookMarked Screen
@@ -76,7 +76,6 @@ Allows users to get tips, learn about current surf conditions, and join a surfin
 
 * Temporary Feed
 * Groups
-* Shop
 * Profile
 
 **Flow Navigation** (Screen to Screen)
