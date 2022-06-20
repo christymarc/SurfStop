@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">SurfStop</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="signup">Signup</string>
+    <string name="new_user_signup">New User Sign Up</string>
+    <string name="logout">Logout</string>
+    <string name="surf_now">Surf Now</string>
+    <string name="groups">Groups</string>
+    <string name="profile">Profile</string>
 </resources>
