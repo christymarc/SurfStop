@@ -27,4 +27,7 @@ public class TempFeedFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_temp_feed, container, false);
     }
+
+    public void onComposeButton(View view) {
+    }
 }

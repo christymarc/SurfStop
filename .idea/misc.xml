@@ -4,11 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/drawable/button_selector.xml" value="0.412" />
+        <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/drawable/customborder.xml" value="0.3155" />
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/activity_login.xml" value="0.3" />
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/activity_signup.xml" value="0.25" />
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/fragment_profile.xml" value="0.390625" />
-        <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/fragment_temp_feed.xml" value="0.31354166666666666" />
+        <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/fragment_temp_feed.xml" value="0.25" />
+        <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/layout/item_shortpost.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/christianamarc/Documents/AndroidStudioProjects/SurfStop/app/src/main/res/menu/menu_bottom_navigation.xml" value="0.5541666666666667" />
       </map>
     </option>
