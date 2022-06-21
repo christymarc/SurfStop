@@ -4,9 +4,17 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="signup">Signup</string>
+    <string name="login_error">Invalid Username/Password</string>
+    <string name="success">Success!</string>
     <string name="new_user_signup">New User Sign Up</string>
     <string name="logout">Logout</string>
     <string name="surf_now">Surf Now</string>
     <string name="groups">Groups</string>
     <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="no_password_match">Passwords do not match.</string>
+    <string name="account_exists">Account already exists.</string>
+    <string name="sign_up_error">Sign up error.</string>
 </resources>
