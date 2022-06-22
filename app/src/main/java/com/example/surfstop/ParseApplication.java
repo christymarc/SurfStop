@@ -3,7 +3,9 @@ package com.example.surfstop;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
 
+import models.ShortPost;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -22,6 +24,8 @@ public class ParseApplication extends Application {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.networkInterceptors().add(httpLoggingInterceptor);
+
+        ParseObject.registerSubclass(ShortPost.class);
 
         // set applicationId, and server server based on the values in the back4app settings.
         // any network interceptors must be added with the Configuration Builder given this syntax

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="8dp"
     tools:context="fragments.TempFeedFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -84,16 +84,6 @@
             tools:text="@string/height" />
 
         <TextView
-            android:id="@+id/tvMinBreakLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/min_break_label"
-            app:layout_constraintEnd_toStartOf="@+id/tvMinBreak"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tvMaxBreak"
-            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription" />
-
-        <TextView
             android:id="@+id/tvMinBreak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -132,6 +122,16 @@
             app:layout_constraintStart_toStartOf="@+id/tvMinBreakLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvMinBreakLabel"
             app:layout_constraintVertical_bias="0.057" />
+
+        <TextView
+            android:id="@+id/tvMinBreakLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/min_break_label"
+            app:layout_constraintEnd_toStartOf="@+id/tvMinBreak"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/tvMaxBreak"
+            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription" />
 
         <TextView
             android:id="@+id/tvWaterTemp"
@@ -194,6 +194,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTempFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -206,14 +207,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="2dp">
+        android:layout_alignParentBottom="true">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/composeFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="2dp"
             android:backgroundTint="@color/vibrant_blue"
             android:elevation="5dp"
             android:onClick="onComposeButton"

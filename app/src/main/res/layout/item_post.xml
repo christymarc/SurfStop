@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ivMedia"
         tools:text="@string/post_content" />
 
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/ivMedia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvName"
         app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleType="centerCrop"/>
 
     <View
         android:id="@+id/vBorder"

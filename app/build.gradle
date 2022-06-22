@@ -64,4 +64,7 @@ dependencies {
 
     // Material Design
     implementation 'com.google.android.material:material:1.4.0'
+
+    // Pinch-to-zoom
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 }
