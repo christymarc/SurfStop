@@ -17,14 +17,14 @@ import com.parse.ParseFile;
 
 import java.util.List;
 
-import models.ShortPost;
+import models.Post;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private final Context context;
-    private List<ShortPost> posts;
+    private List<Post> posts;
 
-    public PostAdapter(Context context, List<ShortPost> posts) {
+    public PostAdapter(Context context, List<Post> posts) {
         this.context = context;
         this.posts = posts;
     }
@@ -39,7 +39,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ShortPost post = posts.get(position);
+        Post post = posts.get(position);
         holder.bind(post);
     }
 
@@ -65,9 +65,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ivMedia = itemView.findViewById(R.id.ivMedia);
         }
 
-        public void bind(ShortPost post) {
+        public void bind(Post post) {
 
-            String created_at = ShortPost.calculateTimeAgo(post.getCreatedAt());
+            String created_at = Post.calculateTimeAgo(post.getCreatedAt());
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
@@ -99,7 +99,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     // Add a list of items -- change to type used
-    public void addAll(List<ShortPost> list) {
+    public void addAll(List<Post> list) {
         posts.addAll(list);
         notifyDataSetChanged();
     }

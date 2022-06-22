@@ -23,6 +23,7 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Post;
 import models.ShortPost;
 
 public class TempFeedFragment extends Fragment {
@@ -30,7 +31,7 @@ public class TempFeedFragment extends Fragment {
     public static final String TAG = "TempFeedActivity";
 
     private RecyclerView rvTempFeed;
-    protected List<ShortPost> allPosts;
+    protected List<Post> allPosts;
     protected PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
