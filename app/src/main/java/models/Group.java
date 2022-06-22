@@ -30,6 +30,7 @@ public class Group extends ParseObject {
     public void setKeyImage(ParseFile groupCoverPhoto) {
         put(KEY_IMAGE, groupCoverPhoto);
     }
+
     public void setKeyName(String groupName) {
         put(KEY_NAME, groupName);
     }
