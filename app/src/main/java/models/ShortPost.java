@@ -29,5 +29,4 @@ public class ShortPost extends Post {
     public void setKeyTag(String tag) {
         put(KEY_TAG, tag);
     }
-
 }

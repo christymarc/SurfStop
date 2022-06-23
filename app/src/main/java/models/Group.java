@@ -3,13 +3,12 @@ package models;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 @ParseClassName("Group")
 public class Group extends ParseObject {
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_IMAGE = "groupCoverPhoto";
-    public static final String KEY_NAME = "groupName";
+    public static final String KEY_GROUPNAME = "groupName";
 
     public String getKeyDescription() {
         return getString(KEY_DESCRIPTION);
@@ -19,9 +18,7 @@ public class Group extends ParseObject {
         return getParseFile(KEY_IMAGE);
     }
 
-    public String getKeyName() {
-        return getString(KEY_NAME);
-    }
+    public String getKeyGroupName() { return getString(KEY_GROUPNAME); }
 
     public void setKeyDescription(String description) {
         put(KEY_DESCRIPTION, description);
@@ -31,7 +28,7 @@ public class Group extends ParseObject {
         put(KEY_IMAGE, groupCoverPhoto);
     }
 
-    public void setKeyName(String groupName) {
-        put(KEY_NAME, groupName);
+    public void setKeyGroupName(String groupName) {
+        put(KEY_GROUPNAME, groupName);
     }
 }

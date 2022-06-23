@@ -1,4 +1,4 @@
-package com.example.surfstop;
+package adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.surfstop.R;
 import com.parse.ParseFile;
 
 import java.util.List;
 
 import models.Post;
+import utils.TimeUtils;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
@@ -67,7 +69,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(Post post) {
 
-            String created_at = Post.calculateTimeAgo(post.getCreatedAt());
+            String created_at = TimeUtils.calculateTimeAgo(post.getCreatedAt());
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
