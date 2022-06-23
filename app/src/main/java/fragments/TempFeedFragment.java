@@ -34,7 +34,7 @@ import models.Post;
 import models.ShortPost;
 import utils.QueryUtils;
 
-public class TempFeedFragment extends Fragment {
+public class TempFeedFragment extends Fragment implements AdapterView.OnItemSelectedListener{
 
     public static final String TAG = "TempFeedActivity";
 
@@ -79,18 +79,8 @@ public class TempFeedFragment extends Fragment {
         beachAdapter = new SpinnerAdapter(view.getContext(),
                 R.layout.activity_custom_spinner, beach_array);
         spinnerBeach.setAdapter(beachAdapter);
-
-        spinnerBeach.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                current_beach = (BeachGroup) parent.getItemAtPosition(pos);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                current_beach = (BeachGroup) parent.getItemAtPosition(0);
-            }
-        });
+        spinnerBeach.setOnItemSelectedListener(this);
+        current_beach = QueryUtils.queryDefaultBeach();
 
         // Get views for description variables
         tvGroupDescriptionLabel = view.findViewById(R.id.tvGroupDescriptionLabel);
@@ -114,7 +104,7 @@ public class TempFeedFragment extends Fragment {
         // set the layout manager on the recycler view
         rvTempFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        QueryUtils.queryShortPosts(allPosts, adapter);
+        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
 
         // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -124,7 +114,7 @@ public class TempFeedFragment extends Fragment {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 adapter.clear();
-                QueryUtils.queryShortPosts(allPosts, adapter);
+                QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -136,5 +126,22 @@ public class TempFeedFragment extends Fragment {
     }
 
     public void onComposeButton(View view) {
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        System.out.println("anyone?");
+        current_beach = (BeachGroup) parent.getSelectedItem();
+        Log.i(TAG, current_beach.getKeyGroupName() + " selected");
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        //TODO: What happens if no beaches selected
+        current_beach = (BeachGroup) parent.getItemAtPosition(0);
+    }
+
+    public void updatePost(List<ShortPost> allPosts) {
+
     }
 }

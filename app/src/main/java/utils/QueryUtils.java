@@ -23,9 +23,17 @@ import models.ShortPost;
 
 public class QueryUtils {
 
-    public static void queryShortPosts(List<Post> allPosts, PostAdapter adapter) {
+    public static void queryShortPosts(List<Post> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class);
         query.include(ShortPost.KEY_USER);
+        //query.whereEqualTo(ShortPost.KEY_GROUP, current_beach.getKeyGroup());
+        /*if (current_beach != null) {
+            query.whereEqualTo(ShortPost.KEY_GROUP, current_beach.getKeyGroup());
+        }
+        else {
+            // Default is Trestles beach
+            query.whereEqualTo("group", "vrmEBvbvMH");
+        }*/
         // Set number of items queried
         query.setLimit(20);
         // Order posts by creation date (newest first)
@@ -40,6 +48,10 @@ public class QueryUtils {
                 for (ShortPost post : posts) {
                     Log.i(TAG, "Content: " + post.getKeyContent() +
                             "\nUser: " + post.getKeyUser().getUsername());
+                    Log.i(TAG, "Group Key: " + post.getKeyGroup());
+                    if (post.getKeyGroup().equals("vrmEBvbvMH")) {
+                        Log.i(TAG, "HERE");
+                    }
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
@@ -70,5 +82,28 @@ public class QueryUtils {
             }
         });
         return favorite_beaches;
+    }
+
+    public static BeachGroup queryDefaultBeach() {
+        final BeachGroup[] default_beach = new BeachGroup[1];
+        ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class);
+        query.include(BeachGroup.KEY_GROUP);
+        // Default set to Trestles Beach
+        // query.whereEqualTo(BeachGroup.KEY_GROUP, "vrmEBvbvMH");
+        query.findInBackground(new FindCallback<BeachGroup>() {
+            @Override
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (BeachGroup group : groups) {
+                    Log.i(TAG, "Group: " + group.getKeyGroupName());
+                }
+                default_beach[0] = groups.get(0);
+                QueryUtils.queryShortPosts(allPosts, adapter, default_beach);
+            }
+        });
+        return default_beach[0];
     }
 }
