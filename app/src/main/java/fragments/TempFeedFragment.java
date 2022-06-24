@@ -1,5 +1,6 @@
 package fragments;
 
+import android.app.DownloadManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,12 +25,15 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import adapters.SpinnerAdapter;
+import models.BasePost;
 import models.BeachGroup;
+import models.FavoriteGroups;
 import models.Post;
 import models.ShortPost;
 import utils.QueryUtils;
@@ -55,7 +59,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
 
     // Feed variables
     private RecyclerView rvTempFeed;
-    public List<Post> allPosts;
+    public List<BasePost> allPosts;
     public PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
@@ -75,12 +79,30 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         super.onViewCreated(view, savedInstanceState);
 
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
-        List<BeachGroup> beach_array = QueryUtils.queryFavoriteBeaches();
-        beachAdapter = new SpinnerAdapter(view.getContext(),
-                R.layout.activity_custom_spinner, beach_array);
-        spinnerBeach.setAdapter(beachAdapter);
         spinnerBeach.setOnItemSelectedListener(this);
-        current_beach = QueryUtils.queryDefaultBeach();
+
+        // Get user's favorite groups to populate spinner
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class);
+        groupsQuery.include(FavoriteGroups.KEY_USER);
+        groupsQuery.whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class);
+        beachQuery.whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        beachQuery.findInBackground(new FindCallback<BeachGroup>() {
+            @Override
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (BeachGroup group : groups) {
+                    Log.i(TAG, "Group: " + group.getKeyGroupName());
+                }
+                beachAdapter = new SpinnerAdapter(view.getContext(),
+                        R.layout.activity_custom_spinner, groups);
+                spinnerBeach.setAdapter(beachAdapter);
+            }
+        });
+
 
         // Get views for description variables
         tvGroupDescriptionLabel = view.findViewById(R.id.tvGroupDescriptionLabel);
@@ -104,7 +126,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         // set the layout manager on the recycler view
         rvTempFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
+        //QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
 
         // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -130,18 +152,16 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        System.out.println("anyone?");
+        adapter.clear();
         current_beach = (BeachGroup) parent.getSelectedItem();
+        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
         Log.i(TAG, current_beach.getKeyGroupName() + " selected");
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        //TODO: What happens if no beaches selected
+        adapter.clear();
         current_beach = (BeachGroup) parent.getItemAtPosition(0);
-    }
-
-    public void updatePost(List<ShortPost> allPosts) {
-
+        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
     }
 }

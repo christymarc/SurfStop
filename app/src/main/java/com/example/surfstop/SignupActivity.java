@@ -66,6 +66,7 @@ public class SignupActivity extends AppCompatActivity {
                 if (e == null) {
                     goMainActivity();
                 } else {
+                    //TODO: Do better error handling here (capture e)
                     if (e.toString().contains("Account already exists.")) {
                         Snackbar.make(signupButton, R.string.account_exists, Snackbar.LENGTH_SHORT)
                                 .show();

@@ -19,12 +19,12 @@
 
         <Spinner
             android:id="@+id/spinnerBeach"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:spinnerMode="dropdown"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -52,11 +52,12 @@
             android:id="@+id/tvGroupDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescriptionLabel"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tvGroupDescriptionLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvGroupDescriptionLabel"
             app:layout_constraintVertical_bias="0.0"
             tools:text="@string/group_description" />
 
@@ -64,11 +65,9 @@
             android:id="@+id/tvGroupDescriptionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerBeach"
             tools:text="@string/group_description_label" />
 
         <TextView

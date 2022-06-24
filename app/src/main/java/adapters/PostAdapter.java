@@ -18,15 +18,16 @@ import com.parse.ParseFile;
 
 import java.util.List;
 
+import models.BasePost;
 import models.Post;
 import utils.TimeUtils;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private final Context context;
-    private List<Post> posts;
+    private List<BasePost> posts;
 
-    public PostAdapter(Context context, List<Post> posts) {
+    public PostAdapter(Context context, List<BasePost> posts) {
         this.context = context;
         this.posts = posts;
     }
@@ -41,7 +42,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Post post = posts.get(position);
+        BasePost post = posts.get(position);
         holder.bind(post);
     }
 
@@ -67,7 +68,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ivMedia = itemView.findViewById(R.id.ivMedia);
         }
 
-        public void bind(Post post) {
+        public void bind(BasePost post) {
 
             String created_at = TimeUtils.calculateTimeAgo(post.getCreatedAt());
 
@@ -101,7 +102,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     // Add a list of items -- change to type used
-    public void addAll(List<Post> list) {
+    public void addAll(List<BasePost> list) {
         posts.addAll(list);
         notifyDataSetChanged();
     }
