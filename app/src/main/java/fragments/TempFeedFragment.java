@@ -40,14 +40,13 @@ import utils.QueryUtils;
 
 public class TempFeedFragment extends Fragment implements AdapterView.OnItemSelectedListener{
 
-    public static final String TAG = "TempFeedActivity";
+    public static final String TAG = TempFeedFragment.class.getName();
 
     Spinner spinnerBeach;
     SpinnerAdapter beachAdapter;
     BeachGroup current_beach;
 
     // Group Description Variables
-    TextView tvGroupDescriptionLabel;
     TextView tvGroupDescription;
     TextView tvMinBreak;
     TextView tvMaxBreak;
@@ -105,7 +104,6 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
 
 
         // Get views for description variables
-        tvGroupDescriptionLabel = view.findViewById(R.id.tvGroupDescriptionLabel);
         tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
         tvMinBreak = view.findViewById(R.id.tvMinBreak);
         tvMaxBreak = view.findViewById(R.id.tvMaxBreak);
@@ -135,7 +133,6 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                adapter.clear();
                 QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
                 swipeContainer.setRefreshing(false);
             }
@@ -150,18 +147,28 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     public void onComposeButton(View view) {
     }
 
+    public void bindDescription() {
+        tvGroupDescription.setText(current_beach.getKeyDescription());
+        tvMinBreak.setText(current_beach.getKeyMinbreak());
+        tvMaxBreak.setText(current_beach.getKeyMaxbreak());
+        //tvAirTemp
+        tvWaterTemp.setText(current_beach.getKeyWatertemp());
+        //tvWeather
+        //tvSunsetTime
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        adapter.clear();
         current_beach = (BeachGroup) parent.getSelectedItem();
         QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
+        bindDescription();
         Log.i(TAG, current_beach.getKeyGroupName() + " selected");
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        adapter.clear();
         current_beach = (BeachGroup) parent.getItemAtPosition(0);
         QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
+        bindDescription();
     }
 }

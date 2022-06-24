@@ -25,17 +25,19 @@ import models.ShortPost;
 public class QueryUtils {
 
     public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
-        ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class);
-        query.include(ShortPost.KEY_USER);
+        adapter.clear();
+
+        ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
+                .include(ShortPost.KEY_USER);
 
         if (current_beach != null) {
             query.whereEqualTo(ShortPost.KEY_BEACHGROUP, current_beach);
         }
 
         // Set number of items queried
-        query.setLimit(20);
-        // Order posts by creation date (newest first)
-        query.addDescendingOrder("createdAt");
+        query.setLimit(20)
+                .addDescendingOrder("createdAt");
+
         query.findInBackground(new FindCallback<ShortPost>() {
             @Override
             public void done(List<ShortPost> posts, ParseException e) {
@@ -55,11 +57,13 @@ public class QueryUtils {
     public static List<BeachGroup> queryFavoriteBeaches() {
         List<BeachGroup> favorite_beaches = new ArrayList<>();
 
-        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class);
-        groupsQuery.include(FavoriteGroups.KEY_USER);
-        groupsQuery.whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
-        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class);
-        beachQuery.whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+
         beachQuery.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
@@ -79,8 +83,9 @@ public class QueryUtils {
 
     public static List<BeachGroup> queryBeaches() {
         List<BeachGroup> beaches = new ArrayList<>();
-        ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class);
-        query.include(BeachGroup.KEY_GROUP);
+        ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
+                .include(BeachGroup.KEY_GROUP);
+
         query.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {

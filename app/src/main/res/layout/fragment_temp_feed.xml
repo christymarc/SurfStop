@@ -39,6 +39,7 @@
             android:id="@+id/tvMaxBreakLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:layout_marginBottom="16dp"
             android:text="@string/max_break_label"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -56,19 +57,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tvGroupDescriptionLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvGroupDescriptionLabel"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="@string/group_description" />
-
-        <TextView
-            android:id="@+id/tvGroupDescriptionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerBeach"
-            tools:text="@string/group_description_label" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="@string/group_description" />
 
         <TextView
             android:id="@+id/tvMaxBreak"
