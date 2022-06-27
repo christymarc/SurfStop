@@ -2,9 +2,11 @@ package utils;
 
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeUtils {
+
     public static String calculateTimeAgo(Date createdAt) {
 
         int SECOND_MILLIS = 1000;
@@ -39,5 +41,14 @@ public class TimeUtils {
         }
 
         return "";
+    }
+
+    public static String unixToUTC(long unixSeconds){
+        Date date = new java.util.Date(unixSeconds*1000L);
+        // the format of date
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("h:mm a");
+        String formattedDate = sdf.format(date);
+        System.out.println(formattedDate);
+        return formattedDate;
     }
 }

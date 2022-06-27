@@ -18,7 +18,7 @@ import fragments.TempFeedFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = MainActivity.class.getName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
     BottomNavigationView bottomNavigationView;

@@ -70,12 +70,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(BasePost post) {
 
-            String created_at = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+            String createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
             tvName.setText(post.getKeyUser().getUsername());
-            tvTime.setText(created_at);
+            tvTime.setText(createdAt);
             ParseFile profilePhoto = post.getKeyUser().getParseFile("profilePhoto");
             if (profilePhoto != null) {
                 Glide.with(context).load(profilePhoto.getUrl())

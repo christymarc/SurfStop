@@ -2,14 +2,14 @@ package utils;
 
 public class TempUtils {
 
-    public static String celsius_to_fahrenheit(String celsius_temp){
-        int c_temp = Integer.parseInt(celsius_temp);
-        int f_temp = c_temp * 9 / 5 + 32;
-        return String.valueOf(f_temp);
+    public static String celsiusToFahrenheit(String celsius_temp){
+        double cTemp = Double.parseDouble(celsius_temp);
+        int fTemp = (int) cTemp * 9 / 5 + 32;
+        return String.valueOf(fTemp);
     }
 
-    public String kelvin_to_fahrenheit(String kelvin_temp) {
-        int c_temp = Integer.parseInt(kelvin_temp) - 273;
-        return celsius_to_fahrenheit(String.valueOf(c_temp));
+    public static String kelvin_to_fahrenheit(String kelvinTemp) {
+        double cTemp = Double.parseDouble(kelvinTemp) - 273.15;
+        return celsiusToFahrenheit(String.valueOf(cTemp));
     }
 }

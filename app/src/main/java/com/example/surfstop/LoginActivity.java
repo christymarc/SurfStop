@@ -17,7 +17,7 @@ import com.parse.ParseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    final String TAG = LoginActivity.class.getName();
+    final String TAG = LoginActivity.class.getSimpleName();
 
     EditText etUsername;
     EditText etPassword;

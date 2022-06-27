@@ -9,7 +9,7 @@ public class BeachGroup extends Group{
     public static final String KEY_MAXBREAK = "maxBreak";
     public static final String KEY_MINBREAK = "minBreak";
     public static final String KEY_WATERTEMP = "waterTemp";
-    public static final String KEY_LOCATIONID = "locationID";
+    public static final String KEY_LOCATIONID = "locationId";
 
     public ParseObject getKeyGroup() { return getParseObject(KEY_GROUP); }
 
@@ -19,7 +19,7 @@ public class BeachGroup extends Group{
 
     public String getKeyWatertemp() { return getString(KEY_WATERTEMP); }
 
-    public Number getKeyLocationid() { return getNumber(KEY_LOCATIONID); }
+    public String getKeyLocationid() { return getString(KEY_LOCATIONID); }
 
     public void setKeyGroup(ParseObject group) { put(KEY_GROUP, group); }
 

@@ -6,6 +6,10 @@ def parsePropertiesFile = rootProject.file("parse.properties")
 def parseProperties = new Properties()
 parseProperties.load(new FileInputStream(parsePropertiesFile))
 
+def weatherPropertiesFile = rootProject.file("weather.properties")
+def weatherProperties = new Properties()
+weatherProperties.load(new FileInputStream(weatherPropertiesFile))
+
 android {
     compileSdk 32
 
@@ -17,12 +21,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "APPLICATION_KEY", parseProperties['APPLICATION_KEY'])
-        buildConfigField("String", "CLIENT_KEY", parseProperties['CLIENT_KEY'])
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "APPLICATION_KEY", parseProperties['APPLICATION_KEY'])
+            buildConfigField("String", "CLIENT_KEY", parseProperties['CLIENT_KEY'])
+            buildConfigField("String", "WEATHER_KEY", weatherProperties['WEATHER_KEY'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -67,4 +73,7 @@ dependencies {
 
     // Pinch-to-zoom
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    // Volley library for API support
+    implementation 'com.android.volley:volley:1.2.1'
 }

@@ -16,7 +16,7 @@ import com.parse.SignUpCallback;
 
 public class SignupActivity extends AppCompatActivity {
 
-    final String TAG = "SignupActivity";
+    final String TAG = SignupActivity.class.getSimpleName();
     EditText etUsername;
     EditText etPassword;
     EditText etPasswordConfirm;
