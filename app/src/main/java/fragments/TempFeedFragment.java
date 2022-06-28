@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -16,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,9 +31,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.surfstop.BuildConfig;
 import com.example.surfstop.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -40,7 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,13 +49,11 @@ import models.BasePost;
 import models.BeachGroup;
 import models.BeachWeather;
 import models.FavoriteGroups;
-import models.Post;
-import models.ShortPost;
 import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;
 
-public class TempFeedFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class TempFeedFragment extends Fragment implements AdapterView.OnItemSelectedListener, ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
 
@@ -74,6 +72,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     TextView tvWeather;
     TextView tvSunsetTime;
 
+    FloatingActionButton composeFab;
 
     // Feed variables
     private RecyclerView rvTempFeed;
@@ -86,7 +85,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     private String temperature;
     // sunset time of local timezone
     private String sunsetTime;
-    long myTimeZone = -25200;
+    final long myTimeZone = -25200;
 
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String api_key = BuildConfig.WEATHER_KEY;
@@ -141,6 +140,8 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         tvWeather = view.findViewById(R.id.tvWeather);
         tvSunsetTime = view.findViewById(R.id.tvSunsetTime);
 
+        composeFab = view.findViewById(R.id.composeFab);
+
         rvTempFeed = view.findViewById(R.id.rvTempFeed);
 
         // initialize the array that will hold posts and create a PostsAdapter
@@ -154,6 +155,13 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         rvTempFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
+
+        composeFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onComposeButton(view);
+            }
+        });
 
         // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -171,9 +179,6 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-    }
-
-    public void onComposeButton(View view) {
     }
 
     public void bindDescription() {
@@ -239,5 +244,22 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         });
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+    }
+
+    public void onComposeButton(View view) {
+        System.out.println("pressed");
+        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(this.current_beach);
+        composeDialogFragment.show(fm, "compose_fragment");
+    }
+
+    @Override
+    public void onFinishComposeDialog(BasePost post) {
+        // Update the RecyclerView with this new tweet
+        // Modify data source of tweets
+        allPosts.add(0, post);
+        // Update the adapter
+        adapter.notifyItemInserted(0);
+        rvTempFeed.smoothScrollToPosition(0);
     }
 }
