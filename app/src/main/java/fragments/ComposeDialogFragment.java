@@ -54,7 +54,7 @@ public class ComposeDialogFragment extends DialogFragment{
     public static final int MAX_POST_LENGTH = 280;
     public static final int TALLEST_WAVE_HEIGHT = 63;
 
-    Context context;
+    ComposeDialogListener composeDialogListener;
 
     EditText etCompose;
     ImageView ivPostImage;
@@ -83,6 +83,10 @@ public class ComposeDialogFragment extends DialogFragment{
         fragment.setArguments(bundle);
 
         return fragment;
+    }
+
+    public void setListener(ComposeDialogListener listener) {
+        this.composeDialogListener = listener;
     }
 
     /**
@@ -285,7 +289,7 @@ public class ComposeDialogFragment extends DialogFragment{
                 etCompose.setText("");
                 ivPostImage.setImageResource(0);
 
-                ComposeDialogListener listener = (ComposeDialogListener) context; // this breaks the code
+                ComposeDialogListener listener = composeDialogListener; // this breaks the code
                 if (listener != null) {
                     listener.onFinishComposeDialog(post);
                 }
@@ -293,17 +297,5 @@ public class ComposeDialogFragment extends DialogFragment{
                 dismiss();
             }
         });
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.context = context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.context = null;
     }
 }

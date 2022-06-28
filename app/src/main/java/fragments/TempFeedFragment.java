@@ -250,6 +250,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         System.out.println("pressed");
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
         ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(this.current_beach);
+        composeDialogFragment.setListener(this);
         composeDialogFragment.show(fm, "compose_fragment");
     }
 
