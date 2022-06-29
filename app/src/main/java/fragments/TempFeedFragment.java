@@ -57,6 +57,8 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
 
+    final long MYTIMEZONE = -25200;
+
     Spinner spinnerBeach;
     SpinnerAdapter beachAdapter;
     BeachGroup current_beach;
@@ -85,7 +87,6 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     private String temperature;
     // sunset time of local timezone
     private String sunsetTime;
-    final long myTimeZone = -25200;
 
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String api_key = BuildConfig.WEATHER_KEY;
@@ -109,11 +110,11 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         spinnerBeach.setOnItemSelectedListener(this);
 
         // Get user's favorite groups to populate spinner
-        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class);
-        groupsQuery.include(FavoriteGroups.KEY_USER);
-        groupsQuery.whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
-        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class);
-        beachQuery.whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
         beachQuery.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
@@ -227,7 +228,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
                             long sunsetUTC = jsonSysObject.getLong("sunset");
                             long locationTimeZone = jsonResponse.getLong("timezone");
                             // need to account for location timezone and my timezone
-                            sunsetTime = TimeUtils.unixToUTC(sunsetUTC + locationTimeZone - myTimeZone);
+                            sunsetTime = TimeUtils.unixToUTC(sunsetUTC + locationTimeZone - MYTIMEZONE);
 
                             tvWeather.setText(description);
                             tvAirTemp.setText(temperature);

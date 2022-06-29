@@ -24,6 +24,8 @@ import models.ShortPost;
 
 public class QueryUtils {
 
+    public static final int QUERY_MAX_ITEMS = 20;
+
     public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
 
@@ -35,7 +37,7 @@ public class QueryUtils {
         }
 
         // Set number of items queried
-        query.setLimit(20)
+        query.setLimit(QUERY_MAX_ITEMS)
                 .addDescendingOrder("createdAt");
 
         query.findInBackground(new FindCallback<ShortPost>() {

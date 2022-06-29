@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLogoutButton(MenuItem item) {
-        ParseUser.logOut();
+        ParseUser.logOutInBackground();
         ParseUser currentUser = ParseUser.getCurrentUser();
+        System.out.println(currentUser);
 
         // Return back to login screen (could also do this with 'finish()')
         Intent i = new Intent(this, LoginActivity.class);

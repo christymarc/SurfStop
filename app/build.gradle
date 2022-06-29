@@ -52,6 +52,9 @@ dependencies {
     // Recycler View
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
+    // Card View
+    implementation "androidx.cardview:cardview:1.0.0"
+
     // Bottom Navigation
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'

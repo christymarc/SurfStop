@@ -1,40 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    card_view:cardCornerRadius="4dp">
 
-    <Button
-        android:id="@+id/textButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_margin="5dp"
-        app:icon="@drawable/ufi_heart"
-        app:iconSize="@android:dimen/app_icon_size"
-        app:iconTint="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="40dp"
+        android:background="@drawable/customborder">
 
-    <ImageView
-        android:id="@+id/tvGroupPhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="250dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        <Button
+            android:id="@+id/favoriteButtonPressed"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="59dp"
+            android:layout_height="56dp"
+            android:layout_gravity="end|top|center_vertical"
+            android:layout_margin="30dp"
+            android:visibility="gone"
+            app:icon="@drawable/ufi_heart_active"
+            app:iconSize="@android:dimen/app_icon_size"
+            app:iconTint="@color/medium_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvGroupName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/groups"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/tvGroupPhoto"
-        app:layout_constraintStart_toStartOf="@+id/tvGroupPhoto"
-        app:layout_constraintTop_toBottomOf="@+id/tvGroupPhoto" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/favoriteButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="59dp"
+            android:layout_height="56dp"
+            android:layout_gravity="end|top|center_vertical"
+            android:layout_margin="30dp"
+            app:icon="@drawable/ufi_heart"
+            app:iconSize="@android:dimen/app_icon_size"
+            app:iconTint="@color/medium_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivGroupPhoto"
+            android:layout_width="0dp"
+            android:layout_height="411dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/tvGroupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:text="@string/groups"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivGroupPhoto" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

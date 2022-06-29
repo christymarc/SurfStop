@@ -25,13 +25,13 @@ import utils.TimeUtils;
 public class BeachWeather {
 
     final String TAG = BeachWeather.class.getSimpleName();
+    final long MYTIMEZONE = -25200;
 
     private String locationID;
     private String description;
     private String temperature;
     // sunset time of local timezone
     private String sunsetTime;
-    long myTimeZone = -25200;
     
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String api_key = BuildConfig.WEATHER_KEY;
@@ -65,7 +65,7 @@ public class BeachWeather {
                     long sunsetUTC = jsonSysObject.getLong("sunset");
                     long locationTimeZone = jsonResponse.getLong("timezone");
                     // need to account for location timezone and my timezone
-                    sunsetTime = TimeUtils.unixToUTC(sunsetUTC + locationTimeZone - myTimeZone);
+                    sunsetTime = TimeUtils.unixToUTC(sunsetUTC + locationTimeZone - MYTIMEZONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
