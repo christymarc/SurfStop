@@ -2,7 +2,6 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,17 +34,12 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-
 import java.io.File;
 import java.io.IOException;
 
-import adapters.SpinnerAdapter;
 import models.BasePost;
 import models.BeachGroup;
-import models.BeachWeather;
 import models.ShortPost;
-import okhttp3.Headers;
 
 public class ComposeDialogFragment extends DialogFragment{
 
@@ -116,7 +110,7 @@ public class ComposeDialogFragment extends DialogFragment{
         postButton = view.findViewById(R.id.postButton);
 
         ivPostImage.setVisibility(View.GONE);
-        surfHeightPicker.setMaxValue(63);
+        surfHeightPicker.setMaxValue(TALLEST_WAVE_HEIGHT);
         surfHeightPicker.setMinValue(0);
 
         this.surfHeight = "0";
