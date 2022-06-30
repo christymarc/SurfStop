@@ -48,7 +48,6 @@ public class TimeUtils {
         // the format of date
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("h:mm a");
         String formattedDate = sdf.format(date);
-        System.out.println(formattedDate);
         return formattedDate;
     }
 }

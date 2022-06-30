@@ -10,16 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.surfstop.R;
 import com.parse.ParseFile;
 
 import java.util.List;
 
 import models.BasePost;
-import models.Post;
+import utils.PostImage;
 import utils.TimeUtils;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
@@ -42,7 +39,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        BasePost post = posts.get(position);
+        BasePost post = null;
+        if (position < posts.size()) {
+            post = posts.get(position);
+        }
+        assert (post != null && !post.getKeyContent().isEmpty());
         holder.bind(post);
     }
 
@@ -78,18 +79,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvTime.setText(createdAt);
             ParseFile profilePhoto = post.getKeyUser().getParseFile("profilePhoto");
             if (profilePhoto != null) {
-                Glide.with(context).load(profilePhoto.getUrl())
-                        .transform(new CircleCrop())
-                        .into(ivProfileImage);
+                PostImage.loadPfpIntoView(context, profilePhoto.getUrl(), ivProfileImage);
             }
             ParseFile image = post.getKeyImage();
             if (image != null) {
-                Glide.with(context).load(image.getUrl())
-                        .override(500, 300)
-                        .centerCrop()
-                        .transform(new RoundedCorners(30))
-                        .into(ivMedia);
-                ivMedia.setVisibility(View.VISIBLE);
+                PostImage.loadImageIntoView(context, image.getUrl(), ivMedia);
             } else {
                 ivMedia.setVisibility(View.GONE);
             }
