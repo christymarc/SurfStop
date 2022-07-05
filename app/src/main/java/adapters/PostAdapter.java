@@ -3,7 +3,6 @@ package adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,11 +104,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             // Check position is valid (exists in view)
             if (position != RecyclerView.NO_POSITION){
                 BasePost post = posts.get(position);
+
                 // TODO: when I generalize this to Short and Long Posts, how will I check what kind of post -> to have the right Intent?
                 // Create intent
                 Intent intent = new Intent(context, ShortPostDetailActivity.class);
                 // Serialize the post
                 intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+
                 // Make elements transition
                 Pair<View, String> p0 = Pair.create(view, "border");
                 Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
@@ -119,6 +120,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 Pair<View, String> p5 = Pair.create(tvTime, "time");
                 ActivityOptionsCompat options = ActivityOptionsCompat
                         .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+
                 context.startActivity(intent, options.toBundle());
             }
         }
