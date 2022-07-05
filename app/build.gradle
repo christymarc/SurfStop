@@ -79,4 +79,12 @@ dependencies {
 
     // Volley library for API support
     implementation 'com.android.volley:volley:1.2.1'
+
+    // Parceler for wrapping/unwrapping objects
+    implementation 'org.parceler:parceler-api:1.1.12'
+    annotationProcessor 'org.parceler:parceler:1.1.12'
+
+    // Lottie for animations
+    def lottieVersion = "5.2.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 }

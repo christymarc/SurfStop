@@ -3,7 +3,10 @@ package models;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
+import org.parceler.Parcel;
+
 @ParseClassName("ShortPost")
+@Parcel(analyze = ShortPost.class)
 public class ShortPost extends Post implements BasePost{
     public static final String KEY_SURFHEIGHT = "surfHeight";
     public static final String KEY_TAG = "tag";

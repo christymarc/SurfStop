@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/ivProfileImage"
         android:autoLink="all"
         android:textSize="20sp"
@@ -57,6 +57,7 @@
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/ivProfileImage"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/username" />
@@ -68,6 +69,7 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="5dp"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/time" />
@@ -112,35 +114,42 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvSurfHeightLabel"
         app:layout_constraintStart_toEndOf="@+id/tvSurfHeightLabel" />
 
-    <TextView
-        android:id="@+id/tvUser"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/username"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-        android:id="@+id/tvHasBeenUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:gravity="center_horizontal"
-        android:text="@string/user_time"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/tvUser"
-        app:layout_constraintTop_toTopOf="@+id/tvUser" />
+        <TextView
+            android:id="@+id/tvUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@string/username"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvUserTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/tvHasBeenUser"
-        app:layout_constraintTop_toTopOf="@+id/tvHasBeenUser"
-        tools:text="@string/time" />
+        <TextView
+            android:id="@+id/tvHasBeenUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="center_horizontal"
+            android:text="@string/user_time"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/tvUser"
+            app:layout_constraintTop_toTopOf="@+id/tvUser" />
+
+        <TextView
+            android:id="@+id/tvUserTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/tvHasBeenUser"
+            app:layout_constraintTop_toTopOf="@+id/tvHasBeenUser"
+            tools:text="@string/time" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.R;
+import com.example.surfstop.ShortPostDetailActivity;
 import com.parse.ParseFile;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -52,7 +57,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return posts.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView tvBody;
         private TextView tvTime;
@@ -67,6 +72,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvName = itemView.findViewById(R.id.tvName);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             ivMedia = itemView.findViewById(R.id.ivMedia);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(BasePost post) {
@@ -86,6 +93,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 PostImage.loadImageIntoView(context, image.getUrl(), ivMedia);
             } else {
                 ivMedia.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAbsoluteAdapterPosition();
+            // Check position is valid (exists in view)
+            if (position != RecyclerView.NO_POSITION){
+                BasePost post = posts.get(position);
+                // TODO: when I generalize this to Short and Long Posts, how will I check what kind of post -> to have the right Intent?
+                // Create intent
+                Intent intent = new Intent(context, ShortPostDetailActivity.class);
+                // Serialize the post
+                intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+                context.startActivity(intent);
             }
         }
     }
