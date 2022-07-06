@@ -89,15 +89,14 @@ public class QueryUtils {
         beachQuery.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
-                String queryBeachName;
-                String currentBeachName = beach.getKeyGroupName();
                 if (e != null) {
                     Log.e(TAG, "Query groups error", e);
                     return;
                 }
                 for (BeachGroup group : groups) {
-                    queryBeachName = group.getKeyGroupName();
+                    String queryBeachName = group.getKeyGroupName();
                     Log.i(TAG, "Group: " + queryBeachName);
+                    String currentBeachName = beach.getKeyGroupName();
                     if(queryBeachName.equals(currentBeachName)) {
                         favoriteButtonPressed.setVisibility(View.VISIBLE);
                         favoriteButton.setVisibility(View.GONE);
