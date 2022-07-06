@@ -16,7 +16,7 @@ public class PostImage {
     }
     public static void loadImageIntoView(Context context, String imageUrl, ImageView ivMedia) {
         Glide.with(context).load(imageUrl)
-                .override(470, 300)
+                .override(400, 250)
                 .centerCrop()
                 .transform(new RoundedCorners(30))
                 .into(ivMedia);
