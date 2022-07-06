@@ -57,6 +57,33 @@ public class QueryUtils {
         });
     }
 
+    public static void queryPersonalPosts(List<BasePost> allPosts, PostAdapter adapter) {
+        adapter.clear();
+
+        ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
+                .include(ShortPost.KEY_USER)
+                .whereEqualTo(ShortPost.KEY_USER, ParseUser.getCurrentUser());
+
+        // Set number of items queried
+        query.setLimit(QUERY_MAX_ITEMS)
+                .addDescendingOrder("createdAt");
+
+        query.findInBackground(new FindCallback<ShortPost>() {
+            @Override
+            public void done(List<ShortPost> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (ShortPost post : posts) {
+                    Log.i(TAG, "Content: " + post.getKeyBeachGroup());
+                }
+                allPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     public static void queryBeachesForSpinner(Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)

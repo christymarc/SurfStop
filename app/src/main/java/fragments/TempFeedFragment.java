@@ -88,11 +88,11 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setClipToOutline(true);
 
+        // get and set description box fragment
         FragmentManager fm = this.getChildFragmentManager();
         FragmentTransaction fragmentTransaction= fm.beginTransaction();
         descriptionBoxFragment = new DescriptionBoxFragment();
         descriptionBoxFragment.setAdapterAndList(adapter, allPosts);
-
         fragmentTransaction.replace(R.id.fragmentContainerView, descriptionBoxFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.addToBackStack(null);

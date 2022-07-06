@@ -40,7 +40,7 @@ public class MyGroupsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
-        rvGroups = view.findViewById(R.id.rvGroups);
+        rvGroups = view.findViewById(R.id.rvFeed);
         swipeContainer = view.findViewById(R.id.swipeContainer);
 
         // initialize the array that will hold posts and create a PostsAdapter

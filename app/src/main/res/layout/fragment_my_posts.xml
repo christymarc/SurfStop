@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/fragment_temp_feed"/>
+    <include layout="@layout/fragment_my_groups"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
