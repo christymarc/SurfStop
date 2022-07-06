@@ -8,10 +8,24 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.surfstop.R;
 
+import java.util.List;
+
+import adapters.PostAdapter;
+import models.BasePost;
+
 public class MyPostsFragment extends Fragment {
+
+    // Feed variables
+    private RecyclerView rvPersonalFeed;
+    public List<BasePost> allPosts;
+    public PostAdapter adapter;
+    SwipeRefreshLayout swipeContainer;
+
     public MyPostsFragment() {
         // Required empty public constructor
     }

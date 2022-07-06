@@ -6,182 +6,21 @@
     android:layout_margin="8dp"
     tools:context="fragments.TempFeedFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintBox"
+    <androidx.fragment.app.FragmentContainerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/customborder"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <Spinner
-            android:id="@+id/spinnerBeach"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:spinnerMode="dropdown"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvWeatherLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/weather_label"
-            app:layout_constraintStart_toStartOf="@+id/tvAirLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvAirLabel" />
-
-        <TextView
-            android:id="@+id/tvMaxBreakLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/max_break_label"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/tvGroupDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerBeach"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="@string/group_description" />
-
-        <TextView
-            android:id="@+id/tvMaxBreak"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMaxBreakLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tvMaxBreakLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvMaxBreakLabel"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="@string/height" />
-
-        <TextView
-            android:id="@+id/tvMinBreak"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="84dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMinBreakLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription"
-            tools:text="@string/height" />
-
-        <TextView
-            android:id="@+id/tvAirLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/air_temp_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvMaxBreakLabel" />
-
-        <TextView
-            android:id="@+id/tvAirTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvAirLabel"
-            app:layout_constraintStart_toEndOf="@+id/tvAirLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvMaxBreak"
-            tools:text="@string/temp" />
-
-        <TextView
-            android:id="@+id/etWaterTempLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/water_temp_label"
-            app:layout_constraintBottom_toBottomOf="@+id/tvAirLabel"
-            app:layout_constraintStart_toStartOf="@+id/tvMinBreakLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvMinBreakLabel"
-            app:layout_constraintVertical_bias="0.057" />
-
-        <TextView
-            android:id="@+id/tvMinBreakLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/min_break_label"
-            app:layout_constraintEnd_toStartOf="@+id/tvMinBreak"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tvMaxBreak"
-            app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription" />
-
-        <TextView
-            android:id="@+id/tvWaterTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/etWaterTempLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/etWaterTempLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvMinBreak"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="@string/temp" />
-
-        <TextView
-            android:id="@+id/tvWeather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvWeatherLabel"
-            app:layout_constraintStart_toEndOf="@+id/tvWeatherLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvWeatherLabel"
-            tools:text="@string/weather_description" />
-
-        <TextView
-            android:id="@+id/tvSunsetLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="@string/sunset_label"
-            app:layout_constraintStart_toEndOf="@+id/tvWeather"
-            app:layout_constraintTop_toTopOf="@+id/tvWeather" />
-
-        <TextView
-            android:id="@+id/tvSunsetTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvSunsetLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.018"
-            app:layout_constraintStart_toEndOf="@+id/tvSunsetLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvSunsetLabel"
-            tools:text="@string/time" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:id="@+id/fragmentContainerView"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/constraintBox"
+        android:layout_below="@+id/fragmentContainerView"
         android:layout_alignParentStart="true"
         android:background="@drawable/customborder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraintBox"
+        app:layout_constraintTop_toBottomOf="@id/fragmentContainerView"
         app:layout_constraintVertical_bias="1.0">
 
         <androidx.recyclerview.widget.RecyclerView
