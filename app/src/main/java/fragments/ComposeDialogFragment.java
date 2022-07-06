@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.surfstop.MainActivity;
 import com.example.surfstop.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseException;
@@ -63,8 +64,8 @@ public class ComposeDialogFragment extends DialogFragment{
     BeachGroup current_beach;
     public static final String CURRENT_BEACH_KEY = "current_beach";
 
-    private File photoFile;
-    public String photoFileName = "photo.jpg";
+    File photoDir;
+    File photoFile;
 
     public ComposeDialogFragment() {
         // Required empty public constructor
@@ -145,7 +146,11 @@ public class ComposeDialogFragment extends DialogFragment{
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchCamera();
+                try {
+                    launchCamera();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -178,18 +183,18 @@ public class ComposeDialogFragment extends DialogFragment{
         this.tag = itemAtPosition.toString();
     }
 
-    private void launchCamera() {
+    private void launchCamera() throws IOException {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
-        photoFile = getPhotoFileUri(photoFileName);
+        photoDir = getContext().getCacheDir(); // context being the Activity pointer
+        photoFile = File.createTempFile("image", ".jpg", photoDir);
 
         // wrap File object into a content provider
         // required for API >= 24
         // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
-        Uri fileProvider = FileProvider.getUriForFile(getContext(),
-                "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
@@ -205,6 +210,7 @@ public class ComposeDialogFragment extends DialogFragment{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                System.out.println(photoFile.getAbsolutePath());
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = rotateBitmapOrientation(photoFile.getAbsolutePath());
                 // RESIZE BITMAP, see section below
