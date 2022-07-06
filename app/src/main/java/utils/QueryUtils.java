@@ -19,6 +19,7 @@ import adapters.SpinnerAdapter;
 import models.BasePost;
 import models.BeachGroup;
 import models.FavoriteGroups;
+import models.Group;
 import models.ShortPost;
 
 public class QueryUtils {
@@ -122,6 +123,30 @@ public class QueryUtils {
                 }
                 allBeaches.addAll(groups);
                 adapter.notifyItemRangeChanged(0, allBeaches.size());
+            }
+        });
+    }
+
+    public static void queryFavorites(List<BeachGroup> favGroups, GroupAdapter adapter) {
+        adapter.clear();
+
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        beachQuery.findInBackground(new FindCallback<BeachGroup>() {
+            @Override
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (BeachGroup group : groups) {
+                    Log.i(TAG, "Group: " + group);
+                }
+                favGroups.addAll(groups);
+                adapter.notifyItemRangeChanged(0, favGroups.size());
             }
         });
     }
