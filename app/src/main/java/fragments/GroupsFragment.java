@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapters.GroupAdapter;
+import models.BaseGroup;
 import models.BeachGroup;
 import utils.QueryUtils;
 
@@ -24,7 +25,7 @@ public class GroupsFragment extends Fragment {
     public static final String TAG = GroupsFragment.class.getSimpleName();
 
     private RecyclerView rvBeaches;
-    protected List<BeachGroup> allBeaches;
+    protected List<BaseGroup> groups;
     protected GroupAdapter adapter;
 
     public GroupsFragment() {
@@ -43,8 +44,8 @@ public class GroupsFragment extends Fragment {
         rvBeaches = view.findViewById(R.id.rvBeaches);
 
         // initialize the array that will hold posts and create a PostsAdapter
-        allBeaches = new ArrayList<>();
-        adapter = new GroupAdapter(getContext(), allBeaches);
+        groups = new ArrayList<>();
+        adapter = new GroupAdapter(getContext(), groups);
 
         // set the adapter on the recycler view
         rvBeaches.setAdapter(adapter);
@@ -52,6 +53,6 @@ public class GroupsFragment extends Fragment {
         rvBeaches.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // Query beaches and add them to the adapter
-        QueryUtils.queryBeaches(allBeaches, adapter);
+        QueryUtils.queryBeaches(groups, adapter);
     }
 }

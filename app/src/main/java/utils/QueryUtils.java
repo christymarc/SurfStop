@@ -16,6 +16,7 @@ import java.util.List;
 import adapters.GroupAdapter;
 import adapters.PostAdapter;
 import adapters.SpinnerAdapter;
+import models.BaseGroup;
 import models.BasePost;
 import models.BeachGroup;
 import models.FavoriteGroups;
@@ -135,7 +136,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryBeaches(List<BeachGroup> allBeaches, GroupAdapter adapter) {
+    public static void queryBeaches(List<BaseGroup> allBeaches, GroupAdapter adapter) {
         ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
                 .include(BeachGroup.KEY_GROUP);
         query.findInBackground(new FindCallback<BeachGroup>() {
@@ -154,7 +155,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryFavorites(List<BeachGroup> favGroups, GroupAdapter adapter) {
+    public static void queryFavorites(List<BaseGroup> favGroups, GroupAdapter adapter) {
         adapter.clear();
 
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)

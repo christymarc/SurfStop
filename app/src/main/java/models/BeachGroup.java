@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @ParseClassName("BeachGroup")
-public class BeachGroup extends Group implements Serializable {
+public class BeachGroup extends Group implements Serializable, BaseGroup {
     private static final String TAG = BeachGroup.class.getSimpleName();
 
     public static final String KEY_GROUP = "group";
