@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLogoutButton(MenuItem item) {
-        // Delete user cache
+        // Clear cache to ensure temporary photos have been cleaned up when we log out
         deleteCache(this);
 
         ParseUser.logOutInBackground();
