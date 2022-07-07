@@ -83,13 +83,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    favoriteButton.setVisibility(View.GONE);
-                    favoriteButtonPressed.setVisibility(View.VISIBLE);
-
-                    int pos = getAbsoluteAdapterPosition();
-                    BeachGroup beachGroup = beaches.get(pos);
-
-                    BeachGroup.addBeachGroup(beachGroup);
+                    changeFavoriteButtonState();
                 }
             });
 
@@ -97,15 +91,25 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    favoriteButton.setVisibility(View.VISIBLE);
-                    favoriteButtonPressed.setVisibility(View.GONE);
-
-                    int pos = getAbsoluteAdapterPosition();
-                    BeachGroup beachGroup = beaches.get(pos);
-
-                    BeachGroup.deleteBeachGroup(beachGroup);
+                   changeFavoriteButtonState();
                 }
             });
+        }
+
+        public void changeFavoriteButtonState() {
+            int pos = getAbsoluteAdapterPosition();
+            BeachGroup beachGroup = beaches.get(pos);
+
+            if (favoriteButton.getVisibility() == View.VISIBLE) {
+                favoriteButton.setVisibility(View.GONE);
+                favoriteButtonPressed.setVisibility(View.VISIBLE);
+                BeachGroup.addBeachGroup(beachGroup);
+            }
+            else {
+                favoriteButton.setVisibility(View.VISIBLE);
+                favoriteButtonPressed.setVisibility(View.GONE);
+                BeachGroup.deleteBeachGroup(beachGroup);
+            }
         }
     }
 }
