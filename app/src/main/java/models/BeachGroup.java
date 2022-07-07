@@ -48,37 +48,4 @@ public class BeachGroup extends Group implements Serializable, BaseGroup {
     }
 
     public void setKeyLocationid(String locationID) { put(KEY_LOCATIONID, locationID); }
-
-    public static void addBeachGroup(BeachGroup beachGroup) {
-        FavoriteGroups favoritedGroup = new FavoriteGroups();
-        favoritedGroup.setKeyGroup(beachGroup.getKeyGroup());
-        favoritedGroup.setKeyUser(ParseUser.getCurrentUser());
-        favoritedGroup.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error while trying to save favorited BeachGroup", e);
-                    return;
-                }
-                Log.i(TAG, "Favorited BeachGroup successfully saved");
-            }
-        });
-    }
-
-    public static void deleteBeachGroup(BeachGroup beachGroup) {
-        ParseQuery<FavoriteGroups> query = ParseQuery.getQuery(FavoriteGroups.class)
-                .whereEqualTo(FavoriteGroups.KEY_GROUP, beachGroup.getKeyGroup());
-        query.findInBackground(new FindCallback<FavoriteGroups>() {
-            @Override
-            public void done(List<FavoriteGroups> objects, ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error while trying to delete favorited BeachGroup", e);
-                    return;
-                }
-                for (ParseObject object : objects) {
-                    object.deleteInBackground();
-                }
-            }
-        });
-    }
 }

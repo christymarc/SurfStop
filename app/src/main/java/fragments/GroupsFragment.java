@@ -25,8 +25,11 @@ public class GroupsFragment extends Fragment {
     public static final String TAG = GroupsFragment.class.getSimpleName();
 
     private RecyclerView rvBeaches;
-    protected List<BaseGroup> groups;
-    protected GroupAdapter adapter;
+    private RecyclerView rvGroups;
+    protected List<BaseGroup> allGroups;
+    protected List<BaseGroup> allBeachGroups;
+    protected GroupAdapter groupAdapter;
+    protected GroupAdapter beachAdapter;
 
     public GroupsFragment() {
         // Required empty public constructor
@@ -41,18 +44,27 @@ public class GroupsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
+        rvGroups = view.findViewById(R.id.rvGroups);
         rvBeaches = view.findViewById(R.id.rvBeaches);
 
         // initialize the array that will hold posts and create a PostsAdapter
-        groups = new ArrayList<>();
-        adapter = new GroupAdapter(getContext(), groups);
+        allGroups = new ArrayList<>();
+        allBeachGroups = new ArrayList<>();
+
+        groupAdapter = new GroupAdapter(getContext(), allGroups);
+        beachAdapter = new GroupAdapter(getContext(), allBeachGroups);
 
         // set the adapter on the recycler view
-        rvBeaches.setAdapter(adapter);
+        rvGroups.setAdapter(groupAdapter);
+        rvBeaches.setAdapter(beachAdapter);
         // set the layout manager on the recycler view
+        rvGroups.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rvBeaches.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // Query beaches and add them to the adapter
-        QueryUtils.queryBeaches(groups, adapter);
+        QueryUtils.queryGroups(allGroups, groupAdapter);
+        QueryUtils.queryBeaches(allBeachGroups, beachAdapter);
+
+        System.out.println(allGroups);
     }
 }

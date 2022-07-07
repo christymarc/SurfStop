@@ -18,6 +18,8 @@ import java.util.List;
 
 import models.BaseGroup;
 import models.BeachGroup;
+import models.FavoriteGroups;
+import models.Group;
 import utils.PostImage;
 import utils.QueryUtils;
 
@@ -77,6 +79,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 ivGroupPhoto.setVisibility(View.GONE);
             }
 
+            // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
             if (group.getClass().equals(BeachGroup.class)) {
                 BeachGroup beachGroup = (BeachGroup) group;
                 // Load favorite beaches into the UI
@@ -86,29 +89,52 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 favoriteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        changeFavoriteBeachButtonState(beachGroup);
+                        changeFavoriteButtonState();
+                        FavoriteGroups.addFavoriteGroup(group);
                     }
                 });
 
-                // group unfavorited
+                // BeachGroup unfavorited
                 favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        changeFavoriteBeachButtonState(beachGroup);
+                        changeFavoriteButtonState();
+                        FavoriteGroups.deleteFavoriteGroup(group);
+                    }
+                });
+            }
+            else {
+                Group otherGroup = (Group) group;
+                // Load favorite beaches into the UI
+                QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
+
+                // BeachGroup favorited
+                favoriteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.addFavoriteGroup(group);
+                    }
+                });
+
+                // BeachGroup unfavorited
+                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.deleteFavoriteGroup(group);
                     }
                 });
             }
         }
-        public void changeFavoriteBeachButtonState(BeachGroup beachGroup) {
+        public void changeFavoriteButtonState() {
             if (favoriteButton.getVisibility() == View.VISIBLE) {
                 favoriteButton.setVisibility(View.GONE);
                 favoriteButtonPressed.setVisibility(View.VISIBLE);
-                BeachGroup.addBeachGroup(beachGroup);
             }
             else {
                 favoriteButton.setVisibility(View.VISIBLE);
                 favoriteButtonPressed.setVisibility(View.GONE);
-                BeachGroup.deleteBeachGroup(beachGroup);
             }
         }
     }

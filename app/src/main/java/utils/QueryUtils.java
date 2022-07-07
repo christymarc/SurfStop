@@ -136,6 +136,54 @@ public class QueryUtils {
         });
     }
 
+    public static void queryGroupsforGroups(Group otherGroup, Button favoriteButton, Button favoriteButtonPressed) {
+        ParseQuery<FavoriteGroups> favQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<Group> groupQuery = ParseQuery.getQuery(Group.class)
+                .whereEqualTo(Group.KEY_GROUP, otherGroup)
+                .whereMatchesKeyInQuery(Group.KEY_GROUP, FavoriteGroups.KEY_GROUP, favQuery);
+        groupQuery.findInBackground(new FindCallback<Group>() {
+            @Override
+            public void done(List<Group> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query groups error", e);
+                    return;
+                }
+                String currentGroupName = otherGroup.getKeyGroupName();
+                for (Group group : groups) {
+                    String queryGroupName = group.getKeyGroupName();
+                    Log.i(TAG, "Group: " + queryGroupName);
+                    if(queryGroupName.equals(currentGroupName)) {
+                        favoriteButtonPressed.setVisibility(View.VISIBLE);
+                        favoriteButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void queryGroups(List<BaseGroup> allGroups, GroupAdapter groupAdapter) {
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .include(BeachGroup.KEY_GROUP);
+        ParseQuery<Group> groupQuery = ParseQuery.getQuery(Group.class)
+                .whereDoesNotMatchKeyInQuery(BeachGroup.KEY_GROUP, Group.KEY_GROUP, beachQuery);
+        groupQuery.findInBackground(new FindCallback<Group>() {
+            @Override
+            public void done(List<Group> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (Group group : groups) {
+                    Log.i(TAG, "Non-beachGroup: " + group);
+                }
+                allGroups.addAll(groups);
+                groupAdapter.notifyItemRangeChanged(0, allGroups.size());
+            }
+        });
+    }
+
     public static void queryBeaches(List<BaseGroup> allBeaches, GroupAdapter adapter) {
         ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
                 .include(BeachGroup.KEY_GROUP);
