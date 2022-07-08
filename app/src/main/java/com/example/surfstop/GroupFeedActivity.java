@@ -7,6 +7,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -32,6 +33,7 @@ public class GroupFeedActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeContainer;
 
     Group currentGroup;
+    TextView tvGroupLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,9 @@ public class GroupFeedActivity extends AppCompatActivity {
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setClipToOutline(true);
 
-        currentGroup = (Group) Parcels.unwrap(getIntent().getParcelableExtra(BaseGroup.class.getSimpleName()));
+        currentGroup = (Group) Parcels.unwrap(getIntent().getParcelableExtra(Group.class.getSimpleName()));
+        tvGroupLabel = findViewById(R.id.tvGroupTimelineLabel);
+        tvGroupLabel.setText(currentGroup.getKeyGroupName());
 
         // set the adapter on the recycler view
         rvGroupFeed.setAdapter(adapter);

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.surfstop.R;
 import com.parse.FindCallback;
@@ -64,6 +65,7 @@ public class QueryUtils {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
                 .include(Post.KEY_USER);
+
 
         if (currentGroup != null) {
             query.whereEqualTo(Post.KEY_GROUP, currentGroup);
