@@ -150,12 +150,16 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             if (position != RecyclerView.NO_POSITION) {
                 BaseGroup group = groups.get(position);
 
-                // Create intent
-                Intent intent = new Intent(context, GroupFeedActivity.class);
-                // Serialize the post
-                intent.putExtra(BaseGroup.class.getSimpleName(), Parcels.wrap(group));
+                // Makes groups only clickable if they are not a BeachGroup
+                if(group.getClass().equals(Group.class)) {
+                    Group currentGroup = (Group) group;
+                    // Create intent
+                    Intent intent = new Intent(context, GroupFeedActivity.class);
+                    // Serialize the post
+                    intent.putExtra(Group.class.getSimpleName(), Parcels.wrap(currentGroup));
 
-                context.startActivity(intent);
+                    context.startActivity(intent);
+                }
             }
         }
     }

@@ -51,7 +51,7 @@ public class QueryUtils {
                     return;
                 }
                 for (ShortPost post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyBeachGroup());
+                    Log.i(TAG, "Content: " + post.getKeyUser());
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
@@ -59,7 +59,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, BaseGroup currentGroup) {
+    public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         adapter.clear();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
@@ -81,7 +81,7 @@ public class QueryUtils {
                     return;
                 }
                 for (Post post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyGroup());
+                    Log.i(TAG, "Content: " + post.getKeyUser());
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();

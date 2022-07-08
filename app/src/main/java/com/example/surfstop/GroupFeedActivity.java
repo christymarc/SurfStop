@@ -18,6 +18,8 @@ import java.util.List;
 import adapters.PostAdapter;
 import models.BaseGroup;
 import models.BasePost;
+import models.BeachGroup;
+import models.Group;
 import utils.QueryUtils;
 
 public class GroupFeedActivity extends AppCompatActivity {
@@ -29,13 +31,13 @@ public class GroupFeedActivity extends AppCompatActivity {
     public PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
-    BaseGroup currentGroup;
+    Group currentGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_feed);
-        System.out.println("hello?");
+
         composeFab = findViewById(R.id.composeFab);
 
         rvGroupFeed = findViewById(R.id.rvTempFeed);
@@ -46,12 +48,14 @@ public class GroupFeedActivity extends AppCompatActivity {
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setClipToOutline(true);
 
-        currentGroup = (BaseGroup) Parcels.unwrap(getIntent().getParcelableExtra(BaseGroup.class.getSimpleName()));
+        currentGroup = (Group) Parcels.unwrap(getIntent().getParcelableExtra(BaseGroup.class.getSimpleName()));
 
         // set the adapter on the recycler view
         rvGroupFeed.setAdapter(adapter);
         // set the layout manager on the recycler view
         rvGroupFeed.setLayoutManager(new LinearLayoutManager(this));
+
+        QueryUtils.queryLongPosts(allPosts, adapter, currentGroup);
 
         composeFab.setOnClickListener(new View.OnClickListener() {
             @Override

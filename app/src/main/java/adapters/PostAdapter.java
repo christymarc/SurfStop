@@ -16,13 +16,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.R;
 import com.example.surfstop.ShortPostDetailActivity;
+import com.parse.Parse;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
 import java.util.List;
 
 import models.BasePost;
+import models.ShortPost;
 import utils.PostImage;
 import utils.TimeUtils;
 
@@ -105,32 +108,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (position != RecyclerView.NO_POSITION){
                 BasePost post = posts.get(position);
 
-                // TODO: when I generalize this to Short and Long Posts, how will I check what kind of post -> to have the right Intent?
-                // Create intent
-                Intent intent = new Intent(context, ShortPostDetailActivity.class);
-                // Serialize the post
-                intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+                if (post.getClass().equals(ShortPost.class)) {
+                    // Create intent
+                    Intent intent = new Intent(context, ShortPostDetailActivity.class);
+                    // Serialize the post
+                    intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
 
-                // Make elements transition
-                Pair<View, String> p0 = Pair.create(view, "border");
-                Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
-                Pair<View, String> p2 = Pair.create(tvBody, "body");
-                Pair<View, String> p3 = Pair.create(tvTime, "time");
-                Pair<View, String> p4 = Pair.create(tvName, "username");
+                    // Make elements transition
+                    Pair<View, String> p0 = Pair.create(view, "border");
+                    Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
+                    Pair<View, String> p2 = Pair.create(tvBody, "body");
+                    Pair<View, String> p3 = Pair.create(tvTime, "time");
+                    Pair<View, String> p4 = Pair.create(tvName, "username");
 
-                ActivityOptionsCompat options;
+                    ActivityOptionsCompat options;
 
-                if (ivMedia.getVisibility() == View.VISIBLE) {
-                    Pair<View, String> p5 = Pair.create(ivMedia, "media");
-                    options = ActivityOptionsCompat
-                            .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+                    if (ivMedia.getVisibility() == View.VISIBLE) {
+                        Pair<View, String> p5 = Pair.create(ivMedia, "media");
+                        options = ActivityOptionsCompat
+                                .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+                    } else {
+                        options = ActivityOptionsCompat
+                                .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4);
+                    }
+
+                    context.startActivity(intent, options.toBundle());
                 }
-                else {
-                    options = ActivityOptionsCompat
-                            .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4);
-                }
-
-                context.startActivity(intent, options.toBundle());
             }
         }
     }
