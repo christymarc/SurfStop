@@ -10,10 +10,13 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.parceler.Parcel;
+
 import java.io.Serializable;
 import java.util.List;
 
 @ParseClassName("BeachGroup")
+@Parcel(analyze = BeachGroup.class)
 public class BeachGroup extends Group implements Serializable, BaseGroup {
     private static final String TAG = BeachGroup.class.getSimpleName();
 

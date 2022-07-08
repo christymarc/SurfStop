@@ -64,7 +64,5 @@ public class GroupsFragment extends Fragment {
         // Query beaches and add them to the adapter
         QueryUtils.queryGroups(allGroups, groupAdapter);
         QueryUtils.queryBeaches(allBeachGroups, beachAdapter);
-
-        System.out.println(allGroups);
     }
 }

@@ -21,6 +21,7 @@ import models.BasePost;
 import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
+import models.Post;
 import models.ShortPost;
 
 public class QueryUtils {
@@ -51,6 +52,36 @@ public class QueryUtils {
                 }
                 for (ShortPost post : posts) {
                     Log.i(TAG, "Content: " + post.getKeyBeachGroup());
+                }
+                allPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, BaseGroup currentGroup) {
+        adapter.clear();
+
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
+                .include(Post.KEY_USER);
+
+        if (currentGroup != null) {
+            query.whereEqualTo(Post.KEY_GROUP, currentGroup);
+        }
+
+        // Set number of items queried
+        query.setLimit(QUERY_MAX_ITEMS)
+                .addDescendingOrder("createdAt");
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (Post post : posts) {
+                    Log.i(TAG, "Content: " + post.getKeyGroup());
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();

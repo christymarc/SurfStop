@@ -39,6 +39,9 @@
     <string name="user_time">has been a user for</string>
     <string name="posts">Posts</string>
     <string name="tags">Tags</string>
+    <string name="other_groups">Other Groups:</string>
+    <string name="beach_groups">Beach Groups:</string>
+    <string name="group">Group:</string>
 
     <string-array name="tags_array">
         <item>awesome</item>

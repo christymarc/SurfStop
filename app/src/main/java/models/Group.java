@@ -4,7 +4,10 @@ import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
+import org.parceler.Parcel;
+
 @ParseClassName("Group")
+@Parcel(analyze = Group.class)
 public class Group extends ParseObject implements BaseGroup {
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_IMAGE = "groupCoverPhoto";

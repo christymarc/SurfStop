@@ -18,6 +18,9 @@
         android:theme="@style/Theme.SurfStop"
         tools:targetApi="31">
         <activity
+            android:name=".GroupFeedActivity"
+            android:exported="false" />
+        <activity
             android:name=".ShortPostDetailActivity"
             android:exported="false" />
         <activity
@@ -42,13 +45,12 @@
             android:authorities="com.example.surfstop.provider"
             android:exported="false"
             android:grantUriPermissions="true">
+
             <!-- ressource file to create -->
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/fileprovider">
-            </meta-data>
+                android:resource="@xml/fileprovider" />
         </provider>
-
     </application>
 
 </manifest>

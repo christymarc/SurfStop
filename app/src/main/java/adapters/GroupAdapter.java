@@ -1,6 +1,7 @@
 package adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.surfstop.GroupFeedActivity;
 import com.example.surfstop.R;
 import com.parse.ParseFile;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -54,7 +58,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         return groups.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvGroupName;
         private ImageView ivGroupPhoto;
@@ -67,6 +71,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             ivGroupPhoto = itemView.findViewById(R.id.ivGroupPhoto);
             favoriteButton = itemView.findViewById(R.id.favoriteButton);
             favoriteButtonPressed = itemView.findViewById(R.id.favoriteButtonPressed);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(BaseGroup group) {
@@ -102,8 +108,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                         FavoriteGroups.deleteFavoriteGroup(group);
                     }
                 });
-            }
-            else {
+            } else {
                 Group otherGroup = (Group) group;
                 // Load favorite beaches into the UI
                 QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
@@ -127,14 +132,30 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 });
             }
         }
+
         public void changeFavoriteButtonState() {
             if (favoriteButton.getVisibility() == View.VISIBLE) {
                 favoriteButton.setVisibility(View.GONE);
                 favoriteButtonPressed.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 favoriteButton.setVisibility(View.VISIBLE);
                 favoriteButtonPressed.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAbsoluteAdapterPosition();
+            // Check position is valid (exists in view)
+            if (position != RecyclerView.NO_POSITION) {
+                BaseGroup group = groups.get(position);
+
+                // Create intent
+                Intent intent = new Intent(context, GroupFeedActivity.class);
+                // Serialize the post
+                intent.putExtra(BaseGroup.class.getSimpleName(), Parcels.wrap(group));
+
+                context.startActivity(intent);
             }
         }
     }
@@ -144,7 +165,6 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         groups.clear();
         notifyDataSetChanged();
     }
-
     // Add a list of items -- change to type used
     public void addAll(List<BeachGroup> list) {
         groups.addAll(list);
