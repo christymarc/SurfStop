@@ -206,19 +206,19 @@ public class QueryUtils {
     public static void queryFavorites(List<BaseGroup> favGroups, GroupAdapter adapter) {
         adapter.clear();
 
-        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+        ParseQuery<FavoriteGroups> favoriteGroupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
                 .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
-        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
-                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
-        beachQuery.findInBackground(new FindCallback<BeachGroup>() {
+        ParseQuery<Group> allGroupsQuery = ParseQuery.getQuery(Group.class)
+                .whereMatchesKeyInQuery(Group.KEY_GROUP, FavoriteGroups.KEY_GROUP, favoriteGroupsQuery);
+        allGroupsQuery.findInBackground(new FindCallback<Group>() {
             @Override
-            public void done(List<BeachGroup> groups, ParseException e) {
+            public void done(List<Group> groups, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
                     return;
                 }
-                for (BeachGroup group : groups) {
+                for (Group group : groups) {
                     Log.i(TAG, "Group: " + group);
                 }
                 favGroups.addAll(groups);
