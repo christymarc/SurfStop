@@ -2,6 +2,8 @@ package com.example.surfstop;
 
 import android.app.Application;
 
+import androidx.room.Room;
+
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -14,6 +16,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ParseApplication extends Application {
+    MyDatabase myDatabase;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,5 +45,11 @@ public class ParseApplication extends Application {
                 .applicationId(BuildConfig.APPLICATION_KEY) // should correspond to Application Id env variable
                 .clientKey(BuildConfig.CLIENT_KEY)  // should correspond to Client key env variable
                 .server("https://parseapi.back4app.com").build());
+
+        // when upgrading versions, kill the original tables by using fallbackToDestructiveMigration()
+        myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).fallbackToDestructiveMigration().build();
+    }
+    public MyDatabase getMyDatabase() {
+        return myDatabase;
     }
 }

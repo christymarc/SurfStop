@@ -250,6 +250,7 @@ public class ComposeDialogFragment extends DialogFragment{
                           File photoFile, String tag, String surfHeight) {
         ShortPost post = new ShortPost();
         post.setKeyBeachGroup(current_beach);
+        post.setKeyGroup(current_beach.getKeyGroup());
         post.setKeyContent(content);
         post.setKeyUser(currentUser);
         if(photoFile != null) {

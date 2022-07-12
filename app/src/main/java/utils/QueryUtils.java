@@ -1,17 +1,22 @@
 package utils;
 
+import static com.parse.Parse.getApplicationContext;
+
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import adapters.GroupAdapter;
@@ -23,12 +28,16 @@ import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
 import models.Post;
+import models.RoomShortPost;
+import models.RoomShortPostDao;
+import models.RoomShortPostWithObjects;
 import models.ShortPost;
 
 public class QueryUtils {
 
     public static final String TAG = QueryUtils.class.getSimpleName();
     public static final int QUERY_MAX_ITEMS = 20;
+    public static RoomShortPostDao roomShortPostDao;
 
     public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
@@ -44,6 +53,8 @@ public class QueryUtils {
         query.setLimit(QUERY_MAX_ITEMS)
                 .addDescendingOrder("createdAt");
 
+        roomShortPostDao = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
+
         query.findInBackground(new FindCallback<ShortPost>() {
             @Override
             public void done(List<ShortPost> posts, ParseException e) {
@@ -52,7 +63,35 @@ public class QueryUtils {
                     return;
                 }
                 for (ShortPost post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyUser());
+                    Log.i(TAG, "Content: " + post.getKeyContent());
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "Saving data into the database");
+                            RoomShortPost roomShortPost = null;
+                            try {
+                                roomShortPost = new RoomShortPost(post);
+                            } catch (ParseException ex) {
+                                ex.printStackTrace();
+                            }
+                            roomShortPostDao.insertShortPost(roomShortPost);
+                            roomShortPostDao.insertUser(roomShortPost.roomUser);
+                        }
+                    });
+                }
+                allPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<RoomShortPostWithObjects> shortPostsDB = roomShortPostDao.currentItems();
+                Log.i(TAG, "Loading in posts from DB...");
+                List<ShortPost> posts = new ArrayList<>();
+                for (RoomShortPostWithObjects post : shortPostsDB) {
+                    ShortPost shortPost = new ShortPost(post.getRoomShortPost());
+                    posts.add(shortPost);
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
@@ -65,7 +104,6 @@ public class QueryUtils {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
                 .include(Post.KEY_USER);
-
 
         if (currentGroup != null) {
             query.whereEqualTo(Post.KEY_GROUP, currentGroup);

@@ -14,9 +14,7 @@ public class Group extends ParseObject implements BaseGroup {
     public static final String KEY_GROUPNAME = "groupName";
     public static final String KEY_GROUP = "group";
 
-    public String getKeyDescription() {
-        return getString(KEY_DESCRIPTION);
-    }
+    public String getKeyDescription() { return getString(KEY_DESCRIPTION); }
 
     public ParseFile getKeyImage() {
         return getParseFile(KEY_IMAGE);
@@ -24,7 +22,7 @@ public class Group extends ParseObject implements BaseGroup {
 
     public String getKeyGroupName() { return getString(KEY_GROUPNAME); }
 
-    public ParseObject getKeyGroup() { return getParseObject(KEY_GROUP); }
+    public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
     public void setKeyDescription(String description) {
         put(KEY_DESCRIPTION, description);
@@ -38,7 +36,7 @@ public class Group extends ParseObject implements BaseGroup {
         put(KEY_GROUPNAME, groupName);
     }
 
-    public void setKeyGroup(ParseObject group) {
+    public void setKeyGroup(Group group) {
         put(KEY_GROUP, group);
     }
 }

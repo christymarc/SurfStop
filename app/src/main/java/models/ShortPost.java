@@ -1,7 +1,7 @@
 package models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseObject;
+import com.parse.ParseFile;
 
 import org.parceler.Parcel;
 
@@ -11,24 +11,30 @@ public class ShortPost extends Post implements BasePost{
     public static final String KEY_SURFHEIGHT = "surfHeight";
     public static final String KEY_TAG = "tag";
     public static final String KEY_BEACHGROUP = "beachGroup";
-    
-    public String getKeySurfHeight() {
-        return getString(KEY_SURFHEIGHT);
+
+    public ShortPost() { }
+
+    public ShortPost(RoomShortPost post) {
+        this.setKeyContent(post.content);
+        this.setKeyUser(post.roomUser.user);
+        //this.setKeyGroup(post.group);
+        //this.setKeyBeachGroup(post.beachGroup);
+        this.setKeyTag(post.tag);
+        this.setKeySurfHeight(post.surfHeight);
+        if(post.imageUrl != null) {
+            this.setKeyImage(post.image);
+        }
     }
 
-    public String getKeyTag() {
-        return getString(KEY_TAG);
-    }
+    public String getKeySurfHeight() { return getString(KEY_SURFHEIGHT); }
 
-    public ParseObject getKeyBeachGroup() { return getParseObject(KEY_BEACHGROUP); }
+    public String getKeyTag() { return getString(KEY_TAG); }
 
-    public void setKeySurfHeight(String surf_height) {
-        put(KEY_SURFHEIGHT, surf_height);
-    }
+    public BeachGroup getKeyBeachGroup() { return (BeachGroup) getParseObject(KEY_BEACHGROUP); }
 
-    public void setKeyTag(String tag) {
-        put(KEY_TAG, tag);
-    }
+    public void setKeySurfHeight(String surf_height) { put(KEY_SURFHEIGHT, surf_height); }
 
-    public void setKeyBeachGroup(ParseObject beachGroup) { put(KEY_BEACHGROUP, beachGroup); }
+    public void setKeyTag(String tag) { put(KEY_TAG, tag); }
+
+    public void setKeyBeachGroup(BeachGroup beachGroup) { put(KEY_BEACHGROUP, beachGroup); }
 }
