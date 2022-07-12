@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -65,6 +66,9 @@ public class QueryUtils {
                 }
                 for (ShortPost post : posts) {
                     Log.i(TAG, "Content: " + post.getKeyContent());
+                    // Pin user into local data store
+                    // so when we call RoomUser from SQL DB, we can match it with a ParseUser
+                    post.getKeyUser().pinInBackground();
                 }
                 AsyncTask.execute(new Runnable() {
                     @Override
@@ -85,6 +89,10 @@ public class QueryUtils {
                 adapter.notifyDataSetChanged();
             }
         });
+        QueryShortPostOffline(roomShortPostDao, allPosts, adapter);
+    }
+
+    private static void QueryShortPostOffline(RoomShortPostDao roomShortPostDao, List<BasePost> allPosts, PostAdapter adapter) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -93,13 +101,24 @@ public class QueryUtils {
                 List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB);
                 List<ShortPost> posts = new ArrayList<>();
                 for(RoomShortPost roomPost : roomPosts) {
-                    ShortPost post = new ShortPost(roomPost);
-                    posts.add(post);
+                    ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
+                    user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
+                        public void done(ParseUser user, ParseException e) {
+                            if (e == null) {
+                                Log.i(TAG, "user Saved in Local Data Store:" + user.toString());
+                                ShortPost post = new ShortPost(roomPost, user);
+                                Log.i(TAG, "ShortPost created: " + post.getKeyContent());
+                                user.unpinInBackground();
+                                posts.add(post);
+                            } else {
+                                Log.e(TAG, "Error loading in users offline");
+                            }
+                        }
+                    });
                 }
                 allPosts.addAll(posts);
             }
         });
-        adapter.clear();
         adapter.notifyDataSetChanged();
     }
 

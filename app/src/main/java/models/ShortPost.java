@@ -2,6 +2,7 @@ package models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 
 import org.parceler.Parcel;
 
@@ -14,9 +15,9 @@ public class ShortPost extends Post implements BasePost{
 
     public ShortPost() { }
 
-    public ShortPost(RoomShortPost post) {
+    public ShortPost(RoomShortPost post, ParseUser user) {
         this.setKeyContent(post.content);
-        this.setKeyUser(post.roomUser.user);
+        this.setKeyUser(user);
         //this.setKeyGroup(post.group);
         //this.setKeyBeachGroup(post.beachGroup);
         this.setKeyTag(post.tag);

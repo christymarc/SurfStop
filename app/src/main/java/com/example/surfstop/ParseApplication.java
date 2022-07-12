@@ -44,7 +44,9 @@ public class ParseApplication extends Application {
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId(BuildConfig.APPLICATION_KEY) // should correspond to Application Id env variable
                 .clientKey(BuildConfig.CLIENT_KEY)  // should correspond to Client key env variable
-                .server("https://parseapi.back4app.com").build());
+                .server("https://parseapi.back4app.com")
+                        .enableLocalDataStore()
+                .build());
 
         // when upgrading versions, kill the original tables by using fallbackToDestructiveMigration()
         myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).fallbackToDestructiveMigration().build();
