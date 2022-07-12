@@ -31,6 +31,7 @@ import models.Post;
 import models.RoomShortPost;
 import models.RoomShortPostDao;
 import models.RoomShortPostWithObjects;
+import models.RoomUser;
 import models.ShortPost;
 
 public class QueryUtils {
@@ -64,21 +65,22 @@ public class QueryUtils {
                 }
                 for (ShortPost post : posts) {
                     Log.i(TAG, "Content: " + post.getKeyContent());
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "Saving data into the database");
-                            RoomShortPost roomShortPost = null;
-                            try {
-                                roomShortPost = new RoomShortPost(post);
-                            } catch (ParseException ex) {
-                                ex.printStackTrace();
-                            }
-                            roomShortPostDao.insertShortPost(roomShortPost);
-                            roomShortPostDao.insertUser(roomShortPost.roomUser);
-                        }
-                    });
                 }
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "Saving data into the database");
+                        List<RoomShortPost> roomShortPosts = new ArrayList<>();
+                        for (ShortPost post : posts) {
+                            RoomShortPost roomPost = new RoomShortPost(post);
+                            roomShortPosts.add(roomPost);
+                        }
+                        List<RoomUser> roomUsers = RoomShortPostWithObjects.usersFromRoomShortPosts(roomShortPosts);
+                        // Must load in users before posts in order for foreign key to work
+                        roomShortPostDao.insertModel(roomUsers.toArray(new RoomUser[0]));
+                        roomShortPostDao.insertModel(roomShortPosts.toArray(new RoomShortPost[0]));
+                    }
+                });
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
             }
@@ -86,17 +88,19 @@ public class QueryUtils {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                List<RoomShortPostWithObjects> shortPostsDB = roomShortPostDao.currentItems();
                 Log.i(TAG, "Loading in posts from DB...");
+                List<RoomShortPostWithObjects> shortPostsDB = roomShortPostDao.currentItems();
+                List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB);
                 List<ShortPost> posts = new ArrayList<>();
-                for (RoomShortPostWithObjects post : shortPostsDB) {
-                    ShortPost shortPost = new ShortPost(post.getRoomShortPost());
-                    posts.add(shortPost);
+                for(RoomShortPost roomPost : roomPosts) {
+                    ShortPost post = new ShortPost(roomPost);
+                    posts.add(post);
                 }
                 allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
             }
         });
+        adapter.clear();
+        adapter.notifyDataSetChanged();
     }
 
     public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {

@@ -98,7 +98,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Room for simple persistence with an ORM
-    def roomVersion = "2.1.0"
+    def roomVersion = "2.4.0"
     implementation "androidx.room:room-runtime:$roomVersion"
     annotationProcessor "androidx.room:room-compiler:$roomVersion"
 }

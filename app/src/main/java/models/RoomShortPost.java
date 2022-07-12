@@ -17,9 +17,7 @@ import java.util.Date;
 import utils.TimeUtils;
 
 @Entity(foreignKeys = {
-        @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId"),
-        @ForeignKey(entity=RoomGroup.class, parentColumns="groupObjectId", childColumns="roomGroupId"),
-        @ForeignKey(entity=RoomBeachGroup.class, parentColumns="beachGroupObjectId", childColumns="roomBeachGroupId")
+        @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId")
 })
 public class RoomShortPost {
     @Ignore
@@ -73,7 +71,7 @@ public class RoomShortPost {
     public RoomShortPost() { }
 
     @Ignore
-    public RoomShortPost(ShortPost post) throws ParseException {
+    public RoomShortPost(ShortPost post) {
         this.post = post;
         this.id = post.getObjectId();
         this.user = post.getKeyUser();
@@ -90,12 +88,12 @@ public class RoomShortPost {
             this.imageUrl = null;
         }
         this.group = post.getKeyGroup();
-        //this.roomGroup = new RoomGroup(group);
-        //this.roomGroupId = roomGroup.groupObjectId;
+        this.roomGroup = new RoomGroup(group);
+        this.roomGroupId = roomGroup.groupObjectId;
         this.surfHeight = post.getKeySurfHeight();
         this.tag = post.getKeyTag();
         this.beachGroup = post.getKeyBeachGroup();
-        //this.roomBeachGroup = new RoomBeachGroup(beachGroup);
-        //this.roomBeachGroupId = roomBeachGroup.beachGroupObjectId;
+        this.roomBeachGroup = new RoomBeachGroup(beachGroup);
+        this.roomBeachGroupId = roomBeachGroup.beachGroupObjectId;
     }
 }

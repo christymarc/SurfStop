@@ -11,16 +11,15 @@ import java.util.List;
 
 @Dao
 public interface RoomShortPostDao {
-//    @Query("SELECT RoomUser.id AS user_id, RoomUser.username AS user_username, RoomUser.createdAt as user_createdAt, " +
-//            "RoomShortPost.* FROM RoomShortPost INNER JOIN RoomUser ON RoomShortPost.roomUserId = RoomUser.id " +
-//            "ORDER BY RoomShortPost.createdAt DESC LIMIT 5")
-    @Query("SELECT id, username, createdAt FROM RoomUser")
-    List<RoomUser> currentItems();
+    @Query("SELECT RoomUser.id AS user_id, RoomUser.username AS user_username, RoomUser.createdAt as user_createdAt, " +
+            "RoomShortPost.* FROM RoomShortPost INNER JOIN RoomUser ON RoomUser.id = RoomShortPost.roomUserId " +
+            "ORDER BY RoomShortPost.createdAt DESC LIMIT 2")
+    List<RoomShortPostWithObjects> currentItems();
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    public void insertShortPost(RoomShortPost post);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertUser(RoomUser user);
+    void insertModel(RoomShortPost... posts);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertModel(RoomUser... users);
 
     @Delete
     public void deleteShortPost(RoomShortPost post);

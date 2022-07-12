@@ -9,7 +9,7 @@ import models.RoomShortPost;
 import models.RoomShortPostDao;
 import models.RoomUser;
 
-@Database(entities={RoomShortPost.class, RoomUser.class, RoomGroup.class, RoomBeachGroup.class}, version=1)
+@Database(entities={RoomShortPost.class, RoomUser.class, RoomGroup.class, RoomBeachGroup.class}, version=5)
 public abstract class MyDatabase extends RoomDatabase {
     // Declare your data access objects as abstract
     public abstract RoomShortPostDao roomShortPostDao();

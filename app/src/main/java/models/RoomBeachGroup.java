@@ -47,15 +47,15 @@ public class RoomBeachGroup {
     public RoomBeachGroup(BeachGroup beachGroup) {
         this.beachGroup = beachGroup;
         this.beachGroupObjectId = beachGroup.getObjectId();
-        this.group = beachGroup.getKeyGroup();
-        this.groupId = group.getObjectId();
-        this.description = group.getKeyDescription();
-        this.image = group.getKeyImage();
-        this.imageUrl = image.getUrl();
-        this.groupName = group.getKeyGroupName();
-        this.maxBreak = beachGroup.getKeyMaxbreak();
-        this.minBreak = beachGroup.getKeyMinbreak();
-        this.waterTemp = beachGroup.getKeyWatertemp();
-        this.locationId = beachGroup.getKeyLocationid();
+//        this.group = beachGroup.getKeyGroup();
+//        this.groupId = group.getObjectId();
+//        this.description = group.getKeyDescription();
+//        this.image = group.getKeyImage();
+//        this.imageUrl = image.getUrl();
+//        this.groupName = group.getKeyGroupName();
+//        this.maxBreak = beachGroup.getKeyMaxbreak();
+//        this.minBreak = beachGroup.getKeyMinbreak();
+//        this.waterTemp = beachGroup.getKeyWatertemp();
+//        this.locationId = beachGroup.getKeyLocationid();
     }
 }

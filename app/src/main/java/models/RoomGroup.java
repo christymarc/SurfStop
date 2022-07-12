@@ -37,10 +37,10 @@ public class RoomGroup {
     public RoomGroup(Group group) {
         this.group = group;
         this.groupObjectId = group.getObjectId();
-        this.description = group.getKeyDescription();
-        this.image = group.getKeyImage();
-        this.imageUrl = image.getUrl();
-        this.groupName = group.getKeyGroupName();
+//        this.description = group.getKeyDescription();
+//        this.image = group.getKeyImage();
+//        this.imageUrl = image.getUrl();
+//        this.groupName = group.getKeyGroupName();
     }
 }
 
