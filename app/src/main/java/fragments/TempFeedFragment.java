@@ -117,7 +117,7 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryShortPosts(allPosts, adapter, descriptionBoxFragment.getCurrentBeach());
+                QueryUtils.queryShortPosts(getContext(), allPosts, adapter, descriptionBoxFragment.getCurrentBeach());
                 swipeContainer.setRefreshing(false);
             }
         });

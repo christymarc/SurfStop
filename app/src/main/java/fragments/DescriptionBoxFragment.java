@@ -127,7 +127,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
 
                             description = jsonWeatherObject.getString(DESCRIPTION_KEY);
                             double tempKelvin = jsonMainObject.getDouble(TEMP_KEY);
-                            temperature = TempUtils.kelvin_to_fahrenheit(Double.toString(tempKelvin));
+                            temperature = TempUtils.kelvinToFahrenheit(Double.toString(tempKelvin));
                             long sunsetUTC = jsonSysObject.getLong(SUNSET_KEY);
                             long locationTimeZone = jsonResponse.getLong(TIMEZONE_KEY);
                             // need to account for location timezone and my timezone
@@ -154,7 +154,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         currentBeach = (BeachGroup) parent.getSelectedItem();
         setCurrentBeach(currentBeach);
-        QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
         Log.i(TAG, currentBeach.getKeyGroupName() + " selected");
     }
 
@@ -162,7 +162,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onNothingSelected(AdapterView<?> parent) {
         currentBeach = (BeachGroup) parent.getItemAtPosition(0);
         setCurrentBeach(currentBeach);
-        QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
     }
 
     public void setCurrentBeach(BeachGroup currentBeach) {

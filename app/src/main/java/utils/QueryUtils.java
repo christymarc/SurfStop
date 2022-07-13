@@ -2,6 +2,8 @@ package utils;
 
 import static com.parse.Parse.getApplicationContext;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.surfstop.MainActivity;
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
 import com.parse.FindCallback;
@@ -41,7 +44,7 @@ public class QueryUtils {
     public static final int QUERY_MAX_ITEMS = 20;
     public static RoomShortPostDao roomShortPostDao;
 
-    public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
+    public static void queryShortPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
@@ -62,6 +65,7 @@ public class QueryUtils {
             public void done(List<ShortPost> posts, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
+                    queryShortPostOffline(context, roomShortPostDao, allPosts, adapter);
                     return;
                 }
                 for (ShortPost post : posts) {
@@ -89,17 +93,17 @@ public class QueryUtils {
                 adapter.notifyDataSetChanged();
             }
         });
-        QueryShortPostOffline(roomShortPostDao, allPosts, adapter);
     }
 
-    private static void QueryShortPostOffline(RoomShortPostDao roomShortPostDao, List<BasePost> allPosts, PostAdapter adapter) {
+    private static void queryShortPostOffline(Context context, RoomShortPostDao roomShortPostDao,
+                                              List<BasePost> allPosts, PostAdapter adapter) {
+        adapter.clear();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Log.i(TAG, "Loading in posts from DB...");
                 List<RoomShortPostWithObjects> shortPostsDB = roomShortPostDao.currentItems();
                 List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB);
-                List<ShortPost> posts = new ArrayList<>();
                 for(RoomShortPost roomPost : roomPosts) {
                     ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
                     user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
@@ -109,17 +113,22 @@ public class QueryUtils {
                                 ShortPost post = new ShortPost(roomPost, user);
                                 Log.i(TAG, "ShortPost created: " + post.getKeyContent());
                                 user.unpinInBackground();
-                                posts.add(post);
+                                allPosts.add(post);
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("Async task done");
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
                             } else {
                                 Log.e(TAG, "Error loading in users offline");
                             }
                         }
                     });
                 }
-                allPosts.addAll(posts);
             }
         });
-        adapter.notifyDataSetChanged();
     }
 
     public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
@@ -191,10 +200,28 @@ public class QueryUtils {
             public void done(List<BeachGroup> groups, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
+                    queryBeachesforSpinnerOffline(spinnerBeach, view);
                     return;
                 }
                 for (BeachGroup group : groups) {
                     Log.i(TAG, "Group: " + group.getKeyGroupName());
+                }
+                BeachGroup.pinAllInBackground(groups);
+                SpinnerAdapter beachAdapter = new SpinnerAdapter(view.getContext(), R.layout.activity_custom_spinner, groups);
+                spinnerBeach.setAdapter(beachAdapter);
+            }
+        });
+    }
+
+    private static void queryBeachesforSpinnerOffline(Spinner spinnerBeach, View view) {
+        ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
+                .fromLocalDatastore();
+        query.findInBackground(new FindCallback<BeachGroup>() {
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e == null) {
+                    Log.i(TAG, "BeachGroups queried from local storage");
+                } else {
+                    Log.e(TAG, "Error loading in BeachGroups from local storage");
                 }
                 SpinnerAdapter beachAdapter = new SpinnerAdapter(view.getContext(), R.layout.activity_custom_spinner, groups);
                 spinnerBeach.setAdapter(beachAdapter);
