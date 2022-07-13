@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -14,11 +15,13 @@ import com.parse.ParseUser;
 import java.net.URI;
 import java.util.Date;
 
+import utils.DateConverter;
 import utils.TimeUtils;
 
 @Entity(foreignKeys = {
         @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId")
 })
+@TypeConverters(DateConverter.class)
 public class RoomShortPost {
     @Ignore
     public ShortPost post;
@@ -38,10 +41,8 @@ public class RoomShortPost {
     @ColumnInfo
     public String content;
 
-    @Ignore
-    public Date date;
     @ColumnInfo
-    public String createdAt;
+    public Date createdAt;
 
     @Ignore
     public ParseFile image;
@@ -78,8 +79,7 @@ public class RoomShortPost {
         this.roomUser = new RoomUser(user);
         this.roomUserId = roomUser.id;
         this.content = post.getKeyContent();
-        this.date = post.getCreatedAt();
-        this.createdAt = TimeUtils.calculateTimeAgo(date);
+        this.createdAt = post.getCreatedAt();
         this.image = post.getKeyImage();
         if (image != null) {
             this.imageUrl = image.getUrl();

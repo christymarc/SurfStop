@@ -6,6 +6,8 @@ import com.parse.ParseUser;
 
 import org.parceler.Parcel;
 
+import java.util.Date;
+
 @ParseClassName("ShortPost")
 @Parcel(analyze = ShortPost.class)
 public class ShortPost extends Post implements BasePost{
@@ -18,6 +20,7 @@ public class ShortPost extends Post implements BasePost{
     public ShortPost(RoomShortPost post, ParseUser user) {
         this.setKeyContent(post.content);
         this.setKeyUser(user);
+        this.setKeyCreatedAt(post.createdAt);
         //this.setKeyGroup(post.group);
         //this.setKeyBeachGroup(post.beachGroup);
         this.setKeyTag(post.tag);

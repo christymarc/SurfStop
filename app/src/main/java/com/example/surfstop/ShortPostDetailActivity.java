@@ -14,6 +14,7 @@ import org.parceler.Parcels;
 
 import models.BasePost;
 import models.ShortPost;
+import utils.InternetUtil;
 import utils.PostImage;
 import utils.TimeUtils;
 
@@ -49,8 +50,9 @@ public class ShortPostDetailActivity extends AppCompatActivity {
 
         post = (ShortPost) Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
 
-        ParseUser user = post.getKeyUser();
         String postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+
+        ParseUser user = post.getKeyUser();
         String userCreatedAt = TimeUtils.calculateTimeAgo(user.getCreatedAt());
 
         // Bind the post data to the view elements

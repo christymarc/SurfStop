@@ -42,9 +42,9 @@ public class QueryUtils {
 
     public static final String TAG = QueryUtils.class.getSimpleName();
     public static final int QUERY_MAX_ITEMS = 20;
-    public static RoomShortPostDao roomShortPostDao;
+    public static final RoomShortPostDao ROOM_SHORT_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
 
-    public static void queryShortPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
+    public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
@@ -58,14 +58,11 @@ public class QueryUtils {
         query.setLimit(QUERY_MAX_ITEMS)
                 .addDescendingOrder("createdAt");
 
-        roomShortPostDao = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
-
         query.findInBackground(new FindCallback<ShortPost>() {
             @Override
             public void done(List<ShortPost> posts, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
-                    queryShortPostOffline(context, roomShortPostDao, allPosts, adapter);
                     return;
                 }
                 for (ShortPost post : posts) {
@@ -85,8 +82,8 @@ public class QueryUtils {
                         }
                         List<RoomUser> roomUsers = RoomShortPostWithObjects.usersFromRoomShortPosts(roomShortPosts);
                         // Must load in users before posts in order for foreign key to work
-                        roomShortPostDao.insertModel(roomUsers.toArray(new RoomUser[0]));
-                        roomShortPostDao.insertModel(roomShortPosts.toArray(new RoomShortPost[0]));
+                        ROOM_SHORT_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
+                        ROOM_SHORT_POST_DAO.insertModel(roomShortPosts.toArray(new RoomShortPost[0]));
                     }
                 });
                 allPosts.addAll(posts);
@@ -95,29 +92,30 @@ public class QueryUtils {
         });
     }
 
-    private static void queryShortPostOffline(Context context, RoomShortPostDao roomShortPostDao,
-                                              List<BasePost> allPosts, PostAdapter adapter) {
+    public static void queryShortPostOffline(Context context, List<BasePost> allPosts,
+                                             PostAdapter adapter, BeachGroup beachGroup) {
         adapter.clear();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Log.i(TAG, "Loading in posts from DB...");
-                List<RoomShortPostWithObjects> shortPostsDB = roomShortPostDao.currentItems();
-                List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB);
+                List<RoomShortPostWithObjects> shortPostsDB = ROOM_SHORT_POST_DAO.currentItems();
+                List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB, beachGroup);
                 for(RoomShortPost roomPost : roomPosts) {
+                    Log.i(TAG, roomPost.content);
                     ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
                     user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
                         public void done(ParseUser user, ParseException e) {
                             if (e == null) {
-                                Log.i(TAG, "user Saved in Local Data Store:" + user.toString());
                                 ShortPost post = new ShortPost(roomPost, user);
                                 Log.i(TAG, "ShortPost created: " + post.getKeyContent());
                                 user.unpinInBackground();
                                 allPosts.add(post);
+
+                                // UI elements must run on the thread they were created on
                                 ((Activity) context).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        System.out.println("Async task done");
                                         adapter.notifyDataSetChanged();
                                     }
                                 });
@@ -200,7 +198,6 @@ public class QueryUtils {
             public void done(List<BeachGroup> groups, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
-                    queryBeachesforSpinnerOffline(spinnerBeach, view);
                     return;
                 }
                 for (BeachGroup group : groups) {
@@ -213,7 +210,7 @@ public class QueryUtils {
         });
     }
 
-    private static void queryBeachesforSpinnerOffline(Spinner spinnerBeach, View view) {
+    public static void queryBeachesforSpinnerOffline(Spinner spinnerBeach, View view) {
         ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
                 .fromLocalDatastore();
         query.findInBackground(new FindCallback<BeachGroup>() {

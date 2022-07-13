@@ -14,16 +14,16 @@ public class RoomShortPostWithObjects {
     @Embedded
     RoomShortPost roomShortPost;
 
-    public RoomUser getRoomUser() {
-        return roomUser;
-    }
-
-    public static List<RoomShortPost> getRoomShortPostList(List<RoomShortPostWithObjects> postsWithObjects) {
+    public static List<RoomShortPost> getRoomShortPostList(List<RoomShortPostWithObjects> postsWithObjects, BeachGroup beachGroup) {
         List<RoomShortPost> posts = new ArrayList<>();
         for (int i = 0; i < postsWithObjects.size(); i++) {
             RoomShortPost post = postsWithObjects.get(i).roomShortPost;
             post.roomUser = postsWithObjects.get(i).roomUser;
-            posts.add(post);
+            System.out.println(post.roomBeachGroupId);
+            System.out.println(beachGroup.getObjectId());
+            if (post.roomBeachGroupId.equals(beachGroup.getObjectId())) {
+                posts.add(post);
+            }
         }
         return posts;
     }
