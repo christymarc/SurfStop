@@ -105,32 +105,17 @@ public class QueryUtils {
                     user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
                         public void done(ParseUser user, ParseException e) {
                             if (e == null) {
-                                // Check how old post is for local DB auto-purge
-                                long postCreatedAt = roomPost.createdAt.getTime();
-                                long currentTime = System.currentTimeMillis();
-                                double hourDifference = (currentTime - postCreatedAt) / (double) TimeUtils.HOUR_MILLIS;
+                                ShortPost post = new ShortPost(roomPost, user);
+                                user.unpinInBackground();
+                                allPosts.add(post);
 
-                                if (hourDifference >= 12) {
-                                    AsyncTask.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ROOM_SHORT_POST_DAO.deleteShortPost(roomPost);
-                                        }
-                                    });
-                                }
-                                else {
-                                    ShortPost post = new ShortPost(roomPost, user);
-                                    user.unpinInBackground();
-                                    allPosts.add(post);
-
-                                    // UI elements must run on the thread they were created on
-                                    ((Activity) context).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    });
-                                }
+                                // UI elements must run on the thread they were created on
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
                             } else {
                                 Log.e(TAG, "Error loading in users offline");
                             }

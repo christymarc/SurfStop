@@ -26,6 +26,16 @@ public class RoomShortPostWithObjects {
         return posts;
     }
 
+    public static List<RoomShortPost> getRoomShortPostList(List<RoomShortPostWithObjects> postsWithObjects) {
+        List<RoomShortPost> posts = new ArrayList<>();
+        for (int i = 0; i < postsWithObjects.size(); i++) {
+            RoomShortPost post = postsWithObjects.get(i).roomShortPost;
+            post.roomUser = postsWithObjects.get(i).roomUser;
+            posts.add(post);
+        }
+        return posts;
+    }
+
     public static List<RoomUser> usersFromRoomShortPosts(List<RoomShortPost> posts) {
         List<RoomUser> users = new ArrayList<>();
         for (int i = 0; i < posts.size(); i++) {

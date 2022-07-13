@@ -48,7 +48,7 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivMedia = findViewById(R.id.ivMedia);
 
-        post = (ShortPost) Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
+        post = Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
 
         String postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
 

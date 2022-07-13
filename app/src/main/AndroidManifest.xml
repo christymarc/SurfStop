@@ -36,10 +36,16 @@
             android:name=".SignupActivity"
             android:exported="false"
             android:label="@string/new_user_signup" />
+        <receiver
+            android:name=".MyAlarmReceiver"
+            android:process=":remote" >
+        </receiver>
+        <service
+            android:name=".LocalPurgeService"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.surfstop.provider"
@@ -52,5 +58,4 @@
                 android:resource="@xml/fileprovider" />
         </provider>
     </application>
-
 </manifest>

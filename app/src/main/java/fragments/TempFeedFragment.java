@@ -138,6 +138,8 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        // Live weather cannot be accessed when offline
     }
 
     public void onComposeButton(View view) {
