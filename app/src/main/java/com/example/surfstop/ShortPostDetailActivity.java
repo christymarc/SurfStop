@@ -67,9 +67,9 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         if (profilePhoto != null) {
             PostImage.loadPfpIntoView(this, profilePhoto.getUrl(), ivProfileImage);
         }
-        ParseFile image = post.getKeyImage();
-        if (image != null) {
-            PostImage.loadImageIntoView(this, image.getUrl(), ivMedia);
+        String imageUrl = post.getKeyImageUrl();
+        if (imageUrl != null) {
+            PostImage.loadImageIntoView(this, imageUrl, ivMedia);
         } else {
             ivMedia.setVisibility(View.GONE);
         }

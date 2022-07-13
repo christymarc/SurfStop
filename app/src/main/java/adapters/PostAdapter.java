@@ -99,9 +99,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (profilePhoto != null) {
                 PostImage.loadPfpIntoView(context, profilePhoto.getUrl(), ivProfileImage);
             }
-            ParseFile image = post.getKeyImage();
-            if (image != null) {
-                PostImage.loadImageIntoView(context, image.getUrl(), ivMedia);
+            String imageUrl = post.getKeyImageUrl();
+            if (imageUrl != null) {
+                PostImage.loadImageIntoView(context, imageUrl, ivMedia);
             } else {
                 ivMedia.setVisibility(View.GONE);
             }
