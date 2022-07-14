@@ -9,22 +9,22 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface RoomShortPostDao {
+public interface RoomPostDao {
     @Query("SELECT RoomUser.id AS user_id, RoomUser.username AS user_username, RoomUser.createdAt as user_createdAt, " +
-            "RoomShortPost.* FROM RoomShortPost INNER JOIN RoomUser ON RoomUser.id = RoomShortPost.roomUserId " +
-            "ORDER BY RoomShortPost.createdAt DESC LIMIT 80")
-    List<RoomShortPostWithObjects> currentItems();
+            "RoomPost.* FROM RoomPost INNER JOIN RoomUser ON RoomUser.id = RoomPost.roomUserId " +
+            "ORDER BY RoomPost.createdAt DESC LIMIT 80")
+    List<RoomPostWithObjects> currentItems();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertModel(RoomShortPost... posts);
+    void insertModel(RoomPost... posts);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertModel(RoomUser... users);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertUser(RoomUser user);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertShortPost(RoomShortPost post);
+    public void insertShortPost(RoomPost post);
 
     @Delete
-    public void deleteShortPost(RoomShortPost post);
+    public void deleteShortPost(RoomPost post);
 }

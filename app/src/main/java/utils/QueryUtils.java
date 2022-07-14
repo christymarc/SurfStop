@@ -30,6 +30,9 @@ import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
 import models.Post;
+import models.RoomPost;
+import models.RoomPostDao;
+import models.RoomPostWithObjects;
 import models.RoomShortPost;
 import models.RoomShortPostDao;
 import models.RoomShortPostWithObjects;
@@ -41,6 +44,7 @@ public class QueryUtils {
     public static final String TAG = QueryUtils.class.getSimpleName();
     public static final int QUERY_MAX_ITEMS = 20;
     public static final RoomShortPostDao ROOM_SHORT_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
+    public static final RoomPostDao ROOM_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomPostDao();
 
     public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
@@ -121,13 +125,21 @@ public class QueryUtils {
                             }
                         }
                     });
-
                 }
             }
         });
     }
 
-    public static void queryLongPosts(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
+    public static void queryLongPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
+        if (InternetUtil.isInternetConnected()) {
+            queryLongPostsOnline(allPosts, adapter, currentGroup);
+        }
+        else {
+            queryLongPostsOffline(context, allPosts, adapter, currentGroup);
+        }
+    }
+
+    public static void queryLongPostsOnline(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         adapter.clear();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
@@ -150,9 +162,61 @@ public class QueryUtils {
                 }
                 for (Post post : posts) {
                     Log.i(TAG, "Content: " + post.getKeyUser());
+                    post.getKeyUser().pinInBackground();
                 }
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "Saving data into the database");
+                        List<RoomPost> roomPosts = new ArrayList<>();
+                        for (Post post : posts) {
+                            RoomPost roomPost = new RoomPost(post);
+                            roomPosts.add(roomPost);
+                        }
+                        List<RoomUser> roomUsers = RoomPostWithObjects.usersFromRoomPosts(roomPosts);
+                        // Must load in users before posts in order for foreign key to work
+                        ROOM_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
+                        ROOM_POST_DAO.insertModel(roomPosts.toArray(new RoomPost[0]));
+                    }
+                });
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public static void queryLongPostsOffline(Context context, List<BasePost> allPosts,
+                                             PostAdapter adapter, Group currentGroup) {
+        adapter.clear();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Loading in posts from DB...");
+                List<RoomPostWithObjects> postsDB = ROOM_POST_DAO.currentItems();
+                List<RoomPost> roomPosts = RoomPostWithObjects.getRoomPostList(postsDB, currentGroup);
+
+                for(RoomPost roomPost : roomPosts) {
+                    ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
+                    user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
+                        public void done(ParseUser user, ParseException e) {
+                            if (e == null) {
+                                Post post = new Post(roomPost, user);
+                                user.unpinInBackground();
+                                allPosts.add(post);
+
+                                // UI elements must run on the thread they were created on
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+                            } else {
+                                Log.e(TAG, "Error loading in users offline");
+                            }
+                        }
+                    });
+                }
             }
         });
     }
@@ -280,6 +344,14 @@ public class QueryUtils {
     }
 
     public static void queryGroups(List<BaseGroup> allGroups, GroupAdapter groupAdapter) {
+        if (InternetUtil.isInternetConnected()) {
+            queryGroupsOnline(allGroups, groupAdapter);
+        } else {
+            queryGroupsOffline(allGroups, groupAdapter);
+        }
+    }
+
+    public static void queryGroupsOnline(List<BaseGroup> allGroups, GroupAdapter groupAdapter) {
         ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
                 .include(BeachGroup.KEY_GROUP);
         ParseQuery<Group> groupQuery = ParseQuery.getQuery(Group.class)
@@ -294,6 +366,26 @@ public class QueryUtils {
                 for (Group group : groups) {
                     Log.i(TAG, "Non-beachGroup: " + group);
                 }
+                Group.pinAllInBackground(groups);
+                allGroups.addAll(groups);
+                groupAdapter.notifyItemRangeChanged(0, allGroups.size());
+            }
+        });
+    }
+
+    public static void queryGroupsOffline(List<BaseGroup> allGroups, GroupAdapter groupAdapter) {
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .fromLocalDatastore();
+        ParseQuery<Group> query = ParseQuery.getQuery(Group.class)
+                .fromLocalDatastore()
+                .whereDoesNotMatchKeyInQuery(BeachGroup.KEY_GROUP, Group.KEY_GROUP, beachQuery);;
+        query.findInBackground(new FindCallback<Group>() {
+            public void done(List<Group> groups, ParseException e) {
+                if (e == null) {
+                    Log.i(TAG, "Groups queried from local storage");
+                } else {
+                    Log.e(TAG, "Error loading in BeachGroups from local storage");
+                }
                 allGroups.addAll(groups);
                 groupAdapter.notifyItemRangeChanged(0, allGroups.size());
             }
@@ -301,6 +393,14 @@ public class QueryUtils {
     }
 
     public static void queryBeaches(List<BaseGroup> allBeaches, GroupAdapter adapter) {
+        if (InternetUtil.isInternetConnected()) {
+            queryBeachesOnline(allBeaches, adapter);
+        } else {
+            queryBeachesOffline(allBeaches, adapter);
+        }
+    }
+
+    public static void queryBeachesOnline(List<BaseGroup> allBeaches, GroupAdapter adapter) {
         ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
                 .include(BeachGroup.KEY_GROUP);
         query.findInBackground(new FindCallback<BeachGroup>() {
@@ -312,6 +412,23 @@ public class QueryUtils {
                 }
                 for (BeachGroup group : groups) {
                     Log.i(TAG, "Group: " + group);
+                }
+                BeachGroup.pinAllInBackground(groups);
+                allBeaches.addAll(groups);
+                adapter.notifyItemRangeChanged(0, allBeaches.size());
+            }
+        });
+    }
+
+    public static void queryBeachesOffline(List<BaseGroup> allBeaches, GroupAdapter adapter) {
+        ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
+                .fromLocalDatastore();
+        query.findInBackground(new FindCallback<BeachGroup>() {
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e == null) {
+                    Log.i(TAG, "Groups queried from local storage");
+                } else {
+                    Log.e(TAG, "Error loading in BeachGroups from local storage");
                 }
                 allBeaches.addAll(groups);
                 adapter.notifyItemRangeChanged(0, allBeaches.size());
