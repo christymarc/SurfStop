@@ -9,7 +9,6 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.surfstop.MainActivity;
 import com.example.surfstop.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseException;
@@ -109,7 +107,7 @@ public class ComposeDialogFragment extends DialogFragment{
         surfHeightPicker = view.findViewById(R.id.surfHeightPicker);
         spinnerTag = view.findViewById(R.id.spinnerTag);
         captureButton = view.findViewById(R.id.captureButton);
-        postButton = view.findViewById(R.id.postButton);
+        postButton = view.findViewById(R.id.okButton);
 
         ivPostImage.setVisibility(View.GONE);
         surfHeightPicker.setMaxValue(TALLEST_WAVE_HEIGHT);

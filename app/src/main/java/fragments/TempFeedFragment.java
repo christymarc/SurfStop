@@ -59,6 +59,8 @@ import utils.TimeUtils;
 public class TempFeedFragment extends Fragment implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
+    public static final String WEATHER_POPUP = "Weather is unavailable when offline. Connect to internet" +
+            " to access live weather updates.";
 
     FloatingActionButton composeFab;
 
@@ -140,6 +142,10 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 android.R.color.holo_red_light);
 
         // Live weather cannot be accessed when offline
+        if (!InternetUtil.isInternetConnected()) {
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(WEATHER_POPUP);
+            popupDialogFragment.show(fm, "weather_fragment");
+        }
     }
 
     public void onComposeButton(View view) {

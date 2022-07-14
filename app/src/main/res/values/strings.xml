@@ -42,6 +42,9 @@
     <string name="other_groups">Other Groups:</string>
     <string name="beach_groups">Beach Groups:</string>
     <string name="group">Group:</string>
+    <string name="popup_message">Notification message</string>
+    <string name="ok">OK</string>
+    <string name="beach_posts">Beach Posts</string>
 
     <string-array name="tags_array">
         <item>awesome</item>
