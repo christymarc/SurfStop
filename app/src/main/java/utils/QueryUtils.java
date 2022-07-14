@@ -2,6 +2,8 @@ package utils;
 
 import static com.parse.Parse.getApplicationContext;
 
+import static fragments.DescriptionBoxFragment.NO_BEACHES_POPUP;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,6 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
@@ -24,6 +29,7 @@ import java.util.List;
 import adapters.GroupAdapter;
 import adapters.PostAdapter;
 import adapters.SpinnerAdapter;
+import fragments.PopupDialogFragment;
 import models.BaseGroup;
 import models.BasePost;
 import models.BeachGroup;
@@ -248,7 +254,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryBeachesForSpinner(Spinner spinnerBeach, View view) {
+    public static void queryBeachesForSpinner(FragmentTransaction fm, Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
@@ -268,6 +274,12 @@ public class QueryUtils {
                 BeachGroup.pinAllInBackground(groups);
                 SpinnerAdapter beachAdapter = new SpinnerAdapter(view.getContext(), R.layout.activity_custom_spinner, groups);
                 spinnerBeach.setAdapter(beachAdapter);
+
+                // Popup to prompt user to favorite some beaches
+                if (spinnerBeach.getAdapter().isEmpty()) {
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(NO_BEACHES_POPUP);
+                    popupDialogFragment.show(fm, "weather_fragment");
+                }
             }
         });
     }
