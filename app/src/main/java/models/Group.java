@@ -6,9 +6,11 @@ import com.parse.ParseObject;
 
 import org.parceler.Parcel;
 
+import java.io.Serializable;
+
 @ParseClassName("Group")
 @Parcel(analyze = Group.class)
-public class Group extends ParseObject implements BaseGroup {
+public class Group extends ParseObject implements Serializable, BaseGroup {
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_IMAGE = "groupCoverPhoto";
     public static final String KEY_GROUPNAME = "groupName";

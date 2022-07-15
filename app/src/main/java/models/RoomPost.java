@@ -14,11 +14,10 @@ import com.parse.ParseUser;
 import java.util.Date;
 
 import utils.DateConverter;
+import utils.InternetUtil;
 import utils.TimeUtils;
 
-@Entity(foreignKeys = {
-        @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId"),
-})
+@Entity(foreignKeys = { @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId") })
 @TypeConverters(DateConverter.class)
 public class RoomPost {
     @Ignore
@@ -64,7 +63,11 @@ public class RoomPost {
         this.roomUser = new RoomUser(user);
         this.roomUserId = roomUser.id;
         this.content = post.getKeyContent();
-        this.createdAt = post.getCreatedAt();
+        if (InternetUtil.isInternetConnected()) {
+            this.createdAt = post.getCreatedAt();
+        } else {
+            this.createdAt = post.getCreatedAtOffline();
+        }
         this.image = post.getKeyImage();
         if (image != null) {
             this.imageUrl = image.getUrl();

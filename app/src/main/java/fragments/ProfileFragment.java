@@ -89,12 +89,5 @@ public class ProfileFragment extends Fragment {
                 tabLayout.getTabAt(position).select();
             }
         });
-
-        // User specific preferences cannot be accessed when offline
-        if (!InternetUtil.isInternetConnected()) {
-            FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(PROFILE_POPUP);
-            popupDialogFragment.show(fm, "weather_fragment");
-        }
     }
 }

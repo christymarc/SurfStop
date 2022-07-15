@@ -14,14 +14,17 @@ import android.widget.Spinner;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.room.Room;
 
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,14 +141,14 @@ public class QueryUtils {
 
     public static void queryLongPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         if (InternetUtil.isInternetConnected()) {
-            queryLongPostsOnline(allPosts, adapter, currentGroup);
+            queryLongPostsOnline(context, allPosts, adapter, currentGroup);
         }
         else {
             queryLongPostsOffline(context, allPosts, adapter, currentGroup);
         }
     }
 
-    public static void queryLongPostsOnline(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
+    public static void queryLongPostsOnline(Context context, List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         adapter.clear();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
@@ -166,27 +169,71 @@ public class QueryUtils {
                     Log.e(TAG, "Query posts error", e);
                     return;
                 }
+
                 for (Post post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyUser());
                     post.getKeyUser().pinInBackground();
                 }
+
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i(TAG, "Saving data into the database");
-                        List<RoomPost> roomPosts = new ArrayList<>();
-                        for (Post post : posts) {
-                            RoomPost roomPost = new RoomPost(post);
-                            roomPosts.add(roomPost);
+                        List<RoomPostWithObjects> postsDB = ROOM_POST_DAO.currentItems();
+                        List<RoomPost> roomPosts = RoomPostWithObjects.getRoomPostList(postsDB, currentGroup);
+
+                        // Checking to see if any posts were posted in offline mode and need to be loaded in
+                        if (roomPosts.size() > posts.size()) {
+                            for (int i = roomPosts.size() - posts.size() - 1; i >= 0; i--) {
+                                RoomPost roomPost = roomPosts.get(i);
+                                ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
+                                user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
+                                    public void done(ParseUser user, ParseException e) {
+                                        if (e == null) {
+                                            Post missingPost = new Post(roomPost, user);
+
+                                            Group postGroup = Group.createWithoutData(Group.class, roomPost.roomGroupId);
+                                            postGroup.fetchFromLocalDatastoreInBackground(new GetCallback<Group>() {
+                                                @Override
+                                                public void done(Group group, ParseException e) {
+                                                    missingPost.setKeyGroup(group);
+                                                    missingPost.saveInBackground();
+                                                }
+                                            });
+                                            posts.add(0, missingPost);
+                                            ((Activity) context).runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    allPosts.addAll(posts);
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
                         }
-                        List<RoomUser> roomUsers = RoomPostWithObjects.usersFromRoomPosts(roomPosts);
-                        // Must load in users before posts in order for foreign key to work
-                        ROOM_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
-                        ROOM_POST_DAO.insertModel(roomPosts.toArray(new RoomPost[0]));
+                        else if (roomPosts.size() < posts.size()) {
+                            Log.i(TAG, "Saving data into the database");
+                            roomPosts = new ArrayList<>();
+                            for (int i = 0; i < posts.size() - roomPosts.size(); i++) {
+                                RoomPost roomPost = new RoomPost(posts.get(i));
+                                roomPosts.add(roomPost);
+                            }
+                            List<RoomUser> roomUsers = RoomPostWithObjects.usersFromRoomPosts(roomPosts);
+                            // Must load in users before posts in order for foreign key to work
+                            ROOM_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
+                            ROOM_POST_DAO.insertModel(roomPosts.toArray(new RoomPost[0]));
+                        }
+                        else {
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    allPosts.addAll(posts);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
                     }
                 });
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
             }
         });
     }
