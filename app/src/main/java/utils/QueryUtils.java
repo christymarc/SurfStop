@@ -199,17 +199,17 @@ public class QueryUtils {
                                                 }
                                             });
                                             posts.add(0, missingPost);
-                                            ((Activity) context).runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    allPosts.addAll(posts);
-                                                    adapter.notifyDataSetChanged();
-                                                }
-                                            });
                                         }
                                     }
                                 });
                             }
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    allPosts.addAll(posts);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                         else if (roomPosts.size() < posts.size()) {
                             Log.i(TAG, "Saving data into the database");
@@ -274,7 +274,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryPersonalPosts(List<BasePost> allPosts, PostAdapter adapter) {
+    public static void queryPersonalBeachPosts(List<BasePost> allPosts, PostAdapter adapter) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)

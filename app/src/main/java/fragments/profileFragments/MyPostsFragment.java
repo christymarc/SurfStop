@@ -59,7 +59,7 @@ public class MyPostsFragment extends Fragment {
         // set the layout manager on the recycler view
         rvPersonalFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        QueryUtils.queryPersonalPosts(allPosts, adapter);
+        QueryUtils.queryPersonalBeachPosts(allPosts, adapter);
 
         // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -68,7 +68,7 @@ public class MyPostsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryPersonalPosts(allPosts, adapter);
+                QueryUtils.queryPersonalBeachPosts(allPosts, adapter);
                 swipeContainer.setRefreshing(false);
             }
         });
