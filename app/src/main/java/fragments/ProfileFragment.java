@@ -26,10 +26,6 @@ import utils.InternetUtil;
 import utils.PostImage;
 
 public class ProfileFragment extends Fragment {
-
-    private static final String PROFILE_POPUP = "Your profile's posts and group preferences cannot be " +
-            "displayed in offline mode. Connect to the internet to access your posts and group preferences.";
-
     TextView tvName;
     ImageView ivProfile;
     TabLayout tabLayout;
@@ -89,12 +85,5 @@ public class ProfileFragment extends Fragment {
                 tabLayout.getTabAt(position).select();
             }
         });
-
-        // User specific preferences cannot be accessed when offline
-        if (!InternetUtil.isInternetConnected()) {
-            FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(PROFILE_POPUP);
-            popupDialogFragment.show(fm, "weather_fragment");
-        }
     }
 }
