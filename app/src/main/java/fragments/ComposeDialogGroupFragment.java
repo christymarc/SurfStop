@@ -2,6 +2,8 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static fragments.ComposeDialogFragment.CAMERA_POPUP;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.surfstop.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -99,16 +102,30 @@ public class ComposeDialogGroupFragment extends DialogFragment {
 
         ivPostImage.setVisibility(View.GONE);
 
-        captureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    launchCamera();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        // Checking for internet connection to not allow users to post photos in offline mode
+        if (InternetUtil.isInternetConnected()) {
+            captureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        launchCamera();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }
+        else {
+            captureButton.setBackgroundColor(getResources().getColor(R.color.medium_gray));
+            captureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(CAMERA_POPUP);
+                    popupDialogFragment.show(fm, "camera_fragment");
+                }
+            });
+        }
 
         // Set click listener on the button
         postButton.setOnClickListener(new View.OnClickListener() {
