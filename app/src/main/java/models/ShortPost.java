@@ -14,15 +14,19 @@ public class ShortPost extends Post implements BasePost{
     public static final String KEY_SURFHEIGHT = "surfHeight";
     public static final String KEY_TAG = "tag";
     public static final String KEY_BEACHGROUP = "beachGroup";
+    public Date createdAt;
+    public String imageUrl;
 
     public ShortPost() { }
 
     public ShortPost(RoomShortPost post, ParseUser user) {
         this.setKeyContent(post.content);
         this.setKeyUser(user);
+        this.createdAt = post.createdAt;
         this.setKeyCreatedAt(post.createdAt);
         this.setKeyTag(post.tag);
         this.setKeySurfHeight(post.surfHeight);
+        this.imageUrl = post.imageUrl;
         if(post.imageUrl != null) {
             this.setKeyImageUrl(post.imageUrl);
         }
