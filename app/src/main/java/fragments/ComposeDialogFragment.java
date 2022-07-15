@@ -40,6 +40,9 @@ import models.BasePost;
 import models.BeachGroup;
 import models.ShortPost;
 import utils.CameraUtil;
+import utils.DateConverter;
+import utils.InternetUtil;
+import utils.KeyGeneratorUtil;
 
 public class ComposeDialogFragment extends DialogFragment{
 
@@ -224,30 +227,40 @@ public class ComposeDialogFragment extends DialogFragment{
         post.setKeyGroup(current_beach.getKeyGroup());
         post.setKeyContent(content);
         post.setKeyUser(currentUser);
+        post.setKeyCreatedAt(DateConverter.toDate(System.currentTimeMillis()));
         if(photoFile != null) {
             post.setKeyImage(new ParseFile(photoFile));
         }
         post.setKeyTag(tag);
         post.setKeySurfHeight(surfHeight);
-        post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error while trying to save post", e);
-                    return;
+        if (InternetUtil.isInternetConnected()) {
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error while trying to save post", e);
+                        return;
+                    }
+                    Log.i(TAG, "Post successfully saved");
+                    etCompose.setText("");
+                    ivPostImage.setImageResource(0);
+
+                    ComposeDialogFragment.ComposeDialogListener listener = composeDialogListener;
+                    if (listener != null) {
+                        listener.onFinishComposeDialog(post);
+                    }
                 }
+            });
+        } else {
+            post.setObjectId(KeyGeneratorUtil.generateRandomKey());
+            etCompose.setText("");
+            ivPostImage.setImageResource(0);
 
-                Log.i(TAG, "Post successfully saved");
-                etCompose.setText("");
-                ivPostImage.setImageResource(0);
-
-                ComposeDialogListener listener = composeDialogListener;
-                if (listener != null) {
-                    listener.onFinishComposeDialog(post);
-                }
-
-                dismiss();
+            ComposeDialogFragment.ComposeDialogListener listener = composeDialogListener;
+            if (listener != null) {
+                listener.onFinishComposeDialog(post);
             }
-        });
+        }
+        dismiss();
     }
 }

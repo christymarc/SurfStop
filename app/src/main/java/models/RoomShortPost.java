@@ -89,9 +89,6 @@ public class RoomShortPost {
         if (image != null) {
             this.imageUrl = image.getUrl();
         }
-        else {
-            this.imageUrl = null;
-        }
         this.group = post.getKeyGroup();
         this.roomGroup = new RoomGroup(group);
         this.roomGroupId = roomGroup.groupObjectId;

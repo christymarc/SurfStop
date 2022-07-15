@@ -164,11 +164,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         currentBeach = (BeachGroup) parent.getSelectedItem();
         setCurrentBeach(currentBeach);
-        if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
-        } else {
-            QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
-        }
+        QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
         Log.i(TAG, currentBeach.getKeyGroupName() + " selected");
     }
 
@@ -176,11 +172,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onNothingSelected(AdapterView<?> parent) {
         currentBeach = (BeachGroup) parent.getItemAtPosition(0);
         setCurrentBeach(currentBeach);
-        if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
-        } else {
-            QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
-        }
+        QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
     }
 
     public void setCurrentBeach(BeachGroup currentBeach) {
