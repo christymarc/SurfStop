@@ -40,7 +40,12 @@ public class Post extends ParseObject implements BasePost {
         return image;
     }
 
-    public String getKeyImageUrl() { return this.imageUrl; }
+    public String getKeyImageUrl() {
+        if (getKeyImage() != null) {
+            return getKeyImage().getUrl();
+        }
+        return this.imageUrl;
+    }
 
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 

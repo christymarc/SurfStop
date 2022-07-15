@@ -120,13 +120,6 @@ public class QueryUtils {
                                     }
                                 });
                             }
-                            ((Activity) context).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    allPosts.addAll(posts);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
                         }
                         else if (roomPosts.size() < posts.size()) {
                             Log.i(TAG, "Saving data into the database");
@@ -140,15 +133,13 @@ public class QueryUtils {
                             ROOM_SHORT_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
                             ROOM_SHORT_POST_DAO.insertModel(roomPosts.toArray(new RoomShortPost[0]));
                         }
-                        else {
-                            ((Activity) context).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    allPosts.addAll(posts);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-                        }
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                allPosts.addAll(posts);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                 });
             }
