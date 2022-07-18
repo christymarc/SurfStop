@@ -39,6 +39,8 @@ import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
 import models.Post;
+import models.RoomFavoriteGroups;
+import models.RoomFavoriteGroupsDao;
 import models.RoomPost;
 import models.RoomPostDao;
 import models.RoomPostWithObjects;
@@ -52,8 +54,13 @@ public class QueryUtils {
 
     public static final String TAG = QueryUtils.class.getSimpleName();
     public static final int QUERY_MAX_ITEMS = 20;
-    public static final RoomShortPostDao ROOM_SHORT_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
-    public static final RoomPostDao ROOM_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomPostDao();
+
+    public static final RoomShortPostDao ROOM_SHORT_POST_DAO =
+            ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
+    public static final RoomPostDao ROOM_POST_DAO =
+            ((ParseApplication) getApplicationContext()).getMyDatabase().roomPostDao();
+    public static final RoomFavoriteGroupsDao ROOM_FAVORITE_GROUPS_DAO =
+            ((ParseApplication) getApplicationContext()).getMyDatabase().roomFavoriteGroupsDao();
 
     public static void queryShortPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, BeachGroup currentBeach) {
         if (InternetUtil.isInternetConnected()) {
@@ -124,8 +131,8 @@ public class QueryUtils {
                         else if (roomPosts.size() < posts.size()) {
                             Log.i(TAG, "Saving data into the database");
                             roomPosts = new ArrayList<>();
-                            for (int i = 0; i < posts.size() - roomPosts.size(); i++) {
-                                RoomShortPost roomPost = new RoomShortPost(posts.get(i));
+                            for (ShortPost post : posts) {
+                                RoomShortPost roomPost = new RoomShortPost(post);
                                 roomPosts.add(roomPost);
                             }
                             List<RoomUser> roomUsers = RoomShortPostWithObjects.usersFromRoomShortPosts(roomPosts);
@@ -317,7 +324,16 @@ public class QueryUtils {
         });
     }
 
-    public static void queryPersonalBeachPosts(List<BasePost> allPosts, PostAdapter adapter) {
+    public static void queryPersonalBeachPosts(Context context, List<BasePost> allPosts, PostAdapter adapter) {
+        if (InternetUtil.isInternetConnected()) {
+            queryPersonalBeachPostsOnline(allPosts, adapter);
+        }
+        else {
+            queryPersonalBeachPostsOffline(context, allPosts, adapter);
+        }
+    }
+
+    public static void queryPersonalBeachPostsOnline(List<BasePost> allPosts, PostAdapter adapter) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
@@ -341,6 +357,33 @@ public class QueryUtils {
         });
     }
 
+    public static void queryPersonalBeachPostsOffline(Context context, List<BasePost> allPosts,
+                                              PostAdapter adapter) {
+        adapter.clear();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Loading in posts from DB...");
+                String userId = ParseUser.getCurrentUser().getObjectId();
+                List<RoomShortPostWithObjects> shortPostsDB = ROOM_SHORT_POST_DAO.personalPosts(userId);
+                List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(shortPostsDB);
+
+                for(RoomShortPost roomPost : roomPosts) {
+                    ShortPost post = new ShortPost(roomPost, ParseUser.getCurrentUser());
+                    allPosts.add(post);
+                }
+
+                // UI elements must run on the thread they were created on
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+    }
+
     public static void queryBeachesForSpinner(FragmentTransaction fm, Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
@@ -352,7 +395,7 @@ public class QueryUtils {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Query posts error", e);
+                    Log.e(TAG, "Query beach groups for spinner error", e);
                     return;
                 }
                 for (BeachGroup group : groups) {
@@ -459,7 +502,7 @@ public class QueryUtils {
             @Override
             public void done(List<Group> groups, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Query posts error", e);
+                    Log.e(TAG, "Query groups error", e);
                     return;
                 }
                 for (Group group : groups) {
@@ -506,7 +549,7 @@ public class QueryUtils {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Query posts error", e);
+                    Log.e(TAG, "Query beach group error", e);
                     return;
                 }
                 for (BeachGroup group : groups) {
@@ -535,7 +578,16 @@ public class QueryUtils {
         });
     }
 
-    public static void queryFavorites(List<BaseGroup> favGroups, GroupAdapter adapter) {
+    public static void queryFavorites(Context context, List<BaseGroup> favGroups, GroupAdapter adapter) {
+        if (InternetUtil.isInternetConnected()) {
+            queryFavoritesOnline(favGroups, adapter);
+        }
+        else {
+            queryFavoritesOffline(context, favGroups, adapter);
+        }
+    }
+
+    public static void queryFavoritesOnline(List<BaseGroup> favGroups, GroupAdapter adapter) {
         adapter.clear();
 
         ParseQuery<FavoriteGroups> favoriteGroupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
@@ -547,7 +599,7 @@ public class QueryUtils {
             @Override
             public void done(List<Group> groups, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Query posts error", e);
+                    Log.e(TAG, "Query favorite groups error", e);
                     return;
                 }
                 for (Group group : groups) {
@@ -555,7 +607,53 @@ public class QueryUtils {
                 }
                 favGroups.addAll(groups);
                 adapter.notifyItemRangeChanged(0, favGroups.size());
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "Saving favorite groups into the database");
+                        List<RoomFavoriteGroups> roomFavoriteGroups = new ArrayList<>();
+                        for (Group group : groups) {
+                            RoomFavoriteGroups favoriteGroup = new RoomFavoriteGroups(group, ParseUser.getCurrentUser());
+                            roomFavoriteGroups.add(favoriteGroup);
+                        }
+                        ROOM_FAVORITE_GROUPS_DAO.insertModel(roomFavoriteGroups.toArray(new RoomFavoriteGroups[0]));
+                    }
+                });
             }
         });
     }
+
+    public static void queryFavoritesOffline(Context context, List<BaseGroup> favGroups, GroupAdapter adapter) {
+        adapter.clear();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Loading in favorites from DB...");
+                String userId = ParseUser.getCurrentUser().getObjectId();
+                List<RoomFavoriteGroups> favoriteGroups = ROOM_FAVORITE_GROUPS_DAO.favoriteGroups(userId);
+
+                for(RoomFavoriteGroups favoriteGroup : favoriteGroups) {
+                    Group group = Group.createWithoutData(Group.class, favoriteGroup.groupId);
+                    group.fetchFromLocalDatastoreInBackground(new GetCallback<Group>() {
+                        public void done(Group group, ParseException e) {
+                            if (e == null) {
+                                favGroups.add(group);
+                            } else {
+                                Log.e(TAG, "Error loading in favorited groups offline");
+                            }
+                            // UI elements must run on the thread they were created on
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyItemRangeChanged(0, favGroups.size());
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 }

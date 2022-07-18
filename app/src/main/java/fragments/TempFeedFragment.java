@@ -2,6 +2,7 @@ package fragments;
 
 import static utils.QueryUtils.ROOM_SHORT_POST_DAO;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,9 +119,22 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 android.R.color.holo_red_light);
 
         // Live weather cannot be accessed when offline
-        if (!InternetUtil.isInternetConnected()) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor edit = pref.edit();
+        if (!InternetUtil.isInternetConnected() && !pref.getBoolean("weatherShownAlready", false)) {
             PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(WEATHER_POPUP);
             popupDialogFragment.show(fm, "weather_fragment");
+            // Updating preferences to say this popup has been shown
+            edit.putBoolean("weatherShownAlready", true);
+            edit.commit();
+        }
+        else if (InternetUtil.isInternetConnected()) {
+            // Updating preference when internet is connected and popup has been shown so
+            // when a user goes online then offline again, they'll see the notification
+            if (pref.getBoolean("weatherShownAlready", false)) {
+                edit.putBoolean("weatherShownAlready", false);
+                edit.commit();
+            }
         }
     }
 
