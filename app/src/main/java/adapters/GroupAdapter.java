@@ -1,13 +1,7 @@
 package adapters;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +22,6 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
-import fragments.GroupsFragment;
 import fragments.PopupDialogFragment;
 import models.BaseGroup;
 import models.BeachGroup;
@@ -102,52 +92,32 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             }
 
             if (InternetUtil.isInternetConnected()) {
+                favoriteButtonPressed.setActivated(true);
+
                 // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
                 if (group.getClass().equals(BeachGroup.class)) {
                     BeachGroup beachGroup = (BeachGroup) group;
-                    // Load favorite beaches into the UI
                     QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
-
-                    // BeachGroup favorited
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.addFavoriteGroup(group);
-                        }
-                    });
-
-                    // BeachGroup unfavorited
-                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.deleteFavoriteGroup(group);
-                        }
-                    });
                 } else {
                     Group otherGroup = (Group) group;
-                    // Load favorite beaches into the UI
                     QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
-
-                    // BeachGroup favorited
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.addFavoriteGroup(group);
-                        }
-                    });
-
-                    // BeachGroup unfavorited
-                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.deleteFavoriteGroup(group);
-                        }
-                    });
                 }
+                // Group favorited
+                favoriteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.addFavoriteGroup(group);
+                    }
+                });
+                // Group unfavorited
+                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.deleteFavoriteGroup(group);
+                    }
+                });
             }
             else {
                 favoriteButton.setVisibility(View.GONE);
