@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.opengl.Visibility;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -42,7 +44,7 @@ import utils.QueryUtils;
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
 
     public static final String TAG = GroupAdapter.class.getSimpleName();
-    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode." +
+    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode. " +
             "Connect to the internet to favorite new groups.";
 
     private final Context context;
@@ -148,12 +150,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 }
             }
             else {
-                favoriteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        popupFavoriteButton();
-                    }
-                });
+                favoriteButton.setVisibility(View.GONE);
+                favoriteButtonPressed.setVisibility(View.VISIBLE);
+                // Set color of button gray
+                favoriteButtonPressed.setActivated(false);
                 favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
