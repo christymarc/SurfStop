@@ -21,7 +21,7 @@ public class FavoriteGroups extends ParseObject{
 
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
-    public ParseObject getKeyGroup() { return getParseObject(KEY_GROUP); }
+    public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
     public void setKeyUser(ParseUser user) { put(KEY_USER, user); }
 

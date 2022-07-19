@@ -50,7 +50,12 @@ public class ShortPostDetailActivity extends AppCompatActivity {
 
         post = Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
 
-        String postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+        String postCreatedAt;
+        if (InternetUtil.isInternetConnected()) {
+            postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+        } else {
+            postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
+        }
 
         ParseUser user = post.getKeyUser();
         String userCreatedAt = TimeUtils.calculateTimeAgo(user.getCreatedAt());

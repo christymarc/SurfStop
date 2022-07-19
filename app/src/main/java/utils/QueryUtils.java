@@ -14,14 +14,17 @@ import android.widget.Spinner;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.room.Room;
 
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,14 +55,23 @@ public class QueryUtils {
     public static final RoomShortPostDao ROOM_SHORT_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomShortPostDao();
     public static final RoomPostDao ROOM_POST_DAO = ((ParseApplication) getApplicationContext()).getMyDatabase().roomPostDao();
 
-    public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
+    public static void queryShortPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, BeachGroup currentBeach) {
+        if (InternetUtil.isInternetConnected()) {
+            queryShortPostsOnline(context, allPosts, adapter, currentBeach);
+        }
+        else {
+            queryShortPostsOffline(context, allPosts, adapter, currentBeach);
+        }
+    }
+
+    public static void queryShortPostsOnline(Context context, List<BasePost> allPosts, PostAdapter adapter, BeachGroup currentBeach) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
                 .include(ShortPost.KEY_USER);
 
-        if (current_beach != null) {
-            query.whereEqualTo(ShortPost.KEY_BEACHGROUP, current_beach);
+        if (currentBeach != null) {
+            query.whereEqualTo(ShortPost.KEY_BEACHGROUP, currentBeach);
         }
 
         // Set number of items queried
@@ -74,7 +86,6 @@ public class QueryUtils {
                     return;
                 }
                 for (ShortPost post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyContent());
                     // Pin user into local data store
                     // so when we call RoomUser from SQL DB, we can match it with a ParseUser
                     post.getKeyUser().pinInBackground();
@@ -82,25 +93,60 @@ public class QueryUtils {
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i(TAG, "Saving data into the database");
-                        List<RoomShortPost> roomShortPosts = new ArrayList<>();
-                        for (ShortPost post : posts) {
-                            RoomShortPost roomPost = new RoomShortPost(post);
-                            roomShortPosts.add(roomPost);
+                        List<RoomShortPostWithObjects> postsDB = ROOM_SHORT_POST_DAO.currentItems();
+                        List<RoomShortPost> roomPosts = RoomShortPostWithObjects.getRoomShortPostList(postsDB, currentBeach);
+
+                        if (roomPosts.size() > posts.size()) {
+                            for (int i = roomPosts.size() - posts.size() - 1; i >= 0; i--) {
+                                RoomShortPost roomPost = roomPosts.get(i);
+                                ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
+                                user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
+                                    public void done(ParseUser user, ParseException e) {
+                                        if (e == null) {
+                                            ShortPost missingPost = new ShortPost(roomPost, user);
+
+                                            BeachGroup postBeachGroup = BeachGroup.createWithoutData
+                                                    (BeachGroup.class, roomPost.roomBeachGroupId);
+                                            postBeachGroup.fetchFromLocalDatastoreInBackground(new GetCallback<BeachGroup>() {
+                                                @Override
+                                                public void done(BeachGroup beachGroup, ParseException e) {
+                                                    missingPost.setKeyBeachGroup(beachGroup);
+                                                    missingPost.setKeyGroup(beachGroup.getKeyGroup());
+                                                    missingPost.saveInBackground();
+                                                }
+                                            });
+                                            posts.add(0, missingPost);
+                                        }
+                                    }
+                                });
+                            }
                         }
-                        List<RoomUser> roomUsers = RoomShortPostWithObjects.usersFromRoomShortPosts(roomShortPosts);
-                        // Must load in users before posts in order for foreign key to work
-                        ROOM_SHORT_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
-                        ROOM_SHORT_POST_DAO.insertModel(roomShortPosts.toArray(new RoomShortPost[0]));
+                        else if (roomPosts.size() < posts.size()) {
+                            Log.i(TAG, "Saving data into the database");
+                            roomPosts = new ArrayList<>();
+                            for (int i = 0; i < posts.size() - roomPosts.size(); i++) {
+                                RoomShortPost roomPost = new RoomShortPost(posts.get(i));
+                                roomPosts.add(roomPost);
+                            }
+                            List<RoomUser> roomUsers = RoomShortPostWithObjects.usersFromRoomShortPosts(roomPosts);
+                            // Must load in users before posts in order for foreign key to work
+                            ROOM_SHORT_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
+                            ROOM_SHORT_POST_DAO.insertModel(roomPosts.toArray(new RoomShortPost[0]));
+                        }
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                allPosts.addAll(posts);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                 });
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
             }
         });
     }
 
-    public static void queryShortPostOffline(Context context, List<BasePost> allPosts,
+    public static void queryShortPostsOffline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, BeachGroup beachGroup) {
         adapter.clear();
         AsyncTask.execute(new Runnable() {
@@ -138,14 +184,14 @@ public class QueryUtils {
 
     public static void queryLongPosts(Context context, List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         if (InternetUtil.isInternetConnected()) {
-            queryLongPostsOnline(allPosts, adapter, currentGroup);
+            queryLongPostsOnline(context, allPosts, adapter, currentGroup);
         }
         else {
             queryLongPostsOffline(context, allPosts, adapter, currentGroup);
         }
     }
 
-    public static void queryLongPostsOnline(List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
+    public static void queryLongPostsOnline(Context context, List<BasePost> allPosts, PostAdapter adapter, Group currentGroup) {
         adapter.clear();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
@@ -166,27 +212,71 @@ public class QueryUtils {
                     Log.e(TAG, "Query posts error", e);
                     return;
                 }
+
                 for (Post post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyUser());
                     post.getKeyUser().pinInBackground();
                 }
+
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i(TAG, "Saving data into the database");
-                        List<RoomPost> roomPosts = new ArrayList<>();
-                        for (Post post : posts) {
-                            RoomPost roomPost = new RoomPost(post);
-                            roomPosts.add(roomPost);
+                        List<RoomPostWithObjects> postsDB = ROOM_POST_DAO.currentItems();
+                        List<RoomPost> roomPosts = RoomPostWithObjects.getRoomPostList(postsDB, currentGroup);
+
+                        // Checking to see if any posts were posted in offline mode and need to be loaded in
+                        if (roomPosts.size() > posts.size()) {
+                            for (int i = roomPosts.size() - posts.size() - 1; i >= 0; i--) {
+                                RoomPost roomPost = roomPosts.get(i);
+                                ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
+                                user.fetchFromLocalDatastoreInBackground(new GetCallback<ParseUser>() {
+                                    public void done(ParseUser user, ParseException e) {
+                                        if (e == null) {
+                                            Post missingPost = new Post(roomPost, user);
+
+                                            Group postGroup = Group.createWithoutData(Group.class, roomPost.roomGroupId);
+                                            postGroup.fetchFromLocalDatastoreInBackground(new GetCallback<Group>() {
+                                                @Override
+                                                public void done(Group group, ParseException e) {
+                                                    missingPost.setKeyGroup(group);
+                                                    missingPost.saveInBackground();
+                                                }
+                                            });
+                                            posts.add(0, missingPost);
+                                        }
+                                    }
+                                });
+                            }
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    allPosts.addAll(posts);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
                         }
-                        List<RoomUser> roomUsers = RoomPostWithObjects.usersFromRoomPosts(roomPosts);
-                        // Must load in users before posts in order for foreign key to work
-                        ROOM_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
-                        ROOM_POST_DAO.insertModel(roomPosts.toArray(new RoomPost[0]));
+                        else if (roomPosts.size() < posts.size()) {
+                            Log.i(TAG, "Saving data into the database");
+                            roomPosts = new ArrayList<>();
+                            for (int i = 0; i < posts.size() - roomPosts.size(); i++) {
+                                RoomPost roomPost = new RoomPost(posts.get(i));
+                                roomPosts.add(roomPost);
+                            }
+                            List<RoomUser> roomUsers = RoomPostWithObjects.usersFromRoomPosts(roomPosts);
+                            // Must load in users before posts in order for foreign key to work
+                            ROOM_POST_DAO.insertModel(roomUsers.toArray(new RoomUser[0]));
+                            ROOM_POST_DAO.insertModel(roomPosts.toArray(new RoomPost[0]));
+                        }
+                        else {
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    allPosts.addAll(posts);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
                     }
                 });
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -227,7 +317,7 @@ public class QueryUtils {
         });
     }
 
-    public static void queryPersonalPosts(List<BasePost> allPosts, PostAdapter adapter) {
+    public static void queryPersonalBeachPosts(List<BasePost> allPosts, PostAdapter adapter) {
         adapter.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
@@ -244,9 +334,6 @@ public class QueryUtils {
                 if (e != null) {
                     Log.e(TAG, "Query posts error", e);
                     return;
-                }
-                for (ShortPost post : posts) {
-                    Log.i(TAG, "Content: " + post.getKeyBeachGroup());
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();

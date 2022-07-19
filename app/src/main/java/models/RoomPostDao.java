@@ -23,8 +23,8 @@ public interface RoomPostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertUser(RoomUser user);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertShortPost(RoomPost post);
+    public void insertPost(RoomPost post);
 
     @Delete
-    public void deleteShortPost(RoomPost post);
+    public void deletePost(RoomPost post);
 }
