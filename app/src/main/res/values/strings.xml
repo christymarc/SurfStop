@@ -11,8 +11,6 @@
     <string name="surf_now">Surf Now</string>
     <string name="groups">Groups</string>
     <string name="profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="no_password_match">Passwords do not match.</string>
     <string name="account_exists">Account already exists.</string>
@@ -30,4 +28,22 @@
     <string name="sunset_label">Sunset:</string>
     <string name="time">Time</string>
     <string name="post_content">post content</string>
+    <string name="how_the_surf">How\'s the surf...?</string>
+    <string name="post">Post!</string>
+    <string name="tag">Tag:</string>
+    <string name="surf_height">Surf height:</string>
+    <string name="email">Email</string>
+    <string name="post_empty">Post is empty!</string>
+    <string name="post_too_long">Post exceeds character limit!</string>
+    <string name="picture_untaken">Picture wasn\'t taken!</string>
+
+    <string-array name="tags_array">
+        <item>awesome</item>
+        <item>poor</item>
+        <item>cold</item>
+        <item>dirty</item>
+        <item>crowded</item>
+        <item>wipeout</item>
+        <item>rough</item>
+    </string-array>
 </resources>

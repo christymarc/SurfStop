@@ -209,7 +209,6 @@
             android:layout_margin="2dp"
             android:backgroundTint="@color/vibrant_blue"
             android:elevation="5dp"
-            android:onClick="onComposeButton"
             android:src="@drawable/ic_vector_compose"
             android:tint="@color/white"
             app:fabSize="normal" />

@@ -3,8 +3,10 @@ package models;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
+import java.io.Serializable;
+
 @ParseClassName("BeachGroup")
-public class BeachGroup extends Group{
+public class BeachGroup extends Group implements Serializable {
     public static final String KEY_GROUP = "group";
     public static final String KEY_MAXBREAK = "maxBreak";
     public static final String KEY_MINBREAK = "minBreak";
