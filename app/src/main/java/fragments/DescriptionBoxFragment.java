@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -49,6 +50,8 @@ import utils.TimeUtils;
 
 public class DescriptionBoxFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String TAG = DescriptionBoxFragment.class.getSimpleName();
+    public static final String NO_BEACHES_POPUP = "You have no favorited beaches! To populate your main" +
+            " timeline, go to the Groups' page and favorite some Beach Groups.";
 
     public List<BasePost> allPosts;
     public PostAdapter adapter;
@@ -88,11 +91,13 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
         spinnerBeach.setOnItemSelectedListener(this);
 
         if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryBeachesForSpinner(spinnerBeach, view);
+            QueryUtils.queryBeachesForSpinner(fm, spinnerBeach, view);
         } else {
             QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
         }
