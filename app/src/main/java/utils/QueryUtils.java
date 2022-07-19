@@ -19,6 +19,7 @@ import adapters.SpinnerAdapter;
 import models.BasePost;
 import models.BeachGroup;
 import models.FavoriteGroups;
+import models.Group;
 import models.ShortPost;
 
 public class QueryUtils {
@@ -35,6 +36,33 @@ public class QueryUtils {
         if (current_beach != null) {
             query.whereEqualTo(ShortPost.KEY_BEACHGROUP, current_beach);
         }
+
+        // Set number of items queried
+        query.setLimit(QUERY_MAX_ITEMS)
+                .addDescendingOrder("createdAt");
+
+        query.findInBackground(new FindCallback<ShortPost>() {
+            @Override
+            public void done(List<ShortPost> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (ShortPost post : posts) {
+                    Log.i(TAG, "Content: " + post.getKeyBeachGroup());
+                }
+                allPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public static void queryPersonalPosts(List<BasePost> allPosts, PostAdapter adapter) {
+        adapter.clear();
+
+        ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
+                .include(ShortPost.KEY_USER)
+                .whereEqualTo(ShortPost.KEY_USER, ParseUser.getCurrentUser());
 
         // Set number of items queried
         query.setLimit(QUERY_MAX_ITEMS)
@@ -121,6 +149,30 @@ public class QueryUtils {
                 }
                 allBeaches.addAll(groups);
                 adapter.notifyItemRangeChanged(0, allBeaches.size());
+            }
+        });
+    }
+
+    public static void queryFavorites(List<BeachGroup> favGroups, GroupAdapter adapter) {
+        adapter.clear();
+
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        beachQuery.findInBackground(new FindCallback<BeachGroup>() {
+            @Override
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query posts error", e);
+                    return;
+                }
+                for (BeachGroup group : groups) {
+                    Log.i(TAG, "Group: " + group);
+                }
+                favGroups.addAll(groups);
+                adapter.notifyItemRangeChanged(0, favGroups.size());
             }
         });
     }

@@ -61,7 +61,7 @@ public class ComposeDialogFragment extends DialogFragment{
     Button captureButton;
     Button postButton;
 
-    BeachGroup current_beach;
+    BeachGroup currentBeach;
     public static final String CURRENT_BEACH_KEY = "current_beach";
 
     File photoDir;
@@ -95,7 +95,7 @@ public class ComposeDialogFragment extends DialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.current_beach = (BeachGroup) getArguments().getSerializable(CURRENT_BEACH_KEY);
+        this.currentBeach = (BeachGroup) getArguments().getSerializable(CURRENT_BEACH_KEY);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_compose_dialogue, container);
     }
@@ -170,7 +170,7 @@ public class ComposeDialogFragment extends DialogFragment{
                             .show();
                     return;
                 }
-                savePost(ParseUser.getCurrentUser(), current_beach, postContent, photoFile, tag, surfHeight);
+                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight);
             }
         });
     }
