@@ -62,7 +62,7 @@ public class ComposeDialogFragment extends DialogFragment{
     Button postButton;
 
     BeachGroup currentBeach;
-    public static final String CURRENT_BEACH_KEY = "current_beach";
+    public static final String CURRENT_BEACH_KEY = "currentBeach";
 
     File photoDir;
     File photoFile;
@@ -71,11 +71,11 @@ public class ComposeDialogFragment extends DialogFragment{
         // Required empty public constructor
     }
 
-    public static ComposeDialogFragment newInstance(BeachGroup current_beach) {
+    public static ComposeDialogFragment newInstance(BeachGroup currentBeach) {
         ComposeDialogFragment fragment = new ComposeDialogFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable(CURRENT_BEACH_KEY, current_beach);
+        bundle.putSerializable(CURRENT_BEACH_KEY, currentBeach);
         fragment.setArguments(bundle);
 
         return fragment;

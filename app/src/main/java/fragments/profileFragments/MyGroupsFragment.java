@@ -18,12 +18,13 @@ import java.util.List;
 import adapters.GroupAdapter;
 import adapters.MyGroupAdapter;
 import adapters.SpinnerAdapter;
+import models.BaseGroup;
 import models.BeachGroup;
 import utils.QueryUtils;
 
 public class MyGroupsFragment extends Fragment {
     private RecyclerView rvGroups;
-    protected List<BeachGroup> favGroups;
+    protected List<BaseGroup> favGroups;
     protected GroupAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
