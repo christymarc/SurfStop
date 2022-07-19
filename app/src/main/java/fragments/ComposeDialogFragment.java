@@ -2,7 +2,6 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,17 +34,12 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-
 import java.io.File;
 import java.io.IOException;
 
-import adapters.SpinnerAdapter;
 import models.BasePost;
 import models.BeachGroup;
-import models.BeachWeather;
 import models.ShortPost;
-import okhttp3.Headers;
 
 public class ComposeDialogFragment extends DialogFragment{
 
@@ -53,6 +47,7 @@ public class ComposeDialogFragment extends DialogFragment{
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 12;
     public static final int MAX_POST_LENGTH = 280;
     public static final int TALLEST_WAVE_HEIGHT = 63;
+    private static final int DEFAULT_WAVE_HEIGHT = 0;
 
     ComposeDialogListener composeDialogListener;
 
@@ -116,10 +111,10 @@ public class ComposeDialogFragment extends DialogFragment{
         postButton = view.findViewById(R.id.postButton);
 
         ivPostImage.setVisibility(View.GONE);
-        surfHeightPicker.setMaxValue(63);
-        surfHeightPicker.setMinValue(0);
+        surfHeightPicker.setMaxValue(TALLEST_WAVE_HEIGHT);
+        surfHeightPicker.setMinValue(DEFAULT_WAVE_HEIGHT);
 
-        this.surfHeight = "0";
+        this.surfHeight = Integer.toString(DEFAULT_WAVE_HEIGHT);
 
         surfHeightPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -289,7 +284,7 @@ public class ComposeDialogFragment extends DialogFragment{
                 etCompose.setText("");
                 ivPostImage.setImageResource(0);
 
-                ComposeDialogListener listener = composeDialogListener; // this breaks the code
+                ComposeDialogListener listener = composeDialogListener;
                 if (listener != null) {
                     listener.onFinishComposeDialog(post);
                 }
