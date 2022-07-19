@@ -14,7 +14,6 @@ import android.widget.Spinner;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.room.Room;
 
 import com.example.surfstop.ParseApplication;
 import com.example.surfstop.R;
@@ -383,6 +382,7 @@ public class QueryUtils {
             }
         });
     }
+
 
     public static void queryBeachesForSpinner(FragmentTransaction fm, Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
