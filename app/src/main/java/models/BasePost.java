@@ -3,6 +3,8 @@ package models;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 public interface BasePost {
