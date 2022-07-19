@@ -487,7 +487,8 @@ public class QueryUtils {
                     return;
                 }
                 for (BeachGroup group : groups) {
-                    queryBeachName = group.getKeyGroupName();
+                    String queryBeachName = group.getKeyGroupName();
+                    String currentBeachName = beach.getKeyGroupName();
                     if(queryBeachName.equals(currentBeachName)) {
                         favoriteButtonPressed.setVisibility(View.VISIBLE);
                         favoriteButton.setVisibility(View.GONE);
