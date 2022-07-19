@@ -2,6 +2,8 @@ package models;
 
 import android.util.Log;
 
+import androidx.room.Entity;
+
 import com.parse.FindCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
@@ -18,15 +20,13 @@ import java.util.List;
 @ParseClassName("BeachGroup")
 @Parcel(analyze = BeachGroup.class)
 public class BeachGroup extends Group implements Serializable, BaseGroup {
-    private static final String TAG = BeachGroup.class.getSimpleName();
-
     public static final String KEY_GROUP = "group";
     public static final String KEY_MAXBREAK = "maxBreak";
     public static final String KEY_MINBREAK = "minBreak";
     public static final String KEY_WATERTEMP = "waterTemp";
     public static final String KEY_LOCATIONID = "locationId";
 
-    public ParseObject getKeyGroup() { return getParseObject(KEY_GROUP); }
+    public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
     public String getKeyMaxbreak() { return getString(KEY_MAXBREAK); }
 
@@ -36,7 +36,7 @@ public class BeachGroup extends Group implements Serializable, BaseGroup {
 
     public String getKeyLocationid() { return getString(KEY_LOCATIONID); }
 
-    public void setKeyGroup(ParseObject group) { put(KEY_GROUP, group); }
+    public void setKeyGroup(Group group) { put(KEY_GROUP, group); }
 
     public void setKeyMaxbreak(String maxBreak) {
         put(KEY_MAXBREAK, maxBreak);

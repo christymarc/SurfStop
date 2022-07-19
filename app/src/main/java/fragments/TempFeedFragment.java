@@ -1,8 +1,10 @@
 package fragments;
 
+import static utils.QueryUtils.ROOM_SHORT_POST_DAO;
 import static utils.WeatherConstants.*;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.text.Layout;
@@ -45,6 +48,10 @@ import java.util.List;
 
 import models.BasePost;
 import models.BeachGroup;
+import models.RoomShortPost;
+import models.RoomUser;
+import models.ShortPost;
+import utils.InternetUtil;
 import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;
@@ -117,7 +124,12 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryShortPosts(allPosts, adapter, descriptionBoxFragment.getCurrentBeach());
+                BeachGroup currentBeach = descriptionBoxFragment.getCurrentBeach();
+                if (InternetUtil.isInternetConnected()) {
+                    QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+                } else {
+                    QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
+                }
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -143,5 +155,16 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
         // Update the adapter
         adapter.notifyItemInserted(0);
         rvTempFeed.smoothScrollToPosition(0);
+
+        // Put new post into local DB
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                RoomUser roomUser = new RoomUser(post.getKeyUser());
+                RoomShortPost roomShortPost = new RoomShortPost((ShortPost) post);
+                ROOM_SHORT_POST_DAO.insertUser(roomUser);
+                ROOM_SHORT_POST_DAO.insertShortPost(roomShortPost);
+            }
+        });
     }
 }

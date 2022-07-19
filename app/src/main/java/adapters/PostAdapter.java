@@ -26,6 +26,7 @@ import java.util.List;
 
 import models.BasePost;
 import models.ShortPost;
+import utils.InternetUtil;
 import utils.PostImage;
 import utils.TimeUtils;
 
@@ -83,7 +84,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(BasePost post) {
 
-            String createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+            String createdAt;
+            if (InternetUtil.isInternetConnected()) {
+                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+            } else {
+                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
+            }
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());

@@ -8,7 +8,7 @@ public class TempUtils {
         return String.valueOf(fTemp);
     }
 
-    public static String kelvin_to_fahrenheit(String kelvinTemp) {
+    public static String kelvinToFahrenheit(String kelvinTemp) {
         double cTemp = Double.parseDouble(kelvinTemp) - 273.15;
         return celsiusToFahrenheit(String.valueOf(cTemp));
     }

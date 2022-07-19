@@ -42,6 +42,7 @@ import adapters.PostAdapter;
 import models.BasePost;
 import models.BeachGroup;
 import models.Post;
+import utils.InternetUtil;
 import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;
@@ -90,7 +91,11 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
         spinnerBeach.setOnItemSelectedListener(this);
 
-        QueryUtils.queryBeachesForSpinner(spinnerBeach, view);
+        if (InternetUtil.isInternetConnected()) {
+            QueryUtils.queryBeachesForSpinner(spinnerBeach, view);
+        } else {
+            QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
+        }
 
         // Get views for description variables
         tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
@@ -127,7 +132,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
 
                             description = jsonWeatherObject.getString(DESCRIPTION_KEY);
                             double tempKelvin = jsonMainObject.getDouble(TEMP_KEY);
-                            temperature = TempUtils.kelvin_to_fahrenheit(Double.toString(tempKelvin));
+                            temperature = TempUtils.kelvinToFahrenheit(Double.toString(tempKelvin));
                             long sunsetUTC = jsonSysObject.getLong(SUNSET_KEY);
                             long locationTimeZone = jsonResponse.getLong(TIMEZONE_KEY);
                             // need to account for location timezone and my timezone
@@ -154,7 +159,11 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         currentBeach = (BeachGroup) parent.getSelectedItem();
         setCurrentBeach(currentBeach);
-        QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        if (InternetUtil.isInternetConnected()) {
+            QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        } else {
+            QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
+        }
         Log.i(TAG, currentBeach.getKeyGroupName() + " selected");
     }
 
@@ -162,7 +171,11 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     public void onNothingSelected(AdapterView<?> parent) {
         currentBeach = (BeachGroup) parent.getItemAtPosition(0);
         setCurrentBeach(currentBeach);
-        QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        if (InternetUtil.isInternetConnected()) {
+            QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
+        } else {
+            QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
+        }
     }
 
     public void setCurrentBeach(BeachGroup currentBeach) {
