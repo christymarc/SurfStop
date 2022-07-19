@@ -24,6 +24,7 @@ import models.BaseGroup;
 import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
+import utils.InternetUtil;
 import utils.PostImage;
 import utils.QueryUtils;
 
@@ -85,51 +86,55 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 ivGroupPhoto.setVisibility(View.GONE);
             }
 
-            // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
-            if (group.getClass().equals(BeachGroup.class)) {
-                BeachGroup beachGroup = (BeachGroup) group;
-                // Load favorite beaches into the UI
-                QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
+            if (InternetUtil.isInternetConnected()) {
+                // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
+                if (group.getClass().equals(BeachGroup.class)) {
+                    BeachGroup beachGroup = (BeachGroup) group;
+                    // Load favorite beaches into the UI
+                    QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
 
-                // BeachGroup favorited
-                favoriteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        changeFavoriteButtonState();
-                        FavoriteGroups.addFavoriteGroup(group);
-                    }
-                });
+                    // BeachGroup favorited
+                    favoriteButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            changeFavoriteButtonState();
+                            FavoriteGroups.addFavoriteGroup(group);
+                        }
+                    });
 
-                // BeachGroup unfavorited
-                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        changeFavoriteButtonState();
-                        FavoriteGroups.deleteFavoriteGroup(group);
-                    }
-                });
+                    // BeachGroup unfavorited
+                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            changeFavoriteButtonState();
+                            FavoriteGroups.deleteFavoriteGroup(group);
+                        }
+                    });
+                } else {
+                    Group otherGroup = (Group) group;
+                    // Load favorite beaches into the UI
+                    QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
+
+                    // BeachGroup favorited
+                    favoriteButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            changeFavoriteButtonState();
+                            FavoriteGroups.addFavoriteGroup(group);
+                        }
+                    });
+
+                    // BeachGroup unfavorited
+                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            changeFavoriteButtonState();
+                            FavoriteGroups.deleteFavoriteGroup(group);
+                        }
+                    });
+                }
             } else {
-                Group otherGroup = (Group) group;
-                // Load favorite beaches into the UI
-                QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
-
-                // BeachGroup favorited
-                favoriteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        changeFavoriteButtonState();
-                        FavoriteGroups.addFavoriteGroup(group);
-                    }
-                });
-
-                // BeachGroup unfavorited
-                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        changeFavoriteButtonState();
-                        FavoriteGroups.deleteFavoriteGroup(group);
-                    }
-                });
+                favoriteButton.setVisibility(View.GONE);
             }
         }
 

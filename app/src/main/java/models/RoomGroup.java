@@ -22,25 +22,12 @@ public class RoomGroup {
     @NonNull
     public String groupObjectId;
 
-    @ColumnInfo
-    public String description;
-    @Ignore
-    public ParseFile image;
-    @ColumnInfo
-    public String imageUrl;
-    @ColumnInfo
-    public String groupName;
-
     public RoomGroup() { }
 
     @Ignore
     public RoomGroup(Group group) {
         this.group = group;
         this.groupObjectId = group.getObjectId();
-//        this.description = group.getKeyDescription();
-//        this.image = group.getKeyImage();
-//        this.imageUrl = image.getUrl();
-//        this.groupName = group.getKeyGroupName();
     }
 }
 

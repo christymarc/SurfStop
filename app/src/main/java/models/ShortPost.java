@@ -21,8 +21,6 @@ public class ShortPost extends Post implements BasePost{
         this.setKeyContent(post.content);
         this.setKeyUser(user);
         this.setKeyCreatedAt(post.createdAt);
-        //this.setKeyGroup(post.group);
-        //this.setKeyBeachGroup(post.beachGroup);
         this.setKeyTag(post.tag);
         this.setKeySurfHeight(post.surfHeight);
         if(post.imageUrl != null) {

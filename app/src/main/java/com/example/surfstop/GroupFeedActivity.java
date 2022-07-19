@@ -59,7 +59,7 @@ public class GroupFeedActivity extends AppCompatActivity {
         // set the layout manager on the recycler view
         rvGroupFeed.setLayoutManager(new LinearLayoutManager(this));
 
-        QueryUtils.queryLongPosts(allPosts, adapter, currentGroup);
+        QueryUtils.queryLongPosts(this, allPosts, adapter, currentGroup);
 
         composeFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +75,7 @@ public class GroupFeedActivity extends AppCompatActivity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryLongPosts(allPosts, adapter, currentGroup);
+                QueryUtils.queryLongPosts(GroupFeedActivity.this, allPosts, adapter, currentGroup);
                 swipeContainer.setRefreshing(false);
             }
         });
