@@ -42,16 +42,12 @@ import java.util.List;
 import adapters.PostAdapter;
 import models.BasePost;
 import models.BeachGroup;
-import models.Post;
-import utils.InternetUtil;
 import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;
 
 public class DescriptionBoxFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String TAG = DescriptionBoxFragment.class.getSimpleName();
-    public static final String NO_BEACHES_POPUP = "You have no favorited beaches! To populate your main" +
-            " timeline, go to the Groups' page and favorite some Beach Groups.";
 
     public List<BasePost> allPosts;
     public PostAdapter adapter;
@@ -59,7 +55,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     Spinner spinnerBeach;
     BeachGroup currentBeach;
 
-    // Group Description Variables
+    // BeachGroup description variables
     TextView tvGroupDescription;
     TextView tvMinBreak;
     TextView tvMaxBreak;
@@ -71,7 +67,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     // Weather data
     private String description;
     private String temperature;
-    // sunset time of local timezone
+    // Sunset time of local timezone
     private String sunsetTime;
 
     public DescriptionBoxFragment() {
@@ -80,7 +76,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_description_box, container, false);
     }
 
@@ -91,18 +86,13 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
         spinnerBeach.setOnItemSelectedListener(this);
 
-        if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryBeachesForSpinner(fm, spinnerBeach, view);
-        } else {
-            QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
-        }
+        QueryUtils.queryBeachesForSpinner(getContext(), ft, spinnerBeach, view);
 
-        // Get views for description variables
         tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
         tvMinBreak = view.findViewById(R.id.tvMinBreak);
         tvMaxBreak = view.findViewById(R.id.tvMaxBreak);
@@ -127,7 +117,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonResponse = new JSONObject(response);
-                            Log.i(TAG, "response: " + response);
 
                             JSONArray jsonWeatherArray = jsonResponse.getJSONArray(WEATHER_KEY);
 
@@ -165,7 +154,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
         currentBeach = (BeachGroup) parent.getSelectedItem();
         setCurrentBeach(currentBeach);
         QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
-        Log.i(TAG, currentBeach.getKeyGroupName() + " selected");
     }
 
     @Override

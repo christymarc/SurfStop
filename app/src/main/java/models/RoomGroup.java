@@ -6,12 +6,6 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.parse.ParseClassName;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-
-import org.parceler.Parcel;
-
 @Entity
 public class RoomGroup {
     @Ignore

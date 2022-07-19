@@ -32,7 +32,7 @@ public class FavoriteGroups extends ParseObject{
 
     public static void addFavoriteGroup(BaseGroup group) {
         FavoriteGroups favoritedGroup = new FavoriteGroups();
-        if (group.getClass().equals(BeachGroup.class)) {
+        if (group instanceof BeachGroup) {
             BeachGroup beachGroup = (BeachGroup) group;
             favoritedGroup.setKeyGroup(beachGroup.getKeyGroup());
         }
@@ -50,7 +50,6 @@ public class FavoriteGroups extends ParseObject{
                     Log.e(TAG, "Error while trying to save favorited BeachGroup", e);
                     return;
                 }
-                Log.i(TAG, "Favorited BeachGroup successfully saved");
             }
         });
 
@@ -67,7 +66,7 @@ public class FavoriteGroups extends ParseObject{
 
     public static void deleteFavoriteGroup(BaseGroup group) {
         ParseQuery<FavoriteGroups> query = ParseQuery.getQuery(FavoriteGroups.class);
-        if (group.getClass().equals(BeachGroup.class)) {
+        if (group instanceof BeachGroup) {
             BeachGroup beachGroup = (BeachGroup) group;
             query.whereEqualTo(FavoriteGroups.KEY_GROUP, beachGroup.getKeyGroup());
             beachGroup.unpinInBackground();

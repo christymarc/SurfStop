@@ -26,14 +26,11 @@ public class MyGroupsFragment extends Fragment {
     protected GroupAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
-    public MyGroupsFragment() {
-        // Required empty public constructor
-    }
+    public MyGroupsFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_my_groups, container, false);
     }
 
@@ -42,31 +39,21 @@ public class MyGroupsFragment extends Fragment {
         rvGroups = view.findViewById(R.id.rvFeed);
         swipeContainer = view.findViewById(R.id.swipeContainer);
 
-        // initialize the array that will hold posts and create a PostsAdapter
         favGroups = new ArrayList<>();
         adapter = new MyGroupAdapter(getContext(), favGroups);
 
-
-        // set the adapter on the recycler view
         rvGroups.setAdapter(adapter);
-        // set the layout manager on the recycler view
         rvGroups.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        // Query beaches and add them to the adapter
         QueryUtils.queryFavorites(getContext(), favGroups, adapter);
 
-        // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 QueryUtils.queryFavorites(getContext(), favGroups, adapter);
                 swipeContainer.setRefreshing(false);
             }
         });
-        // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,

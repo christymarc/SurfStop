@@ -58,9 +58,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
     File photoDir;
     File photoFile;
 
-    public ComposeDialogGroupFragment() {
-        // Required empty public constructor
-    }
+    private ComposeDialogGroupFragment() { }
 
     public static ComposeDialogGroupFragment newInstance(Group currentGroup) {
         ComposeDialogGroupFragment fragment = new ComposeDialogGroupFragment();
@@ -76,9 +74,6 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         this.composeDialogGroupListener = listener;
     }
 
-    /**
-     * Defines the compose listener interface with a method passing back data result.
-     */
     public interface ComposeDialogGroupListener {
         void onFinishComposeDialog(BasePost post);
     }
@@ -87,7 +82,6 @@ public class ComposeDialogGroupFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.currentGroup = (Group) getArguments().getSerializable(CURRENT_GROUP_KEY);
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_compose_dialogue_group, container);
     }
 
@@ -127,7 +121,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
             });
         }
 
-        // Set click listener on the button
+        // Post user's input
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,18 +143,17 @@ public class ComposeDialogGroupFragment extends DialogFragment {
     }
 
     private void launchCamera() throws IOException {
-        // create Intent to take a picture and return control to the calling application
+        // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
         photoDir = getContext().getCacheDir();
         photoFile = File.createTempFile("image", ".jpg", photoDir);
 
-        // wrap File object into a content provider
+        // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
-        // As long as the result is not null, it's safe to use the intent
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             // Start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -177,7 +170,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
                 // Load the taken image into a preview
                 ivPostImage.setImageBitmap(takenImage);
                 ivPostImage.setVisibility(View.VISIBLE);
-            } else { // Result was a failure
+            } else {
                 Snackbar.make(captureButton, R.string.picture_untaken, Snackbar.LENGTH_SHORT).show();
             }
         }
@@ -192,6 +185,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         if(photoFile != null) {
             post.setKeyImage(new ParseFile(photoFile));
         }
+
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {
                 @Override
@@ -220,6 +214,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
                 listener.onFinishComposeDialog(post);
             }
         }
+
         dismiss();
     }
 }

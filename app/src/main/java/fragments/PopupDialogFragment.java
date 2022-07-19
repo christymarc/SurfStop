@@ -1,6 +1,5 @@
 package fragments;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +21,7 @@ public class PopupDialogFragment extends DialogFragment {
     TextView tvPopupText;
     Button okButton;
 
-    public PopupDialogFragment() {
-        // Required empty public constructor
-    }
+    private PopupDialogFragment() { }
 
     public static PopupDialogFragment newInstance(String popupText) {
         PopupDialogFragment fragment = new PopupDialogFragment();
@@ -40,7 +37,6 @@ public class PopupDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.popupText = getArguments().getString(POPUP_TEXT_KEY);
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_popup, container);
     }
 
@@ -53,7 +49,6 @@ public class PopupDialogFragment extends DialogFragment {
 
         tvPopupText.setText(popupText);
 
-        // Set click listener on the button
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

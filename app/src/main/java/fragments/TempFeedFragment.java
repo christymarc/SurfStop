@@ -43,12 +43,9 @@ import utils.QueryUtils;
 public class TempFeedFragment extends Fragment implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
-    public static final String WEATHER_POPUP = "Weather is unavailable when offline. Connect to internet" +
-            " to access live weather updates.";
 
     FloatingActionButton composeFab;
 
-    // Feed variables
     private RecyclerView rvTempFeed;
     public List<BasePost> allPosts;
     public PostAdapter adapter;
@@ -56,14 +53,11 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
 
     DescriptionBoxFragment descriptionBoxFragment;
 
-    public TempFeedFragment() {
-        // Required empty public constructor
-    }
+    public TempFeedFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_temp_feed, container, false);
     }
 
@@ -75,13 +69,12 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
 
         rvTempFeed = view.findViewById(R.id.rvTempFeed);
 
-        // initialize the array that will hold posts and create a PostsAdapter
         allPosts = new ArrayList<>();
         adapter = new PostAdapter(getContext(), allPosts);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setClipToOutline(true);
 
-        // get and set description box fragment
+        // Get and set description box fragment
         FragmentManager fm = this.getChildFragmentManager();
         FragmentTransaction fragmentTransaction= fm.beginTransaction();
         descriptionBoxFragment = new DescriptionBoxFragment();
@@ -91,9 +84,7 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-        // set the adapter on the recycler view
         rvTempFeed.setAdapter(adapter);
-        // set the layout manager on the recycler view
         rvTempFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
         composeFab.setOnClickListener(new View.OnClickListener() {
@@ -103,36 +94,32 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
             }
         });
 
-        // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 BeachGroup currentBeach = descriptionBoxFragment.getCurrentBeach();
                 QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
                 swipeContainer.setRefreshing(false);
             }
         });
-        // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        // Live weather cannot be accessed when offline
+        // Notify user that live weather cannot be accessed when offline
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor edit = pref.edit();
         if (!InternetUtil.isInternetConnected() && !pref.getBoolean("weatherShownAlready", false)) {
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(WEATHER_POPUP);
+            String popupMessage = getResources().getString(R.string.weather_popup);
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
             popupDialogFragment.show(fm, "weather_fragment");
-            // Updating preferences to say this popup has been shown
+            // Update preferences to say this popup has been shown
             edit.putBoolean("weatherShownAlready", true);
             edit.commit();
         }
         else if (InternetUtil.isInternetConnected()) {
-            // Updating preference when internet is connected and popup has been shown so
+            // Update preference when internet is connected and popup has been shown so
             // when a user goes online then offline again, they'll see the notification
             if (pref.getBoolean("weatherShownAlready", false)) {
                 edit.putBoolean("weatherShownAlready", false);
@@ -143,15 +130,15 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
 
     public void onComposeButton(View view) {
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(descriptionBoxFragment.getCurrentBeach());
+        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance
+                (descriptionBoxFragment.getCurrentBeach());
         composeDialogFragment.setListener(this);
         composeDialogFragment.show(fm, "compose_fragment");
     }
 
     @Override
     public void onFinishComposeDialog(BasePost post) {
-        // Update the RecyclerView with this new tweet
-        // Modify data source of tweets
+        // Update the adapter to have the most recent post by the current user
         allPosts.add(0, post);
         // Update the adapter
         adapter.notifyItemInserted(0);

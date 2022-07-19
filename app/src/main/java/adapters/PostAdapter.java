@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.R;
 import com.example.surfstop.ShortPostDetailActivity;
-import com.parse.Parse;
 import com.parse.ParseFile;
-import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
@@ -71,6 +69,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         private ImageView ivProfileImage;
         private ImageView ivMedia;
 
+        String createdAt;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvBody = itemView.findViewById(R.id.tvBody);
@@ -84,17 +84,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(BasePost post) {
 
-            String createdAt;
-            if (InternetUtil.isInternetConnected()) {
-                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
-            } else {
-                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
-            }
+            this.createdAt = post.getDisplayCreationTime();
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
             tvName.setText(post.getKeyUser().getUsername());
-            tvTime.setText(createdAt);
+            tvTime.setText(this.createdAt);
             ParseFile profilePhoto = post.getKeyUser().getParseFile("profilePhoto");
             if (profilePhoto != null) {
                 PostImage.loadPfpIntoView(context, profilePhoto.getUrl(), ivProfileImage);
@@ -110,17 +105,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         @Override
         public void onClick(View view) {
             int position = getAbsoluteAdapterPosition();
-            // Check position is valid (exists in view)
+
             if (position != RecyclerView.NO_POSITION){
                 BasePost post = posts.get(position);
 
-                if (post.getClass().equals(ShortPost.class)) {
-                    // Create intent
+                if (post instanceof ShortPost) {
                     Intent intent = new Intent(context, ShortPostDetailActivity.class);
-                    // Serialize the post
                     intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+                    intent.putExtra("IMAGE_URL", post.getKeyImageUrl());
+                    intent.putExtra("TIMESTAMP", this.createdAt);
 
-                    // Make elements transition
+                    // Pair elements for animated transition
                     Pair<View, String> p0 = Pair.create(view, "border");
                     Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
                     Pair<View, String> p2 = Pair.create(tvBody, "body");
@@ -143,13 +138,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         }
     }
-    // Clean all elements of the recycler
+
+
     public void clear() {
         posts.clear();
         notifyDataSetChanged();
     }
 
-    // Add a list of items -- change to type used
     public void addAll(List<BasePost> list) {
         posts.addAll(list);
         notifyDataSetChanged();

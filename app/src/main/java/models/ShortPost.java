@@ -1,7 +1,6 @@
 package models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import org.parceler.Parcel;
@@ -15,7 +14,6 @@ public class ShortPost extends Post implements BasePost{
     public static final String KEY_TAG = "tag";
     public static final String KEY_BEACHGROUP = "beachGroup";
     public Date createdAt;
-    public String imageUrl;
 
     public ShortPost() { }
 
@@ -26,7 +24,6 @@ public class ShortPost extends Post implements BasePost{
         this.setKeyCreatedAt(post.createdAt);
         this.setKeyTag(post.tag);
         this.setKeySurfHeight(post.surfHeight);
-        this.imageUrl = post.imageUrl;
         if(post.imageUrl != null) {
             this.setKeyImageUrl(post.imageUrl);
         }

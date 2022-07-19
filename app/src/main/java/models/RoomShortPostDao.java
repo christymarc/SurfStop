@@ -6,8 +6,6 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.parse.ParseUser;
-
 import java.util.List;
 
 @Dao
@@ -19,7 +17,7 @@ public interface RoomShortPostDao {
 
     @Query("SELECT RoomUser.id AS user_id, RoomUser.username AS user_username, RoomUser.createdAt as user_createdAt, " +
             "RoomShortPost.* FROM RoomShortPost INNER JOIN RoomUser ON RoomUser.id = RoomShortPost.roomUserId " +
-            "WHERE RoomUser.id = :userId")
+            "WHERE RoomUser.id = :userId ORDER BY RoomShortPost.createdAt DESC")
     List<RoomShortPostWithObjects> personalPosts(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

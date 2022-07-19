@@ -22,12 +22,8 @@ public class ParseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Use for troubleshooting -- remove this line for production
-        Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
-
         // Use for monitoring Parse OkHttp traffic
         // Can be Level.BASIC, Level.HEADERS, or Level.BODY
-        // See https://square.github.io/okhttp/3.x/logging-interceptor/ to see the options.
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -39,18 +35,17 @@ public class ParseApplication extends Application {
         ParseObject.registerSubclass(FavoriteGroups.class);
         ParseObject.registerSubclass(BeachGroup.class);
 
-        // set applicationId, and server server based on the values in the back4app settings.
-        // any network interceptors must be added with the Configuration Builder given this syntax
         Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId(BuildConfig.APPLICATION_KEY) // should correspond to Application Id env variable
-                .clientKey(BuildConfig.CLIENT_KEY)  // should correspond to Client key env variable
+                .applicationId(BuildConfig.APPLICATION_KEY)
+                .clientKey(BuildConfig.CLIENT_KEY)
                 .server("https://parseapi.back4app.com")
                         .enableLocalDataStore()
                 .build());
 
-        // when upgrading versions, kill the original tables by using fallbackToDestructiveMigration()
-        myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).fallbackToDestructiveMigration().build();
+        myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME)
+                .fallbackToDestructiveMigration().build();
     }
+
     public MyDatabase getMyDatabase() {
         return myDatabase;
     }

@@ -14,7 +14,6 @@ import org.parceler.Parcels;
 
 import models.BasePost;
 import models.ShortPost;
-import utils.InternetUtil;
 import utils.PostImage;
 import utils.TimeUtils;
 
@@ -51,11 +50,7 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         post = Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
 
         String postCreatedAt;
-        if (InternetUtil.isInternetConnected()) {
-            postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
-        } else {
-            postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
-        }
+        postCreatedAt = getIntent().getExtras().getString("TIMESTAMP");
 
         ParseUser user = post.getKeyUser();
         String userCreatedAt = TimeUtils.calculateTimeAgo(user.getCreatedAt());
@@ -72,7 +67,7 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         if (profilePhoto != null) {
             PostImage.loadPfpIntoView(this, profilePhoto.getUrl(), ivProfileImage);
         }
-        String imageUrl = post.getKeyImageUrl();
+        String imageUrl = getIntent().getExtras().getString("IMAGE_URL");
         if (imageUrl != null) {
             PostImage.loadImageIntoView(this, imageUrl, ivMedia);
         } else {
