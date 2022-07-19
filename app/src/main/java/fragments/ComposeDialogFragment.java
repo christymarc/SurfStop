@@ -72,7 +72,7 @@ public class ComposeDialogFragment extends DialogFragment{
     File photoDir;
     File photoFile;
 
-    public ComposeDialogFragment() { }
+    private ComposeDialogFragment() { }
 
     public static ComposeDialogFragment newInstance(BeachGroup currentBeach) {
         ComposeDialogFragment fragment = new ComposeDialogFragment();
@@ -122,7 +122,6 @@ public class ComposeDialogFragment extends DialogFragment{
             public void onValueChange(NumberPicker numberPicker, int i, int i1) {
                 int valuePicker = surfHeightPicker.getValue();
                 setSurfHeight(valuePicker);
-                Log.d("picker value", valuePicker + "");
             }
         });
 

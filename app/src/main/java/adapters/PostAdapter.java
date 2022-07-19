@@ -84,11 +84,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(BasePost post) {
 
-            if (InternetUtil.isInternetConnected()) {
-                this.createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
-            } else {
-                this.createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
-            }
+            this.createdAt = post.getDisplayCreationTime();
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
@@ -113,7 +109,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (position != RecyclerView.NO_POSITION){
                 BasePost post = posts.get(position);
 
-                if (post.getClass().equals(ShortPost.class)) {
+                if (post instanceof ShortPost) {
                     Intent intent = new Intent(context, ShortPostDetailActivity.class);
                     intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
                     intent.putExtra("IMAGE_URL", post.getKeyImageUrl());

@@ -18,8 +18,8 @@ public class RoomShortPostWithObjects {
         List<RoomShortPost> posts = new ArrayList<>();
         for (int i = 0; i < postsWithObjects.size(); i++) {
             RoomShortPost post = postsWithObjects.get(i).roomShortPost;
-            post.roomUser = postsWithObjects.get(i).roomUser;
             if (post.roomBeachGroupId.equals(beachGroup.getObjectId())) {
+                post.roomUser = postsWithObjects.get(i).roomUser;
                 posts.add(post);
             }
         }

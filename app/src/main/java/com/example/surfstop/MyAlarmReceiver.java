@@ -12,7 +12,6 @@ public class MyAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent i = new Intent(context, LocalPurgeService.class);
-        i.putExtra("foo", "bar");
         context.startService(i);
     }
 }

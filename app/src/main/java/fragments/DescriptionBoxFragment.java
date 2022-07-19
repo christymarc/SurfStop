@@ -49,8 +49,6 @@ import utils.TimeUtils;
 
 public class DescriptionBoxFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String TAG = DescriptionBoxFragment.class.getSimpleName();
-    public static final String NO_BEACHES_POPUP = "You have no favorited beaches! To populate your main" +
-            " timeline, go to the Groups' page and favorite some Beach Groups.";
 
     public List<BasePost> allPosts;
     public PostAdapter adapter;
@@ -89,13 +87,13 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
         spinnerBeach.setOnItemSelectedListener(this);
 
         if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryBeachesForSpinner(fm, spinnerBeach, view);
+            QueryUtils.queryBeachesForSpinner(getContext(), ft, spinnerBeach, view);
         } else {
             QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
         }
@@ -124,7 +122,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonResponse = new JSONObject(response);
-                            Log.i(TAG, "response: " + response);
 
                             JSONArray jsonWeatherArray = jsonResponse.getJSONArray(WEATHER_KEY);
 
@@ -162,7 +159,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
         currentBeach = (BeachGroup) parent.getSelectedItem();
         setCurrentBeach(currentBeach);
         QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
-        Log.i(TAG, currentBeach.getKeyGroupName() + " selected");
     }
 
     @Override

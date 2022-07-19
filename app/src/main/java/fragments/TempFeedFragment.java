@@ -40,8 +40,6 @@ import utils.QueryUtils;
 public class TempFeedFragment extends Fragment implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
-    public static final String WEATHER_POPUP = "Weather is unavailable when offline. Connect to internet" +
-            " to access live weather updates.";
 
     FloatingActionButton composeFab;
 
@@ -110,7 +108,8 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor edit = pref.edit();
         if (!InternetUtil.isInternetConnected() && !pref.getBoolean("weatherShownAlready", false)) {
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(WEATHER_POPUP);
+            String popupMessage = getResources().getString(R.string.weather_popup);
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
             popupDialogFragment.show(fm, "weather_fragment");
             // Update preferences to say this popup has been shown
             edit.putBoolean("weatherShownAlready", true);

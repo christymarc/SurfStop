@@ -37,7 +37,6 @@ public class SignupActivity extends AppCompatActivity {
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick signup button");
                 String password = etPassword.getText().toString();
                 String password_confirm = etPasswordConfirm.getText().toString();
                 if (password.equals(password_confirm)) {

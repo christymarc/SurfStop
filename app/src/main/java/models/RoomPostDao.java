@@ -17,7 +17,7 @@ public interface RoomPostDao {
 
     @Query("SELECT RoomUser.id AS user_id, RoomUser.username AS user_username, RoomUser.createdAt as user_createdAt, " +
             "RoomPost.* FROM RoomPost INNER JOIN RoomUser ON RoomUser.id = RoomPost.roomUserId " +
-            "WHERE RoomUser.id = :userId")
+            "WHERE RoomUser.id = :userId ORDER BY RoomPost.createdAt DESC")
     List<RoomPostWithObjects> personalPosts(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -8,15 +8,17 @@ import java.util.Date;
 public interface BasePost {
     String getKeyContent();
 
-    Date getCreatedAt();
-
     ParseFile getKeyImage();
-
-    ParseUser getKeyUser();
-
-    Date getCreatedAtOffline();
 
     String getKeyImageUrl();
 
+    Date getCreatedAt();
+
+    ParseUser getKeyUser();
+
     Group getKeyGroup();
+
+    Date getCreatedAtOffline();
+
+    String getDisplayCreationTime();
 }

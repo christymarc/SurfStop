@@ -2,8 +2,6 @@ package utils;
 
 import static com.parse.Parse.getApplicationContext;
 
-import static fragments.DescriptionBoxFragment.NO_BEACHES_POPUP;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -70,7 +68,7 @@ public class QueryUtils {
 
     public static void queryShortPostsOnline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, BeachGroup currentBeach) {
-        adapter.clear();
+        allPosts.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
                 .include(ShortPost.KEY_USER);
@@ -108,6 +106,16 @@ public class QueryUtils {
                         if (roomPosts.size() > posts.size()) {
                             for (int i = roomPosts.size() - posts.size() - 1; i >= 0; i--) {
                                 RoomShortPost roomPost = roomPosts.get(i);
+
+                                // Ensure posts being loaded in aren't over 12 hours old (edge cases)
+                                long postCreatedAt = roomPost.createdAt.getTime();
+                                long currentTime = System.currentTimeMillis();
+                                double hourDifference = (currentTime - postCreatedAt)
+                                        / (double) TimeUtils.HOUR_MILLIS;
+                                if (hourDifference >= 12) {
+                                    continue;
+                                }
+
                                 ParseUser user = ParseUser.createWithoutData(ParseUser.class, roomPost.roomUserId);
 
                                 // Load User in from local Parse DB with post's associated roomUserId key
@@ -166,7 +174,7 @@ public class QueryUtils {
 
     public static void queryShortPostsOffline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, BeachGroup beachGroup) {
-        adapter.clear();
+        allPosts.clear();
 
         AsyncTask.execute(new Runnable() {
             @Override
@@ -215,7 +223,7 @@ public class QueryUtils {
 
     public static void queryLongPostsOnline(Context context, List<BasePost> allPosts,
                                             PostAdapter adapter, Group currentGroup) {
-        adapter.clear();
+        allPosts.clear();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
                 .include(Post.KEY_USER);
@@ -300,7 +308,8 @@ public class QueryUtils {
 
     public static void queryLongPostsOffline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, Group currentGroup) {
-        adapter.clear();
+        allPosts.clear();
+
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -343,7 +352,7 @@ public class QueryUtils {
     }
 
     public static void queryPersonalBeachPostsOnline(List<BasePost> allPosts, PostAdapter adapter) {
-        adapter.clear();
+        allPosts.clear();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
                 .include(ShortPost.KEY_USER)
@@ -368,7 +377,8 @@ public class QueryUtils {
 
     public static void queryPersonalBeachPostsOffline(Context context, List<BasePost> allPosts,
                                               PostAdapter adapter) {
-        adapter.clear();
+        allPosts.clear();
+
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -393,7 +403,8 @@ public class QueryUtils {
         });
     }
 
-    public static void queryBeachesForSpinner(FragmentTransaction fm, Spinner spinnerBeach, View view) {
+    public static void queryBeachesForSpinner(Context context, FragmentTransaction fm,
+                                              Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
@@ -415,8 +426,9 @@ public class QueryUtils {
 
                 // Popup to prompt user to favorite some beaches
                 if (spinnerBeach.getAdapter().isEmpty()) {
+                    String popupText = context.getResources().getString(R.string.no_beaches_popup);
                     PopupDialogFragment popupDialogFragment =
-                            PopupDialogFragment.newInstance(NO_BEACHES_POPUP);
+                            PopupDialogFragment.newInstance(popupText);
                     popupDialogFragment.show(fm, "weather_fragment");
                 }
             }
@@ -437,6 +449,16 @@ public class QueryUtils {
                 spinnerBeach.setAdapter(beachAdapter);
             }
         });
+    }
+
+    public static void queryGroupsforGroupsAdapter(BaseGroup group, Button favoriteButton,
+                                                   Button favoriteButtonPressed) {
+        if (group instanceof BeachGroup) {
+            queryBeachesforGroups((BeachGroup) group, favoriteButton, favoriteButtonPressed);
+        }
+        else {
+            queryGroupsforGroups((Group) group, favoriteButton, favoriteButtonPressed);
+        }
     }
 
     public static void queryBeachesforGroups(BeachGroup beach, Button favoriteButton, Button favoriteButtonPressed){
@@ -591,7 +613,7 @@ public class QueryUtils {
     }
 
     public static void queryFavoritesOnline(List<BaseGroup> favGroups, GroupAdapter adapter) {
-        adapter.clear();
+        favGroups.clear();
 
         ParseQuery<FavoriteGroups> favoriteGroupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
@@ -614,10 +636,12 @@ public class QueryUtils {
                     public void run() {
                         List<RoomFavoriteGroups> roomFavoriteGroups = new ArrayList<>();
                         for (Group group : groups) {
-                            RoomFavoriteGroups favoriteGroup = new RoomFavoriteGroups(group, ParseUser.getCurrentUser());
+                            RoomFavoriteGroups favoriteGroup = new RoomFavoriteGroups
+                                    (group, ParseUser.getCurrentUser());
                             roomFavoriteGroups.add(favoriteGroup);
                         }
-                        ROOM_FAVORITE_GROUPS_DAO.insertModel(roomFavoriteGroups.toArray(new RoomFavoriteGroups[0]));
+                        ROOM_FAVORITE_GROUPS_DAO.insertModel(roomFavoriteGroups.toArray
+                                (new RoomFavoriteGroups[0]));
                     }
                 });
             }
@@ -625,7 +649,7 @@ public class QueryUtils {
     }
 
     public static void queryFavoritesOffline(Context context, List<BaseGroup> favGroups, GroupAdapter adapter) {
-        adapter.clear();
+        favGroups.clear();
 
         AsyncTask.execute(new Runnable() {
             @Override

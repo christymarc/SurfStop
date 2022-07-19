@@ -16,8 +16,8 @@ public class RoomPostWithObjects {
         List<RoomPost> posts = new ArrayList<>();
         for (int i = 0; i < postsWithObjects.size(); i++) {
             RoomPost post = postsWithObjects.get(i).roomPost;
-            post.roomUser = postsWithObjects.get(i).roomUser;
             if (post.roomGroupId.equals(group.getObjectId())) {
+                post.roomUser = postsWithObjects.get(i).roomUser;
                 posts.add(post);
             }
         }

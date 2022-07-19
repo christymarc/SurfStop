@@ -58,7 +58,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
     File photoDir;
     File photoFile;
 
-    public ComposeDialogGroupFragment() { }
+    private ComposeDialogGroupFragment() { }
 
     public static ComposeDialogGroupFragment newInstance(Group currentGroup) {
         ComposeDialogGroupFragment fragment = new ComposeDialogGroupFragment();

@@ -9,6 +9,9 @@ import org.parceler.Parcel;
 
 import java.util.Date;
 
+import utils.InternetUtil;
+import utils.TimeUtils;
+
 @ParseClassName("Post")
 @Parcel(analyze = Post.class)
 public class Post extends ParseObject implements BasePost {
@@ -30,8 +33,10 @@ public class Post extends ParseObject implements BasePost {
         }
     }
 
+    @Override
     public String getKeyContent() { return getString(KEY_CONTENT); }
 
+    @Override
     public ParseFile getKeyImage() {
         ParseFile image = getParseFile(KEY_IMAGE);
         if (image != null) {
@@ -40,6 +45,7 @@ public class Post extends ParseObject implements BasePost {
         return image;
     }
 
+    @Override
     public String getKeyImageUrl() {
         if (getKeyImage() != null) {
             return getKeyImage().getUrl();
@@ -47,11 +53,22 @@ public class Post extends ParseObject implements BasePost {
         return this.imageUrl;
     }
 
+    @Override
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
+    @Override
     public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
+    @Override
     public Date getCreatedAtOffline() { return createdAt; }
+
+    public String getDisplayCreationTime() {
+        if (InternetUtil.isInternetConnected()) {
+            return TimeUtils.calculateTimeAgo(getCreatedAt());
+        } else {
+            return TimeUtils.calculateTimeAgo(getCreatedAtOffline());
+        }
+    }
 
     public void setKeyContent(String content) { put(KEY_CONTENT, content); }
 

@@ -47,6 +47,13 @@
     <string name="beach_posts">Beach Posts</string>
     <string name="long_post_prompt">What\'s on your mind?</string>
 
+    <string name="weather_popup">"Weather is unavailable when offline."
+        "Connect to internet to access live weather updates."</string>
+    <string name="group_popup">"Group favoriting and un-favoriting is unavailable in offline mode."
+        "Connect to the internet to favorite new groups."</string>
+    <string name="no_beaches_popup">"You have no favorited beaches! To populate your main"
+            "timeline, go to the Groups' page and favorite some Beach Groups."</string>
+
     <string-array name="tags_array">
         <item>awesome</item>
         <item>poor</item>

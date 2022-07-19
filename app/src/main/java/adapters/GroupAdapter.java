@@ -34,8 +34,6 @@ import utils.QueryUtils;
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
 
     public static final String TAG = GroupAdapter.class.getSimpleName();
-    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode. " +
-            "Connect to the internet to favorite new groups.";
 
     private final Context context;
     private List<BaseGroup> groups;
@@ -93,15 +91,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
             if (InternetUtil.isInternetConnected()) {
                 favoriteButtonPressed.setActivated(true);
+                QueryUtils.queryGroupsforGroupsAdapter(group, favoriteButton, favoriteButtonPressed);
 
-                // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
-                if (group.getClass().equals(BeachGroup.class)) {
-                    BeachGroup beachGroup = (BeachGroup) group;
-                    QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
-                } else {
-                    Group otherGroup = (Group) group;
-                    QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
-                }
                 // Group favorited
                 favoriteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -136,7 +127,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         public void popupFavoriteButton(){
             FragmentActivity activity = (FragmentActivity) context;
             FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(GROUP_POPUP);
+            String popupMessage = context.getResources().getString(R.string.group_popup);
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
             popupDialogFragment.show(ft, "group_fragment");
         }
 
@@ -158,7 +150,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 BaseGroup group = groups.get(position);
 
                 // Makes groups only clickable if they are not a BeachGroup
-                if(group.getClass().equals(Group.class)) {
+                if(!(group instanceof BeachGroup)) {
                     Group currentGroup = (Group) group;
                     Intent intent = new Intent(context, GroupFeedActivity.class);
                     intent.putExtra(Group.class.getSimpleName(), Parcels.wrap(currentGroup));

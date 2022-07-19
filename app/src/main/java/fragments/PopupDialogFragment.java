@@ -21,7 +21,7 @@ public class PopupDialogFragment extends DialogFragment {
     TextView tvPopupText;
     Button okButton;
 
-    public PopupDialogFragment() { }
+    private PopupDialogFragment() { }
 
     public static PopupDialogFragment newInstance(String popupText) {
         PopupDialogFragment fragment = new PopupDialogFragment();
