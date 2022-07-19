@@ -42,7 +42,6 @@ import java.util.List;
 import adapters.PostAdapter;
 import models.BasePost;
 import models.BeachGroup;
-import utils.InternetUtil;
 import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;

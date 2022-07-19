@@ -14,7 +14,6 @@ import org.parceler.Parcels;
 
 import models.BasePost;
 import models.ShortPost;
-import utils.InternetUtil;
 import utils.PostImage;
 import utils.TimeUtils;
 
