@@ -55,6 +55,7 @@ public class FavoriteGroups extends ParseObject{
         if (group.getClass().equals(BeachGroup.class)) {
             BeachGroup beachGroup = (BeachGroup) group;
             query.whereEqualTo(FavoriteGroups.KEY_GROUP, beachGroup.getKeyGroup());
+            beachGroup.unpinInBackground();
         }
         else {
             Group otherGroup = (Group) group;

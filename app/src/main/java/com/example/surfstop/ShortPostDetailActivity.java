@@ -14,6 +14,7 @@ import org.parceler.Parcels;
 
 import models.BasePost;
 import models.ShortPost;
+import utils.InternetUtil;
 import utils.PostImage;
 import utils.TimeUtils;
 
@@ -47,10 +48,11 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivMedia = findViewById(R.id.ivMedia);
 
-        post = (ShortPost) Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
+        post = Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
+
+        String postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
 
         ParseUser user = post.getKeyUser();
-        String postCreatedAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
         String userCreatedAt = TimeUtils.calculateTimeAgo(user.getCreatedAt());
 
         // Bind the post data to the view elements
@@ -65,9 +67,9 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         if (profilePhoto != null) {
             PostImage.loadPfpIntoView(this, profilePhoto.getUrl(), ivProfileImage);
         }
-        ParseFile image = post.getKeyImage();
-        if (image != null) {
-            PostImage.loadImageIntoView(this, image.getUrl(), ivMedia);
+        String imageUrl = post.getKeyImageUrl();
+        if (imageUrl != null) {
+            PostImage.loadImageIntoView(this, imageUrl, ivMedia);
         } else {
             ivMedia.setVisibility(View.GONE);
         }

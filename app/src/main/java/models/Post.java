@@ -7,48 +7,45 @@ import com.parse.ParseUser;
 
 import org.parceler.Parcel;
 
+import java.util.Date;
+
 @ParseClassName("Post")
 @Parcel(analyze = Post.class)
 public class Post extends ParseObject implements BasePost {
-    public static final String KEY_USER = "username";
     public static final String KEY_CONTENT = "textContent";
     public static final String KEY_IMAGE = "image";
+    public static final String KEY_USER = "username";
     public static final String KEY_GROUP = "group";
-    public static final String KEY_LIKES = "likesCount";
+    public Date createdAt;
+    public String imageUrl;
 
-    public String getKeyContent() {
-        return getString(KEY_CONTENT);
-    }
+    public String getKeyContent() { return getString(KEY_CONTENT); }
 
     public ParseFile getKeyImage() {
-        return getParseFile(KEY_IMAGE);
+        ParseFile image = getParseFile(KEY_IMAGE);
+        if (image != null) {
+            this.imageUrl = image.getUrl();
+        }
+        return image;
     }
 
-    public ParseUser getKeyUser() {
-        return getParseUser(KEY_USER);
-    }
+    public String getKeyImageUrl() { return this.imageUrl; }
 
-    public ParseObject getKeyGroup() {
-        return getParseObject(KEY_GROUP);
-    }
+    public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
-    public Number getKeyLikes() { return getNumber(KEY_LIKES); }
+    public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
-    public void setKeyContent(String content) {
-        put(KEY_CONTENT, content);
-    }
+    public Date getCreatedAtOffline() { return createdAt; }
 
-    public void setKeyImage(ParseFile image) {
-        put(KEY_IMAGE, image);
-    }
+    public void setKeyContent(String content) { put(KEY_CONTENT, content); }
 
-    public void setKeyUser(ParseUser user) {
-        put(KEY_USER, user);
-    }
+    public void setKeyImage(ParseFile image) { put(KEY_IMAGE, image); }
 
-    public void setKeyGroup(ParseObject group) {
-        put(KEY_GROUP, group);
-    }
+    public void setKeyImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-    public void setKeyLikes(Number likes) { put(KEY_LIKES, likes); }
+    public void setKeyUser(ParseUser user) { put(KEY_USER, user); }
+
+    public void setKeyGroup(Group group) { put(KEY_GROUP, group); }
+
+    public void setKeyCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 }
