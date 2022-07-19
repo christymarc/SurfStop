@@ -69,6 +69,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         private ImageView ivProfileImage;
         private ImageView ivMedia;
 
+        String createdAt;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvBody = itemView.findViewById(R.id.tvBody);
@@ -82,17 +84,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public void bind(BasePost post) {
 
-            String createdAt;
             if (InternetUtil.isInternetConnected()) {
-                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
+                this.createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAt());
             } else {
-                createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
+                this.createdAt = TimeUtils.calculateTimeAgo(post.getCreatedAtOffline());
             }
 
             // Bind the post data to the view elements
             tvBody.setText(post.getKeyContent());
             tvName.setText(post.getKeyUser().getUsername());
-            tvTime.setText(createdAt);
+            tvTime.setText(this.createdAt);
             ParseFile profilePhoto = post.getKeyUser().getParseFile("profilePhoto");
             if (profilePhoto != null) {
                 PostImage.loadPfpIntoView(context, profilePhoto.getUrl(), ivProfileImage);
@@ -115,6 +116,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 if (post.getClass().equals(ShortPost.class)) {
                     Intent intent = new Intent(context, ShortPostDetailActivity.class);
                     intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+                    intent.putExtra("IMAGE_URL", post.getKeyImageUrl());
+                    intent.putExtra("TIMESTAMP", this.createdAt);
 
                     // Pair elements for animated transition
                     Pair<View, String> p0 = Pair.create(view, "border");
