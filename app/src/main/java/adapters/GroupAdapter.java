@@ -160,9 +160,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 // Makes groups only clickable if they are not a BeachGroup
                 if(group.getClass().equals(Group.class)) {
                     Group currentGroup = (Group) group;
-                    // Create intent
                     Intent intent = new Intent(context, GroupFeedActivity.class);
-                    // Serialize the post
                     intent.putExtra(Group.class.getSimpleName(), Parcels.wrap(currentGroup));
 
                     context.startActivity(intent);
@@ -171,13 +169,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         }
     }
 
-    // Clean all elements of the recycler
     public void clear() {
         groups.clear();
         notifyDataSetChanged();
     }
-    // Add a list of items -- change to type used
-    public void addAll(List<BeachGroup> list) {
+
+    public void addAll(List<BaseGroup> list) {
         groups.addAll(list);
         notifyDataSetChanged();
     }

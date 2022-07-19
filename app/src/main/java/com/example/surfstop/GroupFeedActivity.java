@@ -20,7 +20,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import adapters.PostAdapter;
 import fragments.ComposeDialogGroupFragment;
@@ -29,14 +28,13 @@ import models.Group;
 import models.Post;
 import models.RoomPost;
 import models.RoomUser;
-import utils.DateConverter;
-import utils.KeyGeneratorUtil;
 import utils.QueryUtils;
 
-public class GroupFeedActivity extends AppCompatActivity implements ComposeDialogGroupFragment.ComposeDialogGroupListener {
+public class GroupFeedActivity extends AppCompatActivity implements
+        ComposeDialogGroupFragment.ComposeDialogGroupListener {
+
     FloatingActionButton composeFab;
 
-    // Feed variables
     private RecyclerView rvGroupFeed;
     public List<BasePost> allPosts;
     public PostAdapter adapter;
@@ -54,7 +52,6 @@ public class GroupFeedActivity extends AppCompatActivity implements ComposeDialo
 
         rvGroupFeed = findViewById(R.id.rvTempFeed);
 
-        // initialize the array that will hold posts and create a PostsAdapter
         allPosts = new ArrayList<>();
         adapter = new PostAdapter(this, allPosts);
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -64,9 +61,8 @@ public class GroupFeedActivity extends AppCompatActivity implements ComposeDialo
         tvGroupLabel = findViewById(R.id.tvGroupTimelineLabel);
         tvGroupLabel.setText(currentGroup.getKeyGroupName());
 
-        // set the adapter on the recycler view
+        // Set adapter on the recycler view
         rvGroupFeed.setAdapter(adapter);
-        // set the layout manager on the recycler view
         rvGroupFeed.setLayoutManager(new LinearLayoutManager(this));
 
         QueryUtils.queryLongPosts(this, allPosts, adapter, currentGroup);
@@ -78,13 +74,10 @@ public class GroupFeedActivity extends AppCompatActivity implements ComposeDialo
             }
         });
 
-        // query more posts
+        // Query more posts upon refresh
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 QueryUtils.queryLongPosts(GroupFeedActivity.this, allPosts, adapter, currentGroup);
                 swipeContainer.setRefreshing(false);
             }
@@ -106,10 +99,8 @@ public class GroupFeedActivity extends AppCompatActivity implements ComposeDialo
 
     @Override
     public void onFinishComposeDialog(BasePost post) {
-        // Update the RecyclerView with this new tweet
-        // Modify data source of tweets
+        // Update adapter with newest post
         allPosts.add(0, post);
-        // Update the adapter
         adapter.notifyItemInserted(0);
         rvGroupFeed.smoothScrollToPosition(0);
 

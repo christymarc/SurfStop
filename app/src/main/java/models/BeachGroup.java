@@ -1,21 +1,10 @@
 package models;
 
-import android.util.Log;
-
-import androidx.room.Entity;
-
-import com.parse.FindCallback;
 import com.parse.ParseClassName;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.parceler.Parcel;
 
 import java.io.Serializable;
-import java.util.List;
 
 @ParseClassName("BeachGroup")
 @Parcel(analyze = BeachGroup.class)

@@ -15,7 +15,6 @@ import java.util.Date;
 
 import utils.DateConverter;
 import utils.InternetUtil;
-import utils.TimeUtils;
 
 @Entity(foreignKeys = { @ForeignKey(entity=RoomUser.class, parentColumns="id", childColumns="roomUserId") })
 @TypeConverters(DateConverter.class)

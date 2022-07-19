@@ -42,7 +42,6 @@ import java.util.List;
 import adapters.PostAdapter;
 import models.BasePost;
 import models.BeachGroup;
-import models.Post;
 import utils.InternetUtil;
 import utils.QueryUtils;
 import utils.TempUtils;
@@ -59,7 +58,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     Spinner spinnerBeach;
     BeachGroup currentBeach;
 
-    // Group Description Variables
+    // BeachGroup description variables
     TextView tvGroupDescription;
     TextView tvMinBreak;
     TextView tvMaxBreak;
@@ -71,7 +70,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     // Weather data
     private String description;
     private String temperature;
-    // sunset time of local timezone
+    // Sunset time of local timezone
     private String sunsetTime;
 
     public DescriptionBoxFragment() {
@@ -80,7 +79,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_description_box, container, false);
     }
 
@@ -102,7 +100,6 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
             QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
         }
 
-        // Get views for description variables
         tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
         tvMinBreak = view.findViewById(R.id.tvMinBreak);
         tvMaxBreak = view.findViewById(R.id.tvMaxBreak);

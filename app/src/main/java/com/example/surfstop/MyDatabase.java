@@ -18,9 +18,7 @@ import models.RoomUser;
 public abstract class MyDatabase extends RoomDatabase {
     // Declare your data access objects as abstract
     public abstract RoomShortPostDao roomShortPostDao();
-
     public abstract RoomPostDao roomPostDao();
-
     public abstract RoomFavoriteGroupsDao roomFavoriteGroupsDao();
 
     // Database name to be used
