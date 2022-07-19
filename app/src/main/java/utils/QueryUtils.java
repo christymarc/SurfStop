@@ -1,28 +1,30 @@
 package utils;
 
-import static fragments.TempFeedFragment.TAG;
-
-import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Spinner;
 
+import com.example.surfstop.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import adapters.GroupAdapter;
 import adapters.PostAdapter;
+import adapters.SpinnerAdapter;
 import models.BasePost;
 import models.BeachGroup;
 import models.FavoriteGroups;
-import models.Group;
-import models.Post;
 import models.ShortPost;
 
 public class QueryUtils {
+
+    public static final String TAG = QueryUtils.class.getSimpleName();
+    public static final int QUERY_MAX_ITEMS = 20;
 
     public static void queryShortPosts(List<BasePost> allPosts, PostAdapter adapter, BeachGroup current_beach) {
         adapter.clear();
@@ -35,7 +37,7 @@ public class QueryUtils {
         }
 
         // Set number of items queried
-        query.setLimit(20)
+        query.setLimit(QUERY_MAX_ITEMS)
                 .addDescendingOrder("createdAt");
 
         query.findInBackground(new FindCallback<ShortPost>() {
@@ -54,16 +56,13 @@ public class QueryUtils {
         });
     }
 
-    public static List<BeachGroup> queryFavoriteBeaches() {
-        List<BeachGroup> favorite_beaches = new ArrayList<>();
-
+    public static void queryBeachesForSpinner(Spinner spinnerBeach, View view) {
+        // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
                 .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
-
         ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
                 .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
-
         beachQuery.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
@@ -74,18 +73,42 @@ public class QueryUtils {
                 for (BeachGroup group : groups) {
                     Log.i(TAG, "Group: " + group.getKeyGroupName());
                 }
-                favorite_beaches.addAll(groups);
-                Log.i(TAG, favorite_beaches.toString());
+                SpinnerAdapter beachAdapter = new SpinnerAdapter(view.getContext(), R.layout.activity_custom_spinner, groups);
+                spinnerBeach.setAdapter(beachAdapter);
             }
         });
-        return favorite_beaches;
     }
 
-    public static List<BeachGroup> queryBeaches() {
-        List<BeachGroup> beaches = new ArrayList<>();
+    public static void queryBeachesforGroups(BeachGroup beach, Button favoriteButton, Button favoriteButtonPressed){
+        ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
+                .include(FavoriteGroups.KEY_USER)
+                .whereEqualTo(FavoriteGroups.KEY_USER, ParseUser.getCurrentUser());
+        ParseQuery<BeachGroup> beachQuery = ParseQuery.getQuery(BeachGroup.class)
+                .whereEqualTo(BeachGroup.KEY_GROUP, beach)
+                .whereMatchesKeyInQuery(BeachGroup.KEY_GROUP, FavoriteGroups.KEY_GROUP, groupsQuery);
+        beachQuery.findInBackground(new FindCallback<BeachGroup>() {
+            @Override
+            public void done(List<BeachGroup> groups, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Query groups error", e);
+                    return;
+                }
+                for (BeachGroup group : groups) {
+                    String queryBeachName = group.getKeyGroupName();
+                    Log.i(TAG, "Group: " + queryBeachName);
+                    String currentBeachName = beach.getKeyGroupName();
+                    if(queryBeachName.equals(currentBeachName)) {
+                        favoriteButtonPressed.setVisibility(View.VISIBLE);
+                        favoriteButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void queryBeaches(List<BeachGroup> allBeaches, GroupAdapter adapter) {
         ParseQuery<BeachGroup> query = ParseQuery.getQuery(BeachGroup.class)
                 .include(BeachGroup.KEY_GROUP);
-
         query.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
@@ -96,9 +119,9 @@ public class QueryUtils {
                 for (BeachGroup group : groups) {
                     Log.i(TAG, "Group: " + group);
                 }
-                beaches.addAll(groups);
+                allBeaches.addAll(groups);
+                adapter.notifyItemRangeChanged(0, allBeaches.size());
             }
         });
-        return beaches;
     }
 }

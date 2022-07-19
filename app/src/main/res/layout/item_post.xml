@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/customborder">
+    android:background="@drawable/customborder"
+    android:transitionName="border">
 
     <ImageView
         android:id="@+id/ivProfileImage"
@@ -17,6 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
+        android:transitionName="profile"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -31,6 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
         app:layout_constraintTop_toBottomOf="@+id/ivMedia"
+        android:transitionName="body"
         tools:text="@string/post_content" />
 
     <com.github.chrisbanes.photoview.PhotoView
@@ -44,7 +47,8 @@
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+        app:layout_constraintTop_toBottomOf="@+id/tvName"
+        android:transitionName="media"/>
 
     <TextView
         android:id="@+id/tvName"
@@ -55,6 +59,7 @@
         android:layout_toEndOf="@+id/ivProfileImage"
         app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
         app:layout_constraintTop_toTopOf="parent"
+        android:transitionName="username"
         tools:text="@string/username" />
 
     <TextView
@@ -65,6 +70,7 @@
         android:layout_marginEnd="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:transitionName="time"
         tools:text="@string/time" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

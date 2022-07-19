@@ -1,15 +1,12 @@
 package models;
 
-import android.util.Log;
-
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
-import java.util.Date;
+import org.parceler.Parcel;
 
 @ParseClassName("ShortPost")
+@Parcel(analyze = ShortPost.class)
 public class ShortPost extends Post implements BasePost{
     public static final String KEY_SURFHEIGHT = "surfHeight";
     public static final String KEY_TAG = "tag";

@@ -1,6 +1,8 @@
 package adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,18 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.surfstop.R;
+import com.example.surfstop.ShortPostDetailActivity;
 import com.parse.ParseFile;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import models.BasePost;
-import models.Post;
+import utils.PostImage;
 import utils.TimeUtils;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
@@ -42,7 +46,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        BasePost post = posts.get(position);
+        BasePost post = null;
+        if (position < posts.size()) {
+            post = posts.get(position);
+        }
+        assert (post != null && !post.getKeyContent().isEmpty());
         holder.bind(post);
     }
 
@@ -51,7 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return posts.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView tvBody;
         private TextView tvTime;
@@ -66,6 +74,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvName = itemView.findViewById(R.id.tvName);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             ivMedia = itemView.findViewById(R.id.ivMedia);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(BasePost post) {
@@ -78,20 +88,40 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvTime.setText(createdAt);
             ParseFile profilePhoto = post.getKeyUser().getParseFile("profilePhoto");
             if (profilePhoto != null) {
-                Glide.with(context).load(profilePhoto.getUrl())
-                        .transform(new CircleCrop())
-                        .into(ivProfileImage);
+                PostImage.loadPfpIntoView(context, profilePhoto.getUrl(), ivProfileImage);
             }
             ParseFile image = post.getKeyImage();
             if (image != null) {
-                Glide.with(context).load(image.getUrl())
-                        .override(500, 300)
-                        .centerCrop()
-                        .transform(new RoundedCorners(30))
-                        .into(ivMedia);
-                ivMedia.setVisibility(View.VISIBLE);
+                PostImage.loadImageIntoView(context, image.getUrl(), ivMedia);
             } else {
                 ivMedia.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAbsoluteAdapterPosition();
+            // Check position is valid (exists in view)
+            if (position != RecyclerView.NO_POSITION){
+                BasePost post = posts.get(position);
+
+                // TODO: when I generalize this to Short and Long Posts, how will I check what kind of post -> to have the right Intent?
+                // Create intent
+                Intent intent = new Intent(context, ShortPostDetailActivity.class);
+                // Serialize the post
+                intent.putExtra(BasePost.class.getSimpleName(), Parcels.wrap(post));
+
+                // Make elements transition
+                Pair<View, String> p0 = Pair.create(view, "border");
+                Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
+                Pair<View, String> p2 = Pair.create(tvBody, "body");
+                Pair<View, String> p3 = Pair.create(ivMedia, "media");
+                Pair<View, String> p4 = Pair.create(tvName, "username");
+                Pair<View, String> p5 = Pair.create(tvTime, "time");
+                ActivityOptionsCompat options = ActivityOptionsCompat
+                        .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+
+                context.startActivity(intent, options.toBundle());
             }
         }
     }
