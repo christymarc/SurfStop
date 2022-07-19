@@ -69,6 +69,7 @@ public class QueryUtils {
     public static void queryShortPostsOnline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, BeachGroup currentBeach) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
                 .include(ShortPost.KEY_USER);
@@ -175,6 +176,7 @@ public class QueryUtils {
     public static void queryShortPostsOffline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, BeachGroup beachGroup) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         AsyncTask.execute(new Runnable() {
             @Override
@@ -224,6 +226,7 @@ public class QueryUtils {
     public static void queryLongPostsOnline(Context context, List<BasePost> allPosts,
                                             PostAdapter adapter, Group currentGroup) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class)
                 .include(Post.KEY_USER);
@@ -309,6 +312,7 @@ public class QueryUtils {
     public static void queryLongPostsOffline(Context context, List<BasePost> allPosts,
                                              PostAdapter adapter, Group currentGroup) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         AsyncTask.execute(new Runnable() {
             @Override
@@ -353,6 +357,7 @@ public class QueryUtils {
 
     public static void queryPersonalBeachPostsOnline(List<BasePost> allPosts, PostAdapter adapter) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         ParseQuery<ShortPost> query = ParseQuery.getQuery(ShortPost.class)
                 .include(ShortPost.KEY_USER)
@@ -378,6 +383,7 @@ public class QueryUtils {
     public static void queryPersonalBeachPostsOffline(Context context, List<BasePost> allPosts,
                                               PostAdapter adapter) {
         allPosts.clear();
+        adapter.notifyDataSetChanged();
 
         AsyncTask.execute(new Runnable() {
             @Override
@@ -623,6 +629,7 @@ public class QueryUtils {
 
     public static void queryFavoritesOnline(List<BaseGroup> favGroups, GroupAdapter adapter) {
         favGroups.clear();
+        adapter.notifyDataSetChanged();
 
         ParseQuery<FavoriteGroups> favoriteGroupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)
@@ -659,6 +666,7 @@ public class QueryUtils {
 
     public static void queryFavoritesOffline(Context context, List<BaseGroup> favGroups, GroupAdapter adapter) {
         favGroups.clear();
+        adapter.notifyDataSetChanged();
 
         AsyncTask.execute(new Runnable() {
             @Override
