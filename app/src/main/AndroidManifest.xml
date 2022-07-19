@@ -39,13 +39,16 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.codepath.fileprovider"
+            android:authorities="com.example.surfstop.provider"
             android:exported="false"
             android:grantUriPermissions="true">
+            <!-- ressource file to create -->
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/fileprovider" />
+                android:resource="@xml/fileprovider">
+            </meta-data>
         </provider>
+
     </application>
 
 </manifest>

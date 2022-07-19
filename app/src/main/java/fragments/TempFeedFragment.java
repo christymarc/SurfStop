@@ -112,6 +112,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         allPosts = new ArrayList<>();
         adapter = new PostAdapter(getContext(), allPosts);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setClipToOutline(true);
 
         // set the adapter on the recycler view
         rvTempFeed.setAdapter(adapter);

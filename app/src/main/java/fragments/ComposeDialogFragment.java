@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.surfstop.MainActivity;
 import com.example.surfstop.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseException;
@@ -63,8 +64,8 @@ public class ComposeDialogFragment extends DialogFragment{
     BeachGroup current_beach;
     public static final String CURRENT_BEACH_KEY = "current_beach";
 
-    private File photoFile;
-    public String photoFileName = "photo.jpg";
+    File photoDir;
+    File photoFile;
 
     public ComposeDialogFragment() {
         // Required empty public constructor
@@ -145,7 +146,11 @@ public class ComposeDialogFragment extends DialogFragment{
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchCamera();
+                try {
+                    launchCamera();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -178,22 +183,19 @@ public class ComposeDialogFragment extends DialogFragment{
         this.tag = itemAtPosition.toString();
     }
 
-    private void launchCamera() {
+    private void launchCamera() throws IOException {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
-        photoFile = getPhotoFileUri(photoFileName);
+        photoDir = getContext().getCacheDir();
+        photoFile = File.createTempFile("image", ".jpg", photoDir);
 
         // wrap File object into a content provider
-        // required for API >= 24
-        // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
-        Uri fileProvider = FileProvider.getUriForFile(getContext(),
-                "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
-        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
-        // So as long as the result is not null, it's safe to use the intent.
+        // As long as the result is not null, it's safe to use the intent
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             // Start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -205,9 +207,8 @@ public class ComposeDialogFragment extends DialogFragment{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // by this point we have the camera photo on disk
+                // Take photo file and rotate to the appropriate orientation
                 Bitmap takenImage = rotateBitmapOrientation(photoFile.getAbsolutePath());
-                // RESIZE BITMAP, see section below
                 // Load the taken image into a preview
                 ivPostImage.setImageBitmap(takenImage);
                 ivPostImage.setVisibility(View.VISIBLE);
@@ -243,22 +244,6 @@ public class ComposeDialogFragment extends DialogFragment{
         Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
         // Return result
         return rotatedBitmap;
-    }
-
-    // Returns the File for a photo stored on disk given the fileName
-    public File getPhotoFileUri(String fileName) {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
-            Log.d(TAG, "failed to create directory");
-        }
-
-        // Return the file target for the photo based on filename
-        return new File(mediaStorageDir.getPath() + File.separator + fileName);
     }
 
     private void savePost(ParseUser currentUser, BeachGroup current_beach, String content,
