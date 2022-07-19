@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.GroupFeedActivity;
@@ -20,16 +22,20 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+import fragments.PopupDialogFragment;
 import models.BaseGroup;
 import models.BeachGroup;
 import models.FavoriteGroups;
 import models.Group;
+import utils.InternetUtil;
 import utils.PostImage;
 import utils.QueryUtils;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
 
     public static final String TAG = GroupAdapter.class.getSimpleName();
+    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode. " +
+            "Connect to the internet to favorite new groups.";
 
     private final Context context;
     private List<BaseGroup> groups;
@@ -85,40 +91,11 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 ivGroupPhoto.setVisibility(View.GONE);
             }
 
-
-        }
-
-        public void changeFavoriteButtonState() {
-            int pos = getAbsoluteAdapterPosition();
-            BeachGroup beachGroup = beaches.get(pos);
-
-            if (favoriteButton.getVisibility() == View.VISIBLE) {
-                favoriteButton.setVisibility(View.GONE);
-                favoriteButtonPressed.setVisibility(View.VISIBLE);
-                BeachGroup.addBeachGroup(beachGroup);
-            }
-            else {
-                favoriteButton.setVisibility(View.VISIBLE);
-                favoriteButtonPressed.setVisibility(View.GONE);
-                BeachGroup.deleteBeachGroup(beachGroup);
-            }
-        }
-        
-        public void bind(BaseGroup group) {
-            // Bind the group data to the view elements
-            tvGroupName.setText(group.getKeyGroupName());
-            ParseFile groupPhoto = group.getKeyImage();
-            if (groupPhoto != null) {
-                PostImage.loadPfpIntoView(context, groupPhoto.getUrl(), ivGroupPhoto);
-            } else {
-                ivGroupPhoto.setVisibility(View.GONE);
-            }
-
             if (InternetUtil.isInternetConnected()) {
                 favoriteButtonPressed.setActivated(true);
 
-                // Checks if group is a BeachGroup so we can type cast
-                if (group instanceof BeachGroup) {
+                // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
+                if (group.getClass().equals(BeachGroup.class)) {
                     BeachGroup beachGroup = (BeachGroup) group;
                     QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
                 } else {

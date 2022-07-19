@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
@@ -21,9 +22,13 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import adapters.ProfileFragmentAdapter;
+import utils.InternetUtil;
 import utils.PostImage;
 
 public class ProfileFragment extends Fragment {
+
+    private static final String PROFILE_POPUP = "Your profile's posts and group preferences cannot be " +
+            "displayed in offline mode. Connect to the internet to access your posts and group preferences.";
 
     TextView tvName;
     ImageView ivProfile;

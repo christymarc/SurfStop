@@ -1,47 +1,30 @@
 package fragments;
 
 import static utils.QueryUtils.ROOM_SHORT_POST_DAO;
-import static utils.WeatherConstants.*;
 
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.text.Layout;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import adapters.PostAdapter;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.surfstop.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +36,12 @@ import models.RoomUser;
 import models.ShortPost;
 import utils.InternetUtil;
 import utils.QueryUtils;
-import utils.TempUtils;
-import utils.TimeUtils;
 
 public class TempFeedFragment extends Fragment implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
+    public static final String WEATHER_POPUP = "Weather is unavailable when offline. Connect to internet" +
+            " to access live weather updates.";
 
     FloatingActionButton composeFab;
 
@@ -125,11 +108,7 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 BeachGroup currentBeach = descriptionBoxFragment.getCurrentBeach();
-                if (InternetUtil.isInternetConnected()) {
-                    QueryUtils.queryShortPosts(allPosts, adapter, currentBeach);
-                } else {
-                    QueryUtils.queryShortPostOffline(getContext(), allPosts, adapter, currentBeach);
-                }
+                QueryUtils.queryShortPosts(getContext(), allPosts, adapter, currentBeach);
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -140,6 +119,23 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
                 android.R.color.holo_red_light);
 
         // Live weather cannot be accessed when offline
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor edit = pref.edit();
+        if (!InternetUtil.isInternetConnected() && !pref.getBoolean("weatherShownAlready", false)) {
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(WEATHER_POPUP);
+            popupDialogFragment.show(fm, "weather_fragment");
+            // Updating preferences to say this popup has been shown
+            edit.putBoolean("weatherShownAlready", true);
+            edit.commit();
+        }
+        else if (InternetUtil.isInternetConnected()) {
+            // Updating preference when internet is connected and popup has been shown so
+            // when a user goes online then offline again, they'll see the notification
+            if (pref.getBoolean("weatherShownAlready", false)) {
+                edit.putBoolean("weatherShownAlready", false);
+                edit.commit();
+            }
+        }
     }
 
     public void onComposeButton(View view) {
@@ -162,10 +158,12 @@ public class TempFeedFragment extends Fragment implements ComposeDialogFragment.
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                RoomUser roomUser = new RoomUser(post.getKeyUser());
-                RoomShortPost roomShortPost = new RoomShortPost((ShortPost) post);
+                RoomUser roomUser = new RoomUser(ParseUser.getCurrentUser());
+                ParseUser.getCurrentUser().pinInBackground();
+                RoomShortPost roomPost = new RoomShortPost((ShortPost) post);
+
                 ROOM_SHORT_POST_DAO.insertUser(roomUser);
-                ROOM_SHORT_POST_DAO.insertShortPost(roomShortPost);
+                ROOM_SHORT_POST_DAO.insertShortPost(roomPost);
             }
         });
     }

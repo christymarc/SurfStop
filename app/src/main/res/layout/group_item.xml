@@ -25,7 +25,7 @@
             android:visibility="gone"
             app:icon="@drawable/ufi_heart_active"
             app:iconSize="@android:dimen/app_icon_size"
-            app:iconTint="@color/medium_red"
+            app:iconTint="@color/group_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,6 +36,7 @@
             android:layout_height="56dp"
             android:layout_gravity="end|top|center_vertical"
             android:layout_margin="5dp"
+            android:background="@drawable/ufi_heart"
             app:icon="@drawable/ufi_heart"
             app:iconSize="@android:dimen/app_icon_size"
             app:iconTint="@color/medium_red"

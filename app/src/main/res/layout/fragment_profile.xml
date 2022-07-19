@@ -43,7 +43,7 @@
             android:id="@+id/postItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/posts" />
+            android:text="@string/beach_posts" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/groupItem"

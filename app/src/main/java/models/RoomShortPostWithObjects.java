@@ -44,10 +44,4 @@ public class RoomShortPostWithObjects {
         }
         return users;
     }
-
-    //    @Embedded (prefix = "group_")
-//    RoomGroup roomGroup;
-//
-//    @Embedded (prefix = "beach_")
-//    RoomBeachGroup roomBeachGroup;
 }

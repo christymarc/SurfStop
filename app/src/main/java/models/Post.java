@@ -19,6 +19,17 @@ public class Post extends ParseObject implements BasePost {
     public Date createdAt;
     public String imageUrl;
 
+    public Post() {}
+
+    public Post(RoomPost post, ParseUser user) {
+        this.setKeyContent(post.content);
+        this.setKeyUser(user);
+        this.setKeyCreatedAt(post.createdAt);
+        if(post.imageUrl != null) {
+            this.setKeyImageUrl(post.imageUrl);
+        }
+    }
+
     public String getKeyContent() { return getString(KEY_CONTENT); }
 
     public ParseFile getKeyImage() {
@@ -29,7 +40,12 @@ public class Post extends ParseObject implements BasePost {
         return image;
     }
 
-    public String getKeyImageUrl() { return this.imageUrl; }
+    public String getKeyImageUrl() {
+        if (getKeyImage() != null) {
+            return getKeyImage().getUrl();
+        }
+        return this.imageUrl;
+    }
 
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
