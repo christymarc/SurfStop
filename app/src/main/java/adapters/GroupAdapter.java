@@ -1,7 +1,12 @@
 package adapters;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.GroupFeedActivity;
@@ -20,6 +29,8 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+import fragments.GroupsFragment;
+import fragments.PopupDialogFragment;
 import models.BaseGroup;
 import models.BeachGroup;
 import models.FavoriteGroups;
@@ -31,6 +42,8 @@ import utils.QueryUtils;
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
 
     public static final String TAG = GroupAdapter.class.getSimpleName();
+    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode." +
+            "Connect to the internet to favorite new groups.";
 
     private final Context context;
     private List<BaseGroup> groups;
@@ -133,9 +146,28 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                         }
                     });
                 }
-            } else {
-                favoriteButton.setVisibility(View.GONE);
             }
+            else {
+                favoriteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupFavoriteButton();
+                    }
+                });
+                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupFavoriteButton();
+                    }
+                });
+            }
+        }
+
+        public void popupFavoriteButton(){
+            FragmentActivity activity = (FragmentActivity) context;
+            FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(GROUP_POPUP);
+            popupDialogFragment.show(ft, "group_fragment");
         }
 
         public void changeFavoriteButtonState() {
