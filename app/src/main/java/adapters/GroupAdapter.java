@@ -136,7 +136,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         public void popupFavoriteButton(){
             FragmentActivity activity = (FragmentActivity) context;
             FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(GROUP_POPUP);
+            String popupMessage = context.getResources().getString(R.string.group_popup);
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
             popupDialogFragment.show(ft, "group_fragment");
         }
 
@@ -158,11 +159,9 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 BaseGroup group = groups.get(position);
 
                 // Makes groups only clickable if they are not a BeachGroup
-                if(group.getClass().equals(Group.class)) {
+                if(!(group instanceof BeachGroup)) {
                     Group currentGroup = (Group) group;
-                    // Create intent
                     Intent intent = new Intent(context, GroupFeedActivity.class);
-                    // Serialize the post
                     intent.putExtra(Group.class.getSimpleName(), Parcels.wrap(currentGroup));
 
                     context.startActivity(intent);
@@ -171,13 +170,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         }
     }
 
-    // Clean all elements of the recycler
     public void clear() {
         groups.clear();
         notifyDataSetChanged();
     }
-    // Add a list of items -- change to type used
-    public void addAll(List<BeachGroup> list) {
+
+    public void addAll(List<BaseGroup> list) {
         groups.addAll(list);
         notifyDataSetChanged();
     }
