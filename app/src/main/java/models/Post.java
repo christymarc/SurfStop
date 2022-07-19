@@ -17,10 +17,19 @@ public class Post extends ParseObject implements BasePost {
     public static final String KEY_USER = "username";
     public static final String KEY_GROUP = "group";
     public Date createdAt;
+    public String imageUrl;
 
     public String getKeyContent() { return getString(KEY_CONTENT); }
 
-    public ParseFile getKeyImage() { return getParseFile(KEY_IMAGE); }
+    public ParseFile getKeyImage() {
+        ParseFile image = getParseFile(KEY_IMAGE);
+        if (image != null) {
+            this.imageUrl = image.getUrl();
+        }
+        return image;
+    }
+
+    public String getKeyImageUrl() { return this.imageUrl; }
 
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
@@ -31,6 +40,8 @@ public class Post extends ParseObject implements BasePost {
     public void setKeyContent(String content) { put(KEY_CONTENT, content); }
 
     public void setKeyImage(ParseFile image) { put(KEY_IMAGE, image); }
+
+    public void setKeyImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public void setKeyUser(ParseUser user) { put(KEY_USER, user); }
 

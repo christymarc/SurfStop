@@ -17,4 +17,6 @@ public interface BasePost {
     ParseUser getKeyUser();
 
     Date getCreatedAtOffline();
+
+    String getKeyImageUrl();
 }

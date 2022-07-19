@@ -19,11 +19,19 @@ public class RoomShortPostWithObjects {
         for (int i = 0; i < postsWithObjects.size(); i++) {
             RoomShortPost post = postsWithObjects.get(i).roomShortPost;
             post.roomUser = postsWithObjects.get(i).roomUser;
-            System.out.println(post.roomBeachGroupId);
-            System.out.println(beachGroup.getObjectId());
             if (post.roomBeachGroupId.equals(beachGroup.getObjectId())) {
                 posts.add(post);
             }
+        }
+        return posts;
+    }
+
+    public static List<RoomShortPost> getRoomShortPostList(List<RoomShortPostWithObjects> postsWithObjects) {
+        List<RoomShortPost> posts = new ArrayList<>();
+        for (int i = 0; i < postsWithObjects.size(); i++) {
+            RoomShortPost post = postsWithObjects.get(i).roomShortPost;
+            post.roomUser = postsWithObjects.get(i).roomUser;
+            posts.add(post);
         }
         return posts;
     }
