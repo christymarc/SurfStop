@@ -17,9 +17,7 @@ import java.util.List;
 
 import adapters.GroupAdapter;
 import adapters.MyGroupAdapter;
-import adapters.SpinnerAdapter;
 import models.BaseGroup;
-import models.BeachGroup;
 import utils.QueryUtils;
 
 public class MyGroupsFragment extends Fragment {
@@ -55,7 +53,7 @@ public class MyGroupsFragment extends Fragment {
         rvGroups.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         // Query beaches and add them to the adapter
-        QueryUtils.queryFavorites(favGroups, adapter);
+        QueryUtils.queryFavorites(getContext(), favGroups, adapter);
 
         // query more posts
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -64,7 +62,7 @@ public class MyGroupsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryFavorites(favGroups, adapter);
+                QueryUtils.queryFavorites(getContext(), favGroups, adapter);
                 swipeContainer.setRefreshing(false);
             }
         });

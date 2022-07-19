@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.Date;
 
 import utils.DateConverter;
+import utils.InternetUtil;
 import utils.TimeUtils;
 
 @Entity(foreignKeys = {
@@ -79,13 +80,14 @@ public class RoomShortPost {
         this.roomUser = new RoomUser(user);
         this.roomUserId = roomUser.id;
         this.content = post.getKeyContent();
-        this.createdAt = post.getCreatedAt();
+        if (InternetUtil.isInternetConnected()) {
+            this.createdAt = post.getCreatedAt();
+        } else {
+            this.createdAt = post.getCreatedAtOffline();
+        }
         this.image = post.getKeyImage();
         if (image != null) {
             this.imageUrl = image.getUrl();
-        }
-        else {
-            this.imageUrl = null;
         }
         this.group = post.getKeyGroup();
         this.roomGroup = new RoomGroup(group);

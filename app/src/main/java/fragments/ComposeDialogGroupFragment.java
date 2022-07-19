@@ -2,11 +2,10 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static fragments.ComposeDialogFragment.CAMERA_POPUP;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,13 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
@@ -38,71 +33,62 @@ import java.io.File;
 import java.io.IOException;
 
 import models.BasePost;
-import models.BeachGroup;
-import models.ShortPost;
+import models.Group;
+import models.Post;
 import utils.CameraUtil;
 import utils.DateConverter;
 import utils.InternetUtil;
 import utils.KeyGeneratorUtil;
 
-public class ComposeDialogFragment extends DialogFragment{
-
-    public static final String TAG = ComposeDialogFragment.class.getSimpleName();
-    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 12;
+public class ComposeDialogGroupFragment extends DialogFragment {
+    public static final String TAG = ComposeDialogGroupFragment.class.getSimpleName();
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 21;
     public static final int MAX_POST_LENGTH = 280;
-    public static final int TALLEST_WAVE_HEIGHT = 63;
-    private static final int DEFAULT_WAVE_HEIGHT = 0;
-    public static final String CAMERA_POPUP = "Uploading photos in posts is unavailable in offline mode." +
-            "Connect to the internet to take photos.";
 
-    ComposeDialogListener composeDialogListener;
+    ComposeDialogGroupFragment.ComposeDialogGroupListener composeDialogGroupListener;
 
     EditText etCompose;
     ImageView ivPostImage;
-    NumberPicker surfHeightPicker;
-    String surfHeight;
-    Spinner spinnerTag;
-    String tag;
     Button captureButton;
     Button postButton;
 
-    BeachGroup currentBeach;
-    public static final String CURRENT_BEACH_KEY = "currentBeach";
+    Group currentGroup;
+    public static final String CURRENT_GROUP_KEY = "currentGroup";
 
     File photoDir;
     File photoFile;
 
-    public ComposeDialogFragment() {
+    public ComposeDialogGroupFragment() {
         // Required empty public constructor
     }
 
-    public static ComposeDialogFragment newInstance(BeachGroup currentBeach) {
-        ComposeDialogFragment fragment = new ComposeDialogFragment();
+    public static ComposeDialogGroupFragment newInstance(Group currentGroup) {
+        ComposeDialogGroupFragment fragment = new ComposeDialogGroupFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable(CURRENT_BEACH_KEY, currentBeach);
+        bundle.putSerializable(CURRENT_GROUP_KEY, currentGroup);
         fragment.setArguments(bundle);
 
         return fragment;
     }
 
-    public void setListener(ComposeDialogListener listener) {
-        this.composeDialogListener = listener;
+    public void setListener(ComposeDialogGroupFragment.ComposeDialogGroupListener listener) {
+        this.composeDialogGroupListener = listener;
     }
 
     /**
      * Defines the compose listener interface with a method passing back data result.
      */
-    public interface ComposeDialogListener {
+    public interface ComposeDialogGroupListener {
         void onFinishComposeDialog(BasePost post);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.currentBeach = (BeachGroup) getArguments().getSerializable(CURRENT_BEACH_KEY);
+        this.currentGroup = (Group) getArguments().getSerializable(CURRENT_GROUP_KEY);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_compose_dialogue, container);
+        return inflater.inflate(R.layout.fragment_compose_dialogue_group, container);
     }
 
     @Override
@@ -111,42 +97,10 @@ public class ComposeDialogFragment extends DialogFragment{
 
         etCompose = view.findViewById(R.id.etCompose);
         ivPostImage = view.findViewById(R.id.ivPostImage);
-        surfHeightPicker = view.findViewById(R.id.surfHeightPicker);
-        spinnerTag = view.findViewById(R.id.spinnerTag);
         captureButton = view.findViewById(R.id.captureButton);
         postButton = view.findViewById(R.id.postButton);
 
         ivPostImage.setVisibility(View.GONE);
-        surfHeightPicker.setMaxValue(TALLEST_WAVE_HEIGHT);
-        surfHeightPicker.setMinValue(DEFAULT_WAVE_HEIGHT);
-
-        this.surfHeight = Integer.toString(DEFAULT_WAVE_HEIGHT);
-
-        surfHeightPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                int valuePicker = surfHeightPicker.getValue();
-                setSurfHeight(valuePicker);
-                Log.d("picker value", valuePicker + "");
-            }
-        });
-
-        ArrayAdapter<CharSequence> tagAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.tags_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinnerTag.setAdapter(tagAdapter);
-        spinnerTag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                setTag(parent.getItemAtPosition(pos));
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                setTag(parent.getItemAtPosition(0));
-            }
-        });
 
         // Checking for internet connection to not allow users to post photos in offline mode
         if (InternetUtil.isInternetConnected()) {
@@ -189,17 +143,9 @@ public class ComposeDialogFragment extends DialogFragment{
                             .show();
                     return;
                 }
-                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight);
+                savePost(ParseUser.getCurrentUser(), currentGroup, postContent, photoFile);
             }
         });
-    }
-
-    private void setSurfHeight(int valuePicker) {
-        this.surfHeight = Integer.toString(valuePicker);
-    }
-
-    private void setTag(Object itemAtPosition) {
-        this.tag = itemAtPosition.toString();
     }
 
     private void launchCamera() throws IOException {
@@ -237,19 +183,15 @@ public class ComposeDialogFragment extends DialogFragment{
         }
     }
 
-    private void savePost(ParseUser currentUser, BeachGroup current_beach, String content,
-                          File photoFile, String tag, String surfHeight) {
-        ShortPost post = new ShortPost();
-        post.setKeyBeachGroup(current_beach);
-        post.setKeyGroup(current_beach.getKeyGroup());
+    private void savePost(ParseUser currentUser, Group currentGroup, String content, File photoFile) {
+        Post post = new Post();
+        post.setKeyGroup(currentGroup.getKeyGroup());
         post.setKeyContent(content);
         post.setKeyUser(currentUser);
         post.setKeyCreatedAt(DateConverter.toDate(System.currentTimeMillis()));
         if(photoFile != null) {
             post.setKeyImage(new ParseFile(photoFile));
         }
-        post.setKeyTag(tag);
-        post.setKeySurfHeight(surfHeight);
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {
                 @Override
@@ -262,7 +204,7 @@ public class ComposeDialogFragment extends DialogFragment{
                     etCompose.setText("");
                     ivPostImage.setImageResource(0);
 
-                    ComposeDialogFragment.ComposeDialogListener listener = composeDialogListener;
+                    ComposeDialogGroupFragment.ComposeDialogGroupListener listener = composeDialogGroupListener;
                     if (listener != null) {
                         listener.onFinishComposeDialog(post);
                     }
@@ -273,7 +215,7 @@ public class ComposeDialogFragment extends DialogFragment{
             etCompose.setText("");
             ivPostImage.setImageResource(0);
 
-            ComposeDialogFragment.ComposeDialogListener listener = composeDialogListener;
+            ComposeDialogGroupFragment.ComposeDialogGroupListener listener = composeDialogGroupListener;
             if (listener != null) {
                 listener.onFinishComposeDialog(post);
             }

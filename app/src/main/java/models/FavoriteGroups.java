@@ -1,5 +1,8 @@
 package models;
 
+import static utils.QueryUtils.ROOM_FAVORITE_GROUPS_DAO;
+
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.FindCallback;
@@ -21,7 +24,7 @@ public class FavoriteGroups extends ParseObject{
 
     public ParseUser getKeyUser() { return getParseUser(KEY_USER); }
 
-    public ParseObject getKeyGroup() { return getParseObject(KEY_GROUP); }
+    public Group getKeyGroup() { return (Group) getParseObject(KEY_GROUP); }
 
     public void setKeyUser(ParseUser user) { put(KEY_USER, user); }
 
@@ -38,6 +41,8 @@ public class FavoriteGroups extends ParseObject{
             favoritedGroup.setKeyGroup(otherGroup);
         }
         favoritedGroup.setKeyUser(ParseUser.getCurrentUser());
+
+        // Save to Parse DB
         favoritedGroup.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -46,6 +51,16 @@ public class FavoriteGroups extends ParseObject{
                     return;
                 }
                 Log.i(TAG, "Favorited BeachGroup successfully saved");
+            }
+        });
+
+        // Save to Room DB
+        AsyncTask.execute(new Runnable() {
+            RoomFavoriteGroups roomFavoriteGroup =
+                    new RoomFavoriteGroups(favoritedGroup.getKeyGroup(), ParseUser.getCurrentUser());
+            @Override
+            public void run() {
+                ROOM_FAVORITE_GROUPS_DAO.insertGroup(roomFavoriteGroup);
             }
         });
     }
@@ -61,6 +76,8 @@ public class FavoriteGroups extends ParseObject{
             Group otherGroup = (Group) group;
             query.whereEqualTo(FavoriteGroups.KEY_GROUP, otherGroup.getKeyGroup());
         }
+
+        // Delete from Parse DB
         query.findInBackground(new FindCallback<FavoriteGroups>() {
             @Override
             public void done(List<FavoriteGroups> objects, ParseException e) {
@@ -71,6 +88,16 @@ public class FavoriteGroups extends ParseObject{
                 for (ParseObject object : objects) {
                     object.deleteInBackground();
                 }
+            }
+        });
+
+        // Delete from Room DB
+        AsyncTask.execute(new Runnable() {
+            RoomFavoriteGroups roomFavoriteGroup =
+                    new RoomFavoriteGroups(group.getKeyGroup(), ParseUser.getCurrentUser());
+            @Override
+            public void run() {
+                ROOM_FAVORITE_GROUPS_DAO.delete(roomFavoriteGroup);
             }
         });
     }

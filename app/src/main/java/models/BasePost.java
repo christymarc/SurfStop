@@ -19,4 +19,6 @@ public interface BasePost {
     Date getCreatedAtOffline();
 
     String getKeyImageUrl();
+
+    Group getKeyGroup();
 }

@@ -7,4 +7,6 @@ public interface BaseGroup {
     String getKeyGroupName();
 
     ParseFile getKeyImage();
+
+    Group getKeyGroup();
 }

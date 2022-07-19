@@ -1,29 +1,39 @@
 package com.example.surfstop;
 
+import static utils.QueryUtils.ROOM_POST_DAO;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import adapters.PostAdapter;
-import models.BaseGroup;
+import fragments.ComposeDialogGroupFragment;
 import models.BasePost;
-import models.BeachGroup;
 import models.Group;
+import models.Post;
+import models.RoomPost;
+import models.RoomUser;
+import utils.DateConverter;
+import utils.KeyGeneratorUtil;
 import utils.QueryUtils;
 
-public class GroupFeedActivity extends AppCompatActivity {
+public class GroupFeedActivity extends AppCompatActivity implements ComposeDialogGroupFragment.ComposeDialogGroupListener {
     FloatingActionButton composeFab;
 
     // Feed variables
@@ -88,6 +98,32 @@ public class GroupFeedActivity extends AppCompatActivity {
     }
 
     public void onComposeButton(View view) {
-        //TODO: compose long post functionality
+        FragmentTransaction fm = this.getSupportFragmentManager().beginTransaction();
+        ComposeDialogGroupFragment composeDialogGroupFragment = ComposeDialogGroupFragment.newInstance(currentGroup);
+        composeDialogGroupFragment.setListener(this);
+        composeDialogGroupFragment.show(fm, "compose_fragment");
+    }
+
+    @Override
+    public void onFinishComposeDialog(BasePost post) {
+        // Update the RecyclerView with this new tweet
+        // Modify data source of tweets
+        allPosts.add(0, post);
+        // Update the adapter
+        adapter.notifyItemInserted(0);
+        rvGroupFeed.smoothScrollToPosition(0);
+
+        // Put new post into local DB
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                RoomUser roomUser = new RoomUser(ParseUser.getCurrentUser());
+                ParseUser.getCurrentUser().pinInBackground();
+                RoomPost roomPost = new RoomPost((Post) post);
+
+                ROOM_POST_DAO.insertUser(roomUser);
+                ROOM_POST_DAO.insertPost(roomPost);
+            }
+        });
     }
 }
