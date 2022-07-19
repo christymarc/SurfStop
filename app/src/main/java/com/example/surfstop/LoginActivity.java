@@ -17,7 +17,8 @@ import com.parse.ParseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    final String TAG = "LoginActivity";
+    final String TAG = LoginActivity.class.getSimpleName();
+
     EditText etUsername;
     EditText etPassword;
     Button loginButton;
