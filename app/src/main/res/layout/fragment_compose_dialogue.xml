@@ -96,7 +96,7 @@
                 app:layout_constraintTop_toTopOf="@+id/tagSelectLabel" />
 
             <Button
-                android:id="@+id/postButton"
+                android:id="@+id/okButton"
                 android:layout_width="179dp"
                 android:layout_height="40dp"
                 android:background="@color/vibrant_blue"
