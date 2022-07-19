@@ -412,6 +412,7 @@ public class QueryUtils {
             queryBeachesforSpinnerOffline(spinnerBeach, view);
         }
     }
+    
     public static void queryBeachesForSpinnerOnline(Context context, FragmentTransaction fm,
                                               Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
@@ -481,8 +482,6 @@ public class QueryUtils {
         beachQuery.findInBackground(new FindCallback<BeachGroup>() {
             @Override
             public void done(List<BeachGroup> groups, ParseException e) {
-                String queryBeachName;
-                String currentBeachName = beach.getKeyGroupName();
                 if (e != null) {
                     Log.e(TAG, "Query groups error", e);
                     return;

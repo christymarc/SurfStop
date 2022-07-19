@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLogoutButton(MenuItem item) {
         deleteCache(this);
+
         ParseUser.logOutInBackground();
 
         // Return back to login screen
