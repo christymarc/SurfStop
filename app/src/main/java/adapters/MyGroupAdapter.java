@@ -11,12 +11,13 @@ import com.example.surfstop.R;
 
 import java.util.List;
 
+import models.BaseGroup;
 import models.BasePost;
 import models.BeachGroup;
 
 public class MyGroupAdapter extends GroupAdapter{
-    public MyGroupAdapter(Context context, List<BeachGroup> beaches) {
-        super(context, beaches);
+    public MyGroupAdapter(Context context, List<BaseGroup> groups) {
+        super(context, groups);
     }
 
     @NonNull

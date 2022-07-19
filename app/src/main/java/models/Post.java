@@ -10,9 +10,9 @@ import org.parceler.Parcel;
 @ParseClassName("Post")
 @Parcel(analyze = Post.class)
 public class Post extends ParseObject implements BasePost {
+    public static final String KEY_USER = "username";
     public static final String KEY_CONTENT = "textContent";
     public static final String KEY_IMAGE = "image";
-    public static final String KEY_USER = "username";
     public static final String KEY_GROUP = "group";
     public static final String KEY_LIKES = "likesCount";
 
