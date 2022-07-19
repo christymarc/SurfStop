@@ -405,6 +405,15 @@ public class QueryUtils {
 
     public static void queryBeachesForSpinner(Context context, FragmentTransaction fm,
                                               Spinner spinnerBeach, View view) {
+        if (InternetUtil.isInternetConnected()) {
+            queryBeachesForSpinnerOnline(context, fm, spinnerBeach, view);
+        }
+        else {
+            queryBeachesforSpinnerOffline(spinnerBeach, view);
+        }
+    }
+    public static void queryBeachesForSpinnerOnline(Context context, FragmentTransaction fm,
+                                              Spinner spinnerBeach, View view) {
         // Get user's favorite groups to populate spinner
         ParseQuery<FavoriteGroups> groupsQuery = ParseQuery.getQuery(FavoriteGroups.class)
                 .include(FavoriteGroups.KEY_USER)

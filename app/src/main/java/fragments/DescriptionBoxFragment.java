@@ -92,11 +92,7 @@ public class DescriptionBoxFragment extends Fragment implements AdapterView.OnIt
         spinnerBeach = view.findViewById(R.id.spinnerBeach);
         spinnerBeach.setOnItemSelectedListener(this);
 
-        if (InternetUtil.isInternetConnected()) {
-            QueryUtils.queryBeachesForSpinner(getContext(), ft, spinnerBeach, view);
-        } else {
-            QueryUtils.queryBeachesforSpinnerOffline(spinnerBeach, view);
-        }
+        QueryUtils.queryBeachesForSpinner(getContext(), ft, spinnerBeach, view);
 
         tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
         tvMinBreak = view.findViewById(R.id.tvMinBreak);
