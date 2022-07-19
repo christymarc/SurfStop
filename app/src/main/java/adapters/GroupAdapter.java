@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.surfstop.GroupFeedActivity;
@@ -20,6 +22,7 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+import fragments.PopupDialogFragment;
 import models.BaseGroup;
 import models.BeachGroup;
 import models.FavoriteGroups;
@@ -31,6 +34,8 @@ import utils.QueryUtils;
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
 
     public static final String TAG = GroupAdapter.class.getSimpleName();
+    private static final String GROUP_POPUP = "Group favoriting and un-favoriting is unavailable in offline mode. " +
+            "Connect to the internet to favorite new groups.";
 
     private final Context context;
     private List<BaseGroup> groups;
@@ -87,55 +92,53 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
             }
 
             if (InternetUtil.isInternetConnected()) {
+                favoriteButtonPressed.setActivated(true);
+
                 // Checks if group is a BeachGroup so we can cast the BaseGroup object to a BeachGroup without error
                 if (group.getClass().equals(BeachGroup.class)) {
                     BeachGroup beachGroup = (BeachGroup) group;
-                    // Load favorite beaches into the UI
                     QueryUtils.queryBeachesforGroups(beachGroup, favoriteButton, favoriteButtonPressed);
-
-                    // BeachGroup favorited
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.addFavoriteGroup(group);
-                        }
-                    });
-
-                    // BeachGroup unfavorited
-                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.deleteFavoriteGroup(group);
-                        }
-                    });
                 } else {
                     Group otherGroup = (Group) group;
-                    // Load favorite beaches into the UI
                     QueryUtils.queryGroupsforGroups(otherGroup, favoriteButton, favoriteButtonPressed);
-
-                    // BeachGroup favorited
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.addFavoriteGroup(group);
-                        }
-                    });
-
-                    // BeachGroup unfavorited
-                    favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            changeFavoriteButtonState();
-                            FavoriteGroups.deleteFavoriteGroup(group);
-                        }
-                    });
                 }
-            } else {
-                favoriteButton.setVisibility(View.GONE);
+                // Group favorited
+                favoriteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.addFavoriteGroup(group);
+                    }
+                });
+                // Group unfavorited
+                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeFavoriteButtonState();
+                        FavoriteGroups.deleteFavoriteGroup(group);
+                    }
+                });
             }
+            else {
+                favoriteButton.setVisibility(View.GONE);
+                favoriteButtonPressed.setVisibility(View.VISIBLE);
+                // Set color of button gray
+                favoriteButtonPressed.setActivated(false);
+                favoriteButtonPressed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupFavoriteButton();
+                    }
+                });
+            }
+        }
+
+        public void popupFavoriteButton(){
+            FragmentActivity activity = (FragmentActivity) context;
+            FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+            String popupMessage = context.getResources().getString(R.string.group_popup);
+            PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
+            popupDialogFragment.show(ft, "group_fragment");
         }
 
         public void changeFavoriteButtonState() {
@@ -156,11 +159,9 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 BaseGroup group = groups.get(position);
 
                 // Makes groups only clickable if they are not a BeachGroup
-                if(group.getClass().equals(Group.class)) {
+                if(!(group instanceof BeachGroup)) {
                     Group currentGroup = (Group) group;
-                    // Create intent
                     Intent intent = new Intent(context, GroupFeedActivity.class);
-                    // Serialize the post
                     intent.putExtra(Group.class.getSimpleName(), Parcels.wrap(currentGroup));
 
                     context.startActivity(intent);
@@ -169,13 +170,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         }
     }
 
-    // Clean all elements of the recycler
     public void clear() {
         groups.clear();
         notifyDataSetChanged();
     }
-    // Add a list of items -- change to type used
-    public void addAll(List<BeachGroup> list) {
+
+    public void addAll(List<BaseGroup> list) {
         groups.addAll(list);
         notifyDataSetChanged();
     }

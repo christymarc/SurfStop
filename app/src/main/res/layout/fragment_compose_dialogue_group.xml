@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/compose"
@@ -45,54 +45,12 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="start|top"
-                    android:hint="@string/how_the_surf"
+                    android:hint="@string/long_post_prompt"
                     android:inputType="textMultiLine"
                     android:minLines="4"
                     tools:layout_editor_absoluteX="63dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/heightSelectLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
-                android:layout_weight="1"
-                android:text="@string/surf_height"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@+id/tagSelectLabel"
-                app:layout_constraintTop_toBottomOf="@+id/tagSelectLabel" />
-
-            <TextView
-                android:id="@+id/tagSelectLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:text="@string/tag"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
-
-            <NumberPicker
-                android:id="@+id/surfHeightPicker"
-                android:layout_width="60dp"
-                android:layout_height="81dp"
-                android:layout_marginStart="20dp"
-                app:layout_constraintBottom_toBottomOf="@+id/heightSelectLabel"
-                app:layout_constraintStart_toEndOf="@+id/heightSelectLabel"
-                app:layout_constraintTop_toTopOf="@+id/heightSelectLabel"
-                app:layout_constraintVertical_bias="0.537" />
-
-            <Spinner
-                android:id="@+id/spinnerTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tagSelectLabel"
-                app:layout_constraintStart_toEndOf="@+id/tagSelectLabel"
-                app:layout_constraintTop_toTopOf="@+id/tagSelectLabel" />
 
             <Button
                 android:id="@+id/postButton"
@@ -104,7 +62,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/surfHeightPicker"
+                app:layout_constraintTop_toBottomOf="@+id/captureButton"
                 app:layout_constraintVertical_bias="0.483" />
 
             <Button
