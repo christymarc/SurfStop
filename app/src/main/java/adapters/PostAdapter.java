@@ -115,11 +115,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 Pair<View, String> p0 = Pair.create(view, "border");
                 Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
                 Pair<View, String> p2 = Pair.create(tvBody, "body");
-                Pair<View, String> p3 = Pair.create(ivMedia, "media");
+                Pair<View, String> p3 = Pair.create(tvTime, "time");
                 Pair<View, String> p4 = Pair.create(tvName, "username");
-                Pair<View, String> p5 = Pair.create(tvTime, "time");
-                ActivityOptionsCompat options = ActivityOptionsCompat
-                        .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+
+                ActivityOptionsCompat options;
+
+                if (ivMedia.getVisibility() == View.VISIBLE) {
+                    Pair<View, String> p5 = Pair.create(ivMedia, "media");
+                    options = ActivityOptionsCompat
+                            .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4, p5);
+                }
+                else {
+                    options = ActivityOptionsCompat
+                            .makeSceneTransitionAnimation((Activity) context, p0, p1, p2, p3, p4);
+                }
 
                 context.startActivity(intent, options.toBundle());
             }

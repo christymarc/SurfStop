@@ -16,6 +16,7 @@ import com.parse.ParseFile;
 
 import java.util.List;
 
+import models.BasePost;
 import models.BeachGroup;
 import utils.PostImage;
 import utils.QueryUtils;
@@ -107,5 +108,17 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
                 }
             });
         }
+    }
+
+    // Clean all elements of the recycler
+    public void clear() {
+        beaches.clear();
+        notifyDataSetChanged();
+    }
+
+    // Add a list of items -- change to type used
+    public void addAll(List<BeachGroup> list) {
+        beaches.addAll(list);
+        notifyDataSetChanged();
     }
 }

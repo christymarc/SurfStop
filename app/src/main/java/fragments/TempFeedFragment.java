@@ -2,21 +2,26 @@ package fragments;
 
 import static utils.WeatherConstants.*;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -44,22 +49,9 @@ import utils.QueryUtils;
 import utils.TempUtils;
 import utils.TimeUtils;
 
-public class TempFeedFragment extends Fragment implements AdapterView.OnItemSelectedListener,
-        ComposeDialogFragment.ComposeDialogListener {
+public class TempFeedFragment extends Fragment implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = TempFeedFragment.class.getSimpleName();
-
-    Spinner spinnerBeach;
-    BeachGroup current_beach;
-
-    // Group Description Variables
-    TextView tvGroupDescription;
-    TextView tvMinBreak;
-    TextView tvMaxBreak;
-    TextView tvAirTemp;
-    TextView tvWaterTemp;
-    TextView tvWeather;
-    TextView tvSunsetTime;
 
     FloatingActionButton composeFab;
 
@@ -69,11 +61,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     public PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
 
-    // Weather data
-    private String description;
-    private String temperature;
-    // sunset time of local timezone
-    private String sunsetTime;
+    DescriptionBoxFragment descriptionBoxFragment;
 
     public TempFeedFragment() {
         // Required empty public constructor
@@ -90,20 +78,6 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        spinnerBeach = view.findViewById(R.id.spinnerBeach);
-        spinnerBeach.setOnItemSelectedListener(this);
-
-        QueryUtils.queryBeachesForSpinner(spinnerBeach, view);
-
-        // Get views for description variables
-        tvGroupDescription = view.findViewById(R.id.tvGroupDescription);
-        tvMinBreak = view.findViewById(R.id.tvMinBreak);
-        tvMaxBreak = view.findViewById(R.id.tvMaxBreak);
-        tvAirTemp = view.findViewById(R.id.tvAirTemp);
-        tvWaterTemp = view.findViewById(R.id.tvWaterTemp);
-        tvWeather = view.findViewById(R.id.tvWeather);
-        tvSunsetTime = view.findViewById(R.id.tvSunsetTime);
-
         composeFab = view.findViewById(R.id.composeFab);
 
         rvTempFeed = view.findViewById(R.id.rvTempFeed);
@@ -113,6 +87,16 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
         adapter = new PostAdapter(getContext(), allPosts);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setClipToOutline(true);
+
+        // get and set description box fragment
+        FragmentManager fm = this.getChildFragmentManager();
+        FragmentTransaction fragmentTransaction= fm.beginTransaction();
+        descriptionBoxFragment = new DescriptionBoxFragment();
+        descriptionBoxFragment.setAdapterAndList(adapter, allPosts);
+        fragmentTransaction.replace(R.id.fragmentContainerView, descriptionBoxFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
 
         // set the adapter on the recycler view
         rvTempFeed.setAdapter(adapter);
@@ -133,7 +117,7 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
+                QueryUtils.queryShortPosts(allPosts, adapter, descriptionBoxFragment.getCurrentBeach());
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -144,74 +128,9 @@ public class TempFeedFragment extends Fragment implements AdapterView.OnItemSele
                 android.R.color.holo_red_light);
     }
 
-    public void bindDescription() {
-        tvGroupDescription.setText(current_beach.getKeyDescription());
-        tvMinBreak.setText(current_beach.getKeyMinbreak());
-        tvMaxBreak.setText(current_beach.getKeyMaxbreak());
-        tvWaterTemp.setText(current_beach.getKeyWatertemp());
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        current_beach = (BeachGroup) parent.getSelectedItem();
-        getWeatherDetails(current_beach.getKeyLocationid());
-        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
-        bindDescription();
-        Log.i(TAG, current_beach.getKeyGroupName() + " selected");
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        current_beach = (BeachGroup) parent.getItemAtPosition(0);
-        getWeatherDetails(current_beach.getKeyLocationid());
-        QueryUtils.queryShortPosts(allPosts, adapter, current_beach);
-        bindDescription();
-    }
-
-    public void getWeatherDetails(String locationID){
-        String temp_url = API_URL + "?id=" + locationID + "&appid=" + API_KEY;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, temp_url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            Log.i(TAG, "response: " + response);
-
-                            JSONArray jsonWeatherArray = jsonResponse.getJSONArray(WEATHER_KEY);
-
-                            JSONObject jsonWeatherObject = jsonWeatherArray.getJSONObject(0);
-                            JSONObject jsonMainObject = jsonResponse.getJSONObject(MAIN_KEY);
-                            JSONObject jsonSysObject = jsonResponse.getJSONObject(SYS_KEY);
-
-                            description = jsonWeatherObject.getString(DESCRIPTION_KEY);
-                            double tempKelvin = jsonMainObject.getDouble(TEMP_KEY);
-                            temperature = TempUtils.kelvin_to_fahrenheit(Double.toString(tempKelvin));
-                            long sunsetUTC = jsonSysObject.getLong(SUNSET_KEY);
-                            long locationTimeZone = jsonResponse.getLong(TIMEZONE_KEY);
-                            // need to account for location timezone and my timezone
-                            sunsetTime = TimeUtils.unixToUTC(sunsetUTC + locationTimeZone - MYTIMEZONE);
-
-                            tvWeather.setText(description);
-                            tvAirTemp.setText(temperature);
-                            tvSunsetTime.setText(sunsetTime);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(TAG, "Error loading in weather data.");
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-    }
-
     public void onComposeButton(View view) {
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(this.current_beach);
+        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(descriptionBoxFragment.getCurrentBeach());
         composeDialogFragment.setListener(this);
         composeDialogFragment.show(fm, "compose_fragment");
     }
