@@ -53,6 +53,7 @@
         "Connect to the internet to favorite new groups."</string>
     <string name="no_beaches_popup">"You have no favorited beaches! To populate your main"
             "timeline, go to the Groups' page and favorite some Beach Groups."</string>
+    <string name="is_this_a_beach">Is this a beach?</string>
 
     <string-array name="tags_array">
         <item>awesome</item>

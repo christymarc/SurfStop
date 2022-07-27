@@ -13,31 +13,40 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/compose"
             android:layout_width="317dp"
-            android:layout_height="549dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center">
 
             <ImageView
                 android:id="@+id/ivPostImage"
                 android:layout_width="wrap_content"
-                android:layout_height="175dp"
+                android:layout_height="160dp"
                 android:layout_margin="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
 
+            <CheckBox
+                android:id="@+id/checkbox_beach"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onCheckboxClicked"
+                android:text="@string/is_this_a_beach"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                app:layout_constraintTop_toBottomOf="@+id/ivPostImage" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
                 android:layout_width="272dp"
-                android:layout_height="137dp"
-                android:layout_margin="20dp"
-                android:layout_marginTop="44dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="280"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.121"
+                app:layout_constraintHorizontal_bias="0.488"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivPostImage">
+                app:layout_constraintTop_toBottomOf="@id/checkbox_beach">
 
                 <EditText
                     android:id="@+id/etCompose"
@@ -47,7 +56,7 @@
                     android:gravity="start|top"
                     android:hint="@string/how_the_surf"
                     android:inputType="textMultiLine"
-                    android:minLines="4"
+                    android:minLines="3"
                     tools:layout_editor_absoluteX="63dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -98,6 +107,7 @@
                 android:id="@+id/postButton"
                 android:layout_width="179dp"
                 android:layout_height="40dp"
+                android:layout_margin="10dp"
                 android:background="@color/vibrant_blue"
                 android:text="@string/post"
                 android:textColor="@color/white"
