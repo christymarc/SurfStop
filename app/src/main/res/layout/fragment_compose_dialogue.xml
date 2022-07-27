@@ -27,10 +27,9 @@
                 tools:srcCompat="@tools:sample/avatars" />
 
             <CheckBox
-                android:id="@+id/checkbox_beach"
+                android:id="@+id/checkboxBeach"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onCheckboxClicked"
                 android:text="@string/is_this_a_beach"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@+id/textInputLayout"
@@ -46,7 +45,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.488"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/checkbox_beach">
+                app:layout_constraintTop_toBottomOf="@id/checkboxBeach">
 
                 <EditText
                     android:id="@+id/etCompose"

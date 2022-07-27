@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -65,6 +67,8 @@ public class ComposeDialogFragment extends DialogFragment{
     String tag;
     Button captureButton;
     Button postButton;
+    CheckBox checkBox;
+    Boolean checked = false;
 
     BeachGroup currentBeach;
     public static final String CURRENT_BEACH_KEY = "currentBeach";
@@ -109,6 +113,7 @@ public class ComposeDialogFragment extends DialogFragment{
         spinnerTag = view.findViewById(R.id.spinnerTag);
         captureButton = view.findViewById(R.id.captureButton);
         postButton = view.findViewById(R.id.postButton);
+        checkBox = view.findViewById(R.id.checkboxBeach);
 
         ivPostImage.setVisibility(View.GONE);
 
@@ -165,7 +170,14 @@ public class ComposeDialogFragment extends DialogFragment{
             });
         }
 
-        // Post user's input
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+                setCheckBox(isChecked);
+            }
+        });
+
+                // Post user's input
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +193,7 @@ public class ComposeDialogFragment extends DialogFragment{
                             .show();
                     return;
                 }
-                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight);
+                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight, checked);
             }
         });
     }
@@ -192,6 +204,10 @@ public class ComposeDialogFragment extends DialogFragment{
 
     private void setTag(Object itemAtPosition) {
         this.tag = itemAtPosition.toString();
+    }
+
+    private void setCheckBox(boolean isChecked) {
+        this.checked = isChecked;
     }
 
     private void launchCamera() throws IOException {
@@ -229,7 +245,7 @@ public class ComposeDialogFragment extends DialogFragment{
     }
 
     private void savePost(ParseUser currentUser, BeachGroup current_beach, String content,
-                          File photoFile, String tag, String surfHeight) {
+                          File photoFile, String tag, String surfHeight, Boolean checked) {
 
         ShortPost post = new ShortPost();
         post.setKeyBeachGroup(current_beach);
@@ -242,6 +258,7 @@ public class ComposeDialogFragment extends DialogFragment{
         }
         post.setKeyTag(tag);
         post.setKeySurfHeight(surfHeight);
+        post.setKeyIsImageBeach(checked);
 
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {

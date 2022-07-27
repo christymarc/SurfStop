@@ -13,6 +13,7 @@ public class ShortPost extends Post implements BasePost{
     public static final String KEY_SURFHEIGHT = "surfHeight";
     public static final String KEY_TAG = "tag";
     public static final String KEY_BEACHGROUP = "beachGroup";
+    public static final String KEY_ISIMAGEBEACH = "isImageBeach";
     public Date createdAt;
 
     public ShortPost() { }
@@ -27,6 +28,7 @@ public class ShortPost extends Post implements BasePost{
         if(post.imageUrl != null) {
             this.setKeyImageUrl(post.imageUrl);
         }
+        this.setKeyIsImageBeach(post.isImageBeach);
     }
 
     public String getKeySurfHeight() { return getString(KEY_SURFHEIGHT); }
@@ -35,9 +37,13 @@ public class ShortPost extends Post implements BasePost{
 
     public BeachGroup getKeyBeachGroup() { return (BeachGroup) getParseObject(KEY_BEACHGROUP); }
 
+    public Boolean getKeyIsImageBeach() { return getBoolean(KEY_ISIMAGEBEACH); }
+
     public void setKeySurfHeight(String surf_height) { put(KEY_SURFHEIGHT, surf_height); }
 
     public void setKeyTag(String tag) { put(KEY_TAG, tag); }
 
     public void setKeyBeachGroup(BeachGroup beachGroup) { put(KEY_BEACHGROUP, beachGroup); }
+
+    public void setKeyIsImageBeach(Boolean isImageBeach) { put(KEY_ISIMAGEBEACH, isImageBeach); }
 }
