@@ -153,13 +153,21 @@ public class ComposeDialogFragment extends DialogFragment{
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    launchCamera();
+                    try {
+                        launchCamera();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    launchUpload();
+                    try {
+                        launchUpload();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -210,7 +218,7 @@ public class ComposeDialogFragment extends DialogFragment{
                             .show();
                     return;
                 }
-                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight, checked);
+                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, tag, surfHeight);
             }
         });
     }
@@ -227,17 +235,13 @@ public class ComposeDialogFragment extends DialogFragment{
         this.checked = isChecked;
     }
 
-    private void launchCamera() {
+    private void launchCamera() throws IOException {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
-        photoDir = getContext().getCacheDir();
-        try {
-            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.photoDir = getContext().getCacheDir();
+        this.photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -249,16 +253,12 @@ public class ComposeDialogFragment extends DialogFragment{
         }
     }
 
-    private void launchUpload() {
+    private void launchUpload() throws IOException {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
         // Create a File reference for future access
-        photoDir = getContext().getCacheDir();
-        try {
-            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.photoDir = getContext().getCacheDir();
+        this.photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -276,7 +276,7 @@ public class ComposeDialogFragment extends DialogFragment{
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Take photo file and rotate to the appropriate orientation
-                this.image = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
+                this.image = CameraUtil.rotateBitmapOrientation(this.photoFile.getAbsolutePath());
                 // Load the taken image into a preview
                 ivPostImage.setImageBitmap(this.image);
                 ivPostImage.setVisibility(View.VISIBLE);
@@ -291,7 +291,7 @@ public class ComposeDialogFragment extends DialogFragment{
 
                 this.image = null;
                 try {
-                    photoFile = FileUtil.from(getContext(), uriData);
+                    this.photoFile = FileUtil.from(getContext(), uriData);
                     this.image = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -307,7 +307,7 @@ public class ComposeDialogFragment extends DialogFragment{
     }
 
     private void savePost(ParseUser currentUser, BeachGroup current_beach, String content,
-                          File photoFile, String tag, String surfHeight, Boolean checked) {
+                          String tag, String surfHeight) {
 
         ShortPost post = new ShortPost();
         post.setKeyBeachGroup(current_beach);
@@ -315,11 +315,19 @@ public class ComposeDialogFragment extends DialogFragment{
         post.setKeyContent(content);
         post.setKeyUser(currentUser);
         post.setKeyCreatedAt(DateConverter.toDate(System.currentTimeMillis()));
+        post.setKeyTag(tag);
+        post.setKeySurfHeight(surfHeight);
         if(photoFile != null) {
-            post.setKeyImage(new ParseFile(photoFile));
-            post.setKeyIsImageBeach(checked);
+            ParseFile parseFile = new ParseFile(this.photoFile);
+            try {
+                parseFile.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            post.setKeyImage(parseFile);
+            post.setKeyIsImageBeach(this.checked);
 
-            if (checked) {
+            if (this.checked) {
                 Bitmap scaledImage = Bitmap.createScaledBitmap(this.image, IMG_SIZE, IMG_SIZE, false);
                 float beachState = ImageClassificationUtil.classifyImage(scaledImage);
                 if (beachState < 0) {
@@ -330,8 +338,6 @@ public class ComposeDialogFragment extends DialogFragment{
                 }
             }
         }
-        post.setKeyTag(tag);
-        post.setKeySurfHeight(surfHeight);
 
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {

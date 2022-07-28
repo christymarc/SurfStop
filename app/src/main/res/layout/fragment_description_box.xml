@@ -12,6 +12,27 @@
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintVertical_bias="0.0">
 
+    <TextView
+        android:id="@+id/tvMinBreakFeet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feet"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvMinBreak"
+        app:layout_constraintStart_toEndOf="@+id/tvMinBreak"
+        app:layout_constraintTop_toTopOf="@+id/tvMinBreak"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/tvFareinheitAirTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fareinheit"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvAirTemp"
+        app:layout_constraintStart_toEndOf="@+id/tvAirTemp"
+        app:layout_constraintTop_toTopOf="@+id/tvAirTemp" />
+
     <Spinner
         android:id="@+id/spinnerBeach"
         android:layout_width="0dp"
@@ -75,18 +96,18 @@
         android:id="@+id/tvMinBreak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="84dp"
+        android:layout_marginEnd="56dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/tvMinBreakLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvGroupDescription"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="@string/height" />
 
     <TextView
         android:id="@+id/tvAirLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
         android:text="@string/air_temp_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMaxBreakLabel" />
@@ -96,9 +117,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/tvAirLabel"
+        app:layout_constraintBottom_toTopOf="@+id/tvWeatherLabel"
         app:layout_constraintStart_toEndOf="@+id/tvAirLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMaxBreak"
+        app:layout_constraintTop_toTopOf="@+id/tvAirLabel"
         tools:text="@string/temp" />
 
     <TextView
@@ -115,6 +136,7 @@
         android:id="@+id/tvMinBreakLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
         android:text="@string/min_break_label"
         app:layout_constraintEnd_toStartOf="@+id/tvMinBreak"
         app:layout_constraintHorizontal_bias="1.0"
@@ -136,10 +158,11 @@
 
     <TextView
         android:id="@+id/tvWeather"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/tvWeatherLabel"
+        app:layout_constraintEnd_toStartOf="@+id/tvSunsetLabel"
         app:layout_constraintStart_toEndOf="@+id/tvWeatherLabel"
         app:layout_constraintTop_toTopOf="@+id/tvWeatherLabel"
         tools:text="@string/weather_description" />
@@ -148,10 +171,9 @@
         android:id="@+id/tvSunsetLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
         android:text="@string/sunset_label"
-        app:layout_constraintStart_toEndOf="@+id/tvWeather"
-        app:layout_constraintTop_toTopOf="@+id/tvWeather" />
+        app:layout_constraintStart_toStartOf="@+id/etWaterTempLabel"
+        app:layout_constraintTop_toBottomOf="@+id/etWaterTempLabel" />
 
     <TextView
         android:id="@+id/tvSunsetTime"
@@ -164,5 +186,26 @@
         app:layout_constraintStart_toEndOf="@+id/tvSunsetLabel"
         app:layout_constraintTop_toTopOf="@+id/tvSunsetLabel"
         tools:text="@string/time" />
+
+    <TextView
+        android:id="@+id/tvFareinheitWaterTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="°F"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvWaterTemp"
+        app:layout_constraintStart_toEndOf="@+id/tvWaterTemp"
+        app:layout_constraintTop_toTopOf="@+id/tvWaterTemp"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/tvMaxBreakFeet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ft"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvMaxBreak"
+        app:layout_constraintStart_toEndOf="@+id/tvMaxBreak"
+        app:layout_constraintTop_toTopOf="@+id/tvMaxBreak" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

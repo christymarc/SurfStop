@@ -61,6 +61,8 @@
     <string name="clean">clean</string>
     <string name="dirty">dirty</string>
     <string name="picture_not_uploaded">Picture wasn\'t uploaded!</string>
+    <string name="fareinheit">°F</string>
+    <string name="feet">ft</string>
 
     <string-array name="tags_array">
         <item>awesome</item>
