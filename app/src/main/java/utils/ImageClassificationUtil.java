@@ -2,14 +2,11 @@ package utils;
 
 import static com.parse.Parse.getApplicationContext;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.example.surfstop.ml.Model;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.image.ImageProcessor;
-import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.IOException;
