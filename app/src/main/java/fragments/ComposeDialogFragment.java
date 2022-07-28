@@ -162,7 +162,11 @@ public class ComposeDialogFragment extends DialogFragment{
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    launchUpload();
+                    try {
+                        launchUpload();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -248,9 +252,21 @@ public class ComposeDialogFragment extends DialogFragment{
         }
     }
 
-    private void launchUpload() {
+    private void launchUpload() throws IOException {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE);
+
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        photoFile = File.createTempFile("image", ".jpg", photoDir);
+
+        // Wrap File object into a content provider
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
     }
 
     @Override
@@ -276,13 +292,6 @@ public class ComposeDialogFragment extends DialogFragment{
                 try {
                     photoFile = FileUtil.from(getContext(), uriData);
                     displayImage = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                Bitmap uploadedImage = null;
-                try {
-                    uploadedImage = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uriData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
