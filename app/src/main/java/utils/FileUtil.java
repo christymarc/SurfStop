@@ -25,7 +25,7 @@ public class FileUtil {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         String fileName = getFileName(context, uri);
         String[] splitName = splitFileName(fileName);
-        File tempFile = File.createTempFile(splitName[0], splitName[1]);
+        File tempFile = File.createTempFile("temporary_file" + splitName[0], splitName[1]);
         tempFile = rename(tempFile, fileName);
         tempFile.deleteOnExit();
         FileOutputStream out = null;

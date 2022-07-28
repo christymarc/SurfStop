@@ -100,24 +100,24 @@ public class ComposeDialogGroupFragment extends DialogFragment {
 
         // Checking for internet connection to not allow users to post photos in offline mode
         if (InternetUtil.isInternetConnected()) {
+            // Create a File reference for future access
+            photoDir = getContext().getCacheDir();
+            try {
+                photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        launchCamera();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    launchCamera();
                 }
             });
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-                        launchUpload();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    launchUpload();
                 }
             });
         }
@@ -166,13 +166,9 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         });
     }
 
-    private void launchCamera() throws IOException {
+    private void launchCamera() {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // Create a File reference for future access
-        photoDir = getContext().getCacheDir();
-        photoFile = File.createTempFile("image", ".jpg", photoDir);
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -184,12 +180,8 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         }
     }
 
-    private void launchUpload() throws IOException {
+    private void launchUpload() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        // Create a File reference for future access
-        photoDir = getContext().getCacheDir();
-        photoFile = File.createTempFile("image", ".jpg", photoDir);
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
