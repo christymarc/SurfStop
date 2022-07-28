@@ -150,14 +150,6 @@ public class ComposeDialogFragment extends DialogFragment{
 
         // Checking for internet connection to not allow users to post photos in offline mode
         if (InternetUtil.isInternetConnected()) {
-            // Create a File reference for future access
-            photoDir = getContext().getCacheDir();
-            try {
-                photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -239,6 +231,14 @@ public class ComposeDialogFragment extends DialogFragment{
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
@@ -251,6 +251,14 @@ public class ComposeDialogFragment extends DialogFragment{
 
     private void launchUpload() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -309,21 +317,21 @@ public class ComposeDialogFragment extends DialogFragment{
         post.setKeyCreatedAt(DateConverter.toDate(System.currentTimeMillis()));
         if(photoFile != null) {
             post.setKeyImage(new ParseFile(photoFile));
+            post.setKeyIsImageBeach(checked);
+
+            if (checked) {
+                Bitmap scaledImage = Bitmap.createScaledBitmap(this.image, IMG_SIZE, IMG_SIZE, false);
+                float beachState = ImageClassificationUtil.classifyImage(scaledImage);
+                if (beachState < 0) {
+                    post.setKeyIsBeachClean(true);
+                }
+                else {
+                    post.setKeyIsBeachClean(false);
+                }
+            }
         }
         post.setKeyTag(tag);
         post.setKeySurfHeight(surfHeight);
-        post.setKeyIsImageBeach(checked);
-
-        if (checked) {
-            Bitmap scaledImage = Bitmap.createScaledBitmap(this.image, IMG_SIZE, IMG_SIZE, false);
-            float beachState = ImageClassificationUtil.classifyImage(scaledImage);
-            if (beachState < 0) {
-                post.setKeyIsBeachClean(true);
-            }
-            else {
-                post.setKeyIsBeachClean(false);
-            }
-        }
 
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {

@@ -100,14 +100,6 @@ public class ComposeDialogGroupFragment extends DialogFragment {
 
         // Checking for internet connection to not allow users to post photos in offline mode
         if (InternetUtil.isInternetConnected()) {
-            // Create a File reference for future access
-            photoDir = getContext().getCacheDir();
-            try {
-                photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -170,6 +162,14 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
@@ -182,6 +182,14 @@ public class ComposeDialogGroupFragment extends DialogFragment {
 
     private void launchUpload() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
