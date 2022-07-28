@@ -12,7 +12,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/compose"
-            android:layout_width="317dp"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
 
@@ -37,9 +37,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
-                android:layout_width="272dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="20dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="280"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -121,9 +121,20 @@
                 android:layout_width="63dp"
                 android:layout_height="46dp"
                 android:layout_margin="5dp"
+                android:layout_marginTop="8dp"
                 app:icon="@android:drawable/ic_menu_camera"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                app:layout_constraintEnd_toStartOf="@+id/uploadButton"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+            <Button
+                android:id="@+id/uploadButton"
+                android:layout_width="50dp"
+                android:layout_height="46dp"
+                app:icon="@drawable/upload"
+                app:layout_constraintBottom_toBottomOf="@+id/captureButton"
+                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                app:layout_constraintTop_toTopOf="@+id/captureButton"
+                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

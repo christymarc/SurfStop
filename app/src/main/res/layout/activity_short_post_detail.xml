@@ -93,7 +93,7 @@
         android:text="@string/tag"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/tvBody"
-        app:layout_constraintTop_toBottomOf="@+id/tvBody" />
+        app:layout_constraintTop_toBottomOf="@id/tvBeachShows" />
 
     <TextView
         android:id="@+id/tvTag"
@@ -164,4 +164,27 @@
             app:layout_constraintTop_toTopOf="@+id/tvHasBeenUser"
             tools:text="@string/time" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvBeachShows"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/the_beach_is"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/tvBody"
+        app:layout_constraintTop_toBottomOf="@+id/tvBody" />
+
+    <TextView
+        android:id="@+id/tvBeachClassified"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBeachShows"
+        app:layout_constraintStart_toEndOf="@+id/tvBeachShows"
+        app:layout_constraintTop_toTopOf="@+id/tvBeachShows" />
 </androidx.constraintlayout.widget.ConstraintLayout>

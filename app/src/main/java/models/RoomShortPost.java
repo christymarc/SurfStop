@@ -73,6 +73,9 @@ public class RoomShortPost {
     @ColumnInfo
     public Boolean isImageBeach;
 
+    @ColumnInfo
+    public Boolean isBeachClean;
+
     public RoomShortPost() { }
 
     @Ignore
@@ -100,6 +103,7 @@ public class RoomShortPost {
         this.beachGroup = post.getKeyBeachGroup();
         this.roomBeachGroup = new RoomBeachGroup(beachGroup);
         this.roomBeachGroupId = roomBeachGroup.beachGroupObjectId;
-        this.isImageBeach = post.getKeyIsImageBeach();
+        this.isImageBeach = post.getKeyIsBeachClean();
+        this.isBeachClean = post.getKeyIsBeachClean();
     }
 }

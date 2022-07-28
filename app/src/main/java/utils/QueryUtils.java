@@ -442,9 +442,9 @@ public class QueryUtils {
 
                 // Popup to prompt user to favorite some beaches
                 if (spinnerBeach.getAdapter().isEmpty()) {
-                    String popupText = context.getResources().getString(R.string.no_beaches_popup);
+                    String popupMessage = context.getResources().getString(R.string.no_beaches_popup);
                     PopupDialogFragment popupDialogFragment =
-                            PopupDialogFragment.newInstance(popupText);
+                            PopupDialogFragment.newInstance(popupMessage);
                     popupDialogFragment.show(fm, "weather_fragment");
                 }
             }

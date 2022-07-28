@@ -14,6 +14,7 @@ public class ShortPost extends Post implements BasePost{
     public static final String KEY_TAG = "tag";
     public static final String KEY_BEACHGROUP = "beachGroup";
     public static final String KEY_ISIMAGEBEACH = "isImageBeach";
+    public static final String KEY_ISBEACHCLEAN = "isBeachClean";
     public Date createdAt;
 
     public ShortPost() { }
@@ -28,7 +29,7 @@ public class ShortPost extends Post implements BasePost{
         if(post.imageUrl != null) {
             this.setKeyImageUrl(post.imageUrl);
         }
-        this.setKeyIsImageBeach(post.isImageBeach);
+        this.setKeyIsBeachClean(post.isBeachClean);
     }
 
     public String getKeySurfHeight() { return getString(KEY_SURFHEIGHT); }
@@ -39,6 +40,8 @@ public class ShortPost extends Post implements BasePost{
 
     public Boolean getKeyIsImageBeach() { return getBoolean(KEY_ISIMAGEBEACH); }
 
+    public Boolean getKeyIsBeachClean() { return getBoolean(KEY_ISBEACHCLEAN); }
+
     public void setKeySurfHeight(String surf_height) { put(KEY_SURFHEIGHT, surf_height); }
 
     public void setKeyTag(String tag) { put(KEY_TAG, tag); }
@@ -46,4 +49,5 @@ public class ShortPost extends Post implements BasePost{
     public void setKeyBeachGroup(BeachGroup beachGroup) { put(KEY_BEACHGROUP, beachGroup); }
 
     public void setKeyIsImageBeach(Boolean isImageBeach) { put(KEY_ISIMAGEBEACH, isImageBeach); }
+    public void setKeyIsBeachClean(Boolean isBeachClean) { put(KEY_ISBEACHCLEAN, isBeachClean); }
 }

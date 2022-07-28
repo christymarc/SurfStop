@@ -14,7 +14,7 @@ import models.RoomShortPostDao;
 import models.RoomUser;
 
 @Database(entities={RoomFavoriteGroups.class, RoomPost.class, RoomShortPost.class,
-        RoomUser.class, RoomGroup.class, RoomBeachGroup.class}, version=10)
+        RoomUser.class, RoomGroup.class, RoomBeachGroup.class}, version=12)
 public abstract class MyDatabase extends RoomDatabase {
     // Declare your data access objects as abstract
     public abstract RoomShortPostDao roomShortPostDao();
