@@ -140,6 +140,8 @@ SurfStop is a surf social media app catering towards surfers of all levels and a
    | group         | Pointer to Group | group that the post is apart of |
    | beachGroup    | Pointer to BeachGroup | beach group that the post is apart of |
    | image         | Image    | image that user adds to post (optional) |
+   | isImageBeach  | Boolean  | boolean value saying whether or not the posted image is of a beach |
+   | isBeachClean  | Boolean  | boolean value assessed by TensorflowLite model saying whether or not the beach is clean |
    | textContent   | String   | text content of the post by author |
    | surfHeight    | Number   | user's estimate of current average wave height (optional) |
    | tag           | String   | user's assessment described through a word tag (optional)|
