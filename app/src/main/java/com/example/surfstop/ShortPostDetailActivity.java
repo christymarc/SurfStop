@@ -30,6 +30,8 @@ public class ShortPostDetailActivity extends AppCompatActivity {
     TextView tvUserTime;
     ImageView ivProfileImage;
     ImageView ivMedia;
+    TextView tvBeachShows;
+    TextView tvBeachClassified;
 
 
     @Override
@@ -46,6 +48,8 @@ public class ShortPostDetailActivity extends AppCompatActivity {
         tvUserTime = findViewById(R.id.tvUserTime);
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivMedia = findViewById(R.id.ivMedia);
+        tvBeachShows = findViewById(R.id.tvBeachShows);
+        tvBeachClassified = findViewById(R.id.tvBeachClassified);
 
         post = Parcels.unwrap(getIntent().getParcelableExtra(BasePost.class.getSimpleName()));
 
@@ -72,6 +76,17 @@ public class ShortPostDetailActivity extends AppCompatActivity {
             PostImage.loadImageIntoView(this, imageUrl, ivMedia);
         } else {
             ivMedia.setVisibility(View.GONE);
+        }
+
+        if (post.getKeyIsImageBeach()) {
+            tvBeachShows.setVisibility(View.VISIBLE);
+            tvBeachClassified.setVisibility(View.VISIBLE);
+            if (post.getKeyIsBeachClean()) {
+                tvBeachClassified.setText(R.string.clean);
+            }
+            else {
+                tvBeachClassified.setText(R.string.dirty);
+            }
         }
     }
 }

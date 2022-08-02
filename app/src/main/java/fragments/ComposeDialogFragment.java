@@ -2,11 +2,10 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static utils.ImageClassificationUtil.IMG_SIZE;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -42,18 +43,19 @@ import models.BeachGroup;
 import models.ShortPost;
 import utils.CameraUtil;
 import utils.DateConverter;
+import utils.FileUtil;
+import utils.ImageClassificationUtil;
 import utils.InternetUtil;
 import utils.KeyGeneratorUtil;
 
 public class ComposeDialogFragment extends DialogFragment{
 
     public static final String TAG = ComposeDialogFragment.class.getSimpleName();
-    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 12;
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1;
+    public static final int UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE = 2;
     public static final int MAX_POST_LENGTH = 280;
     public static final int TALLEST_WAVE_HEIGHT = 63;
     private static final int DEFAULT_WAVE_HEIGHT = 0;
-    public static final String CAMERA_POPUP = "Uploading photos in posts is unavailable in offline mode." +
-            "Connect to the internet to take photos.";
 
     ComposeDialogListener composeDialogListener;
 
@@ -64,7 +66,11 @@ public class ComposeDialogFragment extends DialogFragment{
     Spinner spinnerTag;
     String tag;
     Button captureButton;
+    Button uploadButton;
     Button postButton;
+    CheckBox checkBox;
+    Boolean checked = false;
+    Bitmap image;
 
     BeachGroup currentBeach;
     public static final String CURRENT_BEACH_KEY = "currentBeach";
@@ -108,7 +114,9 @@ public class ComposeDialogFragment extends DialogFragment{
         surfHeightPicker = view.findViewById(R.id.surfHeightPicker);
         spinnerTag = view.findViewById(R.id.spinnerTag);
         captureButton = view.findViewById(R.id.captureButton);
+        uploadButton = view.findViewById(R.id.uploadButton);
         postButton = view.findViewById(R.id.postButton);
+        checkBox = view.findViewById(R.id.checkboxBeach);
 
         ivPostImage.setVisibility(View.GONE);
 
@@ -152,18 +160,47 @@ public class ComposeDialogFragment extends DialogFragment{
                     }
                 }
             });
+            uploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        launchUpload();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
         else {
+            String popupMessage = getContext().getResources().getString(R.string.camera_popup);
+
             captureButton.setBackgroundColor(getResources().getColor(R.color.medium_gray));
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(CAMERA_POPUP);
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
                     popupDialogFragment.show(fm, "camera_fragment");
                 }
             });
+
+            uploadButton.setBackgroundColor(getResources().getColor(R.color.medium_gray));
+            uploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
+                    popupDialogFragment.show(fm, "upload_fragment");
+                }
+            });
         }
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+                setCheckBox(isChecked);
+            }
+        });
 
         // Post user's input
         postButton.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +218,7 @@ public class ComposeDialogFragment extends DialogFragment{
                             .show();
                     return;
                 }
-                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, photoFile, tag, surfHeight);
+                savePost(ParseUser.getCurrentUser(), currentBeach, postContent, tag, surfHeight);
             }
         });
     }
@@ -194,13 +231,17 @@ public class ComposeDialogFragment extends DialogFragment{
         this.tag = itemAtPosition.toString();
     }
 
+    private void setCheckBox(boolean isChecked) {
+        this.checked = isChecked;
+    }
+
     private void launchCamera() throws IOException {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
-        photoDir = getContext().getCacheDir();
-        photoFile = File.createTempFile("image", ".jpg", photoDir);
+        this.photoDir = getContext().getCacheDir();
+        this.photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -212,24 +253,61 @@ public class ComposeDialogFragment extends DialogFragment{
         }
     }
 
+    private void launchUpload() throws IOException {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Create a File reference for future access
+        this.photoDir = getContext().getCacheDir();
+        this.photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+
+        // Wrap File object into a content provider
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Take photo file and rotate to the appropriate orientation
-                Bitmap takenImage = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
+                this.image = CameraUtil.rotateBitmapOrientation(this.photoFile.getAbsolutePath());
                 // Load the taken image into a preview
-                ivPostImage.setImageBitmap(takenImage);
+                ivPostImage.setImageBitmap(this.image);
                 ivPostImage.setVisibility(View.VISIBLE);
+                checkBox.setVisibility(View.VISIBLE);
             } else {
                 Snackbar.make(captureButton, R.string.picture_untaken, Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        else if (requestCode == UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Uri uriData = data.getData();
+
+                this.image = null;
+                try {
+                    this.photoFile = FileUtil.from(getContext(), uriData);
+                    this.image = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ivPostImage.setImageBitmap(this.image);
+                ivPostImage.setVisibility(View.VISIBLE);
+                checkBox.setVisibility(View.VISIBLE);
+            } else {
+                Snackbar.make(uploadButton, R.string.picture_not_uploaded, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
 
     private void savePost(ParseUser currentUser, BeachGroup current_beach, String content,
-                          File photoFile, String tag, String surfHeight) {
+                          String tag, String surfHeight) {
 
         ShortPost post = new ShortPost();
         post.setKeyBeachGroup(current_beach);
@@ -237,11 +315,29 @@ public class ComposeDialogFragment extends DialogFragment{
         post.setKeyContent(content);
         post.setKeyUser(currentUser);
         post.setKeyCreatedAt(DateConverter.toDate(System.currentTimeMillis()));
-        if(photoFile != null) {
-            post.setKeyImage(new ParseFile(photoFile));
-        }
         post.setKeyTag(tag);
         post.setKeySurfHeight(surfHeight);
+        if(photoFile != null) {
+            ParseFile parseFile = new ParseFile(this.photoFile);
+            try {
+                parseFile.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            post.setKeyImage(parseFile);
+            post.setKeyIsImageBeach(this.checked);
+
+            if (this.checked) {
+                Bitmap scaledImage = Bitmap.createScaledBitmap(this.image, IMG_SIZE, IMG_SIZE, false);
+                float beachState = ImageClassificationUtil.classifyImage(scaledImage);
+                if (beachState < 0) {
+                    post.setKeyIsBeachClean(true);
+                }
+                else {
+                    post.setKeyIsBeachClean(false);
+                }
+            }
+        }
 
         if (InternetUtil.isInternetConnected()) {
             post.saveInBackground(new SaveCallback() {

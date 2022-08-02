@@ -2,8 +2,6 @@ package fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import static fragments.ComposeDialogFragment.CAMERA_POPUP;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -37,12 +35,14 @@ import models.Group;
 import models.Post;
 import utils.CameraUtil;
 import utils.DateConverter;
+import utils.FileUtil;
 import utils.InternetUtil;
 import utils.KeyGeneratorUtil;
 
 public class ComposeDialogGroupFragment extends DialogFragment {
     public static final String TAG = ComposeDialogGroupFragment.class.getSimpleName();
-    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 21;
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1;
+    public static final int UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE = 2;
     public static final int MAX_POST_LENGTH = 280;
 
     ComposeDialogGroupFragment.ComposeDialogGroupListener composeDialogGroupListener;
@@ -50,6 +50,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
     EditText etCompose;
     ImageView ivPostImage;
     Button captureButton;
+    Button uploadButton;
     Button postButton;
 
     Group currentGroup;
@@ -93,6 +94,7 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         ivPostImage = view.findViewById(R.id.ivPostImage);
         captureButton = view.findViewById(R.id.captureButton);
         postButton = view.findViewById(R.id.postButton);
+        uploadButton = view.findViewById(R.id.uploadButton);
 
         ivPostImage.setVisibility(View.GONE);
 
@@ -101,22 +103,36 @@ public class ComposeDialogGroupFragment extends DialogFragment {
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        launchCamera();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    launchCamera();
+                }
+            });
+            uploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    launchUpload();
                 }
             });
         }
         else {
+            String popupMessage = getContext().getResources().getString(R.string.camera_popup);
+
             captureButton.setBackgroundColor(getResources().getColor(R.color.medium_gray));
             captureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
-                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(CAMERA_POPUP);
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
                     popupDialogFragment.show(fm, "camera_fragment");
+                }
+            });
+
+            uploadButton.setBackgroundColor(getResources().getColor(R.color.medium_gray));
+            uploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+                    PopupDialogFragment popupDialogFragment = PopupDialogFragment.newInstance(popupMessage);
+                    popupDialogFragment.show(fm, "upload_fragment");
                 }
             });
         }
@@ -142,13 +158,17 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         });
     }
 
-    private void launchCamera() throws IOException {
+    private void launchCamera() {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Create a File reference for future access
         photoDir = getContext().getCacheDir();
-        photoFile = File.createTempFile("image", ".jpg", photoDir);
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
@@ -157,6 +177,27 @@ public class ComposeDialogGroupFragment extends DialogFragment {
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             // Start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
+    private void launchUpload() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // Create a File reference for future access
+        photoDir = getContext().getCacheDir();
+        try {
+            photoFile = File.createTempFile("temporary_image", ".jpg", photoDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Wrap File object into a content provider
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.example.surfstop.provider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE);
         }
     }
 
@@ -172,6 +213,24 @@ public class ComposeDialogGroupFragment extends DialogFragment {
                 ivPostImage.setVisibility(View.VISIBLE);
             } else {
                 Snackbar.make(captureButton, R.string.picture_untaken, Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        else if (requestCode == UPLOAD_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Uri uriData = data.getData();
+
+                Bitmap displayImage = null;
+                try {
+                    photoFile = FileUtil.from(getContext(), uriData);
+                    displayImage = CameraUtil.rotateBitmapOrientation(photoFile.getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ivPostImage.setImageBitmap(displayImage);
+                ivPostImage.setVisibility(View.VISIBLE);
+            } else {
+                Snackbar.make(uploadButton, R.string.picture_not_uploaded, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
